@@ -106,7 +106,7 @@ async function sendMessage() {
     contents.push({ role: 'user', parts: [{ text: message }] });
 
     const res = await fetch(`${API_URL}?key=${getNextKey()}`, {
-      method: 'DYNAMIC',
+      method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ contents })
     });
