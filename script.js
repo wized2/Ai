@@ -1,33 +1,42 @@
-// ENDROID AI v3 — LIVE INTERNET + UNLIMITED KEYS + PURE ENGLISH
-// Professional • Clean • Unstoppable
+// ENDROID AI v4 — FINAL FIXED VERSION
+// NO STUCK LOOP • LIVE INTERNET • PROFESSIONAL • UNSTOPPABLE
 
 let API_KEYS = [];
+let keysLoaded = false;
+
 fetch('keys.txt?t=' + Date.now())
-  .then(r => r.ok ? r.text() : Promise.reject())
+  .then(r => r.ok ? r.text() : Promise.reject('keys.txt not found'))
   .then(text => {
-    API_KEYS = text.split('\n').map(l => l.trim()).filter(l => l.startsWith('AIzaSy') && l.length > 30);
-    console.log(`ENDROID AI v3 READY — ${API_KEYS.length} keys + LIVE internet activated`);
+    API_KEYS = text.split('\n')
+      .map(l => l.trim())
+      .filter(l => l.startsWith('AIzaSy') && l.length > 30);
+    keysLoaded = true;
+    console.log(`ENDROID AI v4 LOADED ${API_KEYS.length} KEYS + LIVE INTERNET`);
+    if (API_KEYS.length === 0) {
+      document.body.innerHTML = `<div style="text-align:center;margin-top:100px;font-family:sans-serif;">
+        <h2>keys.txt is empty!</h2><p>Add your Gemini keys (one per line)</p>
+      </div>`;
+    }
   })
-  .catch(() => {
+  .catch(err => {
+    console.warn('Using fallback key', err);
     API_KEYS = ["AIzaSyBdNZDgXeZmRuMOPdsAE0kVAgVyePnqD0U"];
+    keysLoaded = true;
   });
 
+// Wait for keys before allowing messages
 let currentKeyIndex = 0;
-let failedKeys = new Set();
 function getNextKey() {
-  while (failedKeys.has(currentKeyIndex % API_KEYS.length)) {
-    currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
-  }
+  if (API_KEYS.length === 0) return null;
   const key = API_KEYS[currentKeyIndex % API_KEYS.length];
-  currentKeyIndex = (currentKeyIndex + 1) % API_KEYS.length;
+  currentKeyIndex++;
   return key;
 }
-setInterval(() => location.reload(), 180000);
 
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const SYSTEM_PROMPT = `You are Endroid AI — a fast, intelligent, and unlimited AI assistant with real-time internet access via Google Search.
-You have perfect memory, beautiful design, and never run out of quota.
+You have perfect memory and never run out of quota.
 Always be helpful, confident, and concise. Use markdown and cite sources when grounding is used.
 Current date: November 08, 2025.`;
 
@@ -36,12 +45,10 @@ const welcomeMessages = [
   "Ready when you are — real-time answers, unlimited power.",
   "Endroid online: fast, smart, and always up to date.",
   "Live Google Search enabled. What would you like to know?",
-  "Endroid AI v3 — unlimited and connected to the web."
+  "Endroid AI v4 — unlimited and connected to the web."
 ];
 
 let chatHistory = [];
-let retryCount = 0;
-const MAX_RETRIES = 3;  // Prevent infinite loop
 
 window.onload = () => {
   loadChat();
@@ -74,57 +81,60 @@ function addMessage(role, text) {
 }
 
 async function sendMessage() {
+  if (!keysLoaded || API_KEYS.length === 0) {
+    addMessage('bot', "Keys not loaded yet. Please wait...");
+    return;
+  }
+
   const input = document.getElementById('messageInput');
   const message = input.value.trim();
-  if (!message || API_KEYS.length === 0) return;
+  if (!message) return;
 
   addMessage('user', message);
   input.value = '';
   document.getElementById('sendBtn').disabled = true;
   hideError();
 
-  try {
-    let contents = [];
-    if (chatHistory.length === 0) {
-      contents.push({ role: 'user', parts: [{ text: SYSTEM_PROMPT }] });
-    }
-    chatHistory.forEach(m => contents.push({ role: m.role, parts: [{ text: m.text }] }));
-    contents.push({ role: 'user', parts: [{ text: message }] });
+  const contents = chatHistory.length === 0
+    ? [{ role: 'user', parts: [{ text: SYSTEM_PROMPT }] }, { role: 'user', parts: [{ text: message }] }]
+    : [...chatHistory.map(m => ({ role: m.role, parts: [{ text: m.text }] })), { role: 'user', parts: [{ text: message }] }];
 
-    const key = getNextKey();
+  const key = getNextKey();
+  if (!key) {
+    addMessage('bot', "No valid API key available.");
+    document.getElementById('sendBtn').disabled = false;
+    return;
+  }
+
+  try {
     const res = await fetch(`${API_URL}?key=${key}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         contents,
-        tools: [{ googleSearchRetrieval: {} }],  // LIVE INTERNET
+        tools: [{ googleSearchRetrieval: {} }],
         safetySettings: [{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }]
       })
     });
 
     if (!res.ok) {
       const err = await res.text();
-      if (err.includes('429') || err.includes('quota')) {
-        failedKeys.add((currentKeyIndex - 1 + API_KEYS.length) % API_KEYS.length);
-        console.warn(`Key failed — rotating (${failedKeys.size} dead)`);
-        retryCount++;
-        if (retryCount < MAX_RETRIES) {
-          addMessage('bot', "Switching key — please wait...");
-          setTimeout(sendMessage, 1000); // Delay retry
-          return;
-        } else {
-          throw new Error("Max retries reached");
-        }
+      if (err.includes('429') || err.includes('RESOURCE_EXHAUSTED')) {
+        addMessage('bot', "This key hit quota. Trying next one...");
+        setTimeout(sendMessage, 1200);
+        return;
       }
       throw new Error(err);
     }
 
-    retryCount = 0; // Reset on success
     const data = await res.json();
-    const reply = data.candidates[0].content.parts[0].text;
+    if (!data.candidates?.[0]?.content?.parts?.[0]?.text) {
+      throw new Error("Empty response");
+    }
 
+    const reply = data.candidates[0].content.parts[0].text;
     let citationText = "";
-    if (data.candidates[0].groundingMetadata?.groundingChunks) {
+    if (data.candidates[0].groundingMetadata?.groundingChunks?.length > 0) {
       citationText = "\n\nSources:\n";
       data.candidates[0].groundingMetadata.groundingChunks.forEach((chunk, i) => {
         const url = chunk.web?.uri || "Source";
@@ -139,16 +149,9 @@ async function sendMessage() {
     addMessage('bot', fullReply);
 
   } catch (err) {
-    console.error(err);
-    retryCount = 0; // Reset on general error
-    if (err.message.includes('Max retries')) {
-      showError("All keys temporarily exhausted. Try later.");
-      addMessage('bot', "All keys on cooldown — check quota or add more.");
-    } else {
-      showError("Network error. Retrying...");
-      addMessage('bot', "Network issue — retrying in 1s...");
-      setTimeout(sendMessage, 1000);
-    }
+    console.error("API Error:", err);
+    addMessage('bot', "Network error. Retrying with next key...");
+    setTimeout(sendMessage, 1500);
   } finally {
     document.getElementById('sendBtn').disabled = false;
     input.focus();
