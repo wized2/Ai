@@ -30,13 +30,34 @@ function getNextKey() {
   return key;
 }
 
-// CORE AI – NO GOOGLE SEARCH TOOL ANYMORE
+// Auto-refresh every 3 minutes
+setInterval(() => location.reload(), 180000);
+
+// CORE AI
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const SYSTEM_PROMPT = `You are Endroid AI, a fast, friendly, and unlimited chatbot powered by Google Gemini.
 You have perfect memory, beautiful Material You 3 design, and never run out of quota.
 Be helpful, concise, and use markdown when it makes things clearer.`;
 
+// --- NEW FEATURE: DuckDuckGo Web Search (Free, No API key needed) ---
+async function duckDuckGoSearch(query) {
+  try {
+    const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1&no_html=1`;
+    const res = await fetch(url);
+    const data = await res.json();
+    const summary =
+      data.Abstract ||
+      (data.RelatedTopics && data.RelatedTopics[0]?.Text) ||
+      "No live data found.";
+    return summary;
+  } catch (err) {
+    console.warn("DuckDuckGo fetch failed:", err);
+    return "No live data available.";
+  }
+}
+
+// Welcome messages
 const welcomeMessages = [
   "Hey there! What can I help with?",
   "Ready when you are.",
@@ -84,6 +105,7 @@ function addMessage(role, text) {
   container.scrollTop = container.scrollHeight;
 }
 
+// MAIN SEND FUNCTION — now with DuckDuckGo integration
 async function sendMessage() {
   const input = document.getElementById('messageInput');
   const message = input.value.trim();
@@ -95,28 +117,42 @@ async function sendMessage() {
   hideError();
 
   try {
+    // Step 1: Fetch live data (if user asks for web info)
+    let liveData = "";
+    const triggerWords = ["search", "latest", "news", "today", "update", "info", "information"];
+    if (triggerWords.some(w => message.toLowerCase().includes(w))) {
+      liveData = await duckDuckGoSearch(message);
+      if (liveData && liveData !== "No live data found.") {
+        addMessage("system", "_Fetching live info..._");
+      }
+    }
+
+    // Step 2: Prepare prompt
     let contents = [];
     if (chatHistory.length === 0) {
       contents.push({ role: 'user', parts: [{ text: SYSTEM_PROMPT }] });
     }
     chatHistory.forEach(m => contents.push({ role: m.role, parts: [{ text: m.text }] }));
-    contents.push({ role: 'user', parts: [{ text: message }] });
 
+    let finalPrompt = message;
+    if (liveData && liveData !== "No live data found.") {
+      finalPrompt = `User asked: "${message}"\n\nHere is the latest web info:\n${liveData}\n\nNow respond based on this data.`;
+    }
+
+    contents.push({ role: 'user', parts: [{ text: finalPrompt }] });
+
+    // Step 3: Ask Gemini
     const res = await fetch(`${API_URL}?key=${getNextKey()}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        contents,
-        // THIS IS THE ONLY CHANGE – DISABLE GOOGLE SEARCH GROUNDING
-        tools: []   // ← empty tools = NO internet, NO search, NO external fetch
-      })
+      body: JSON.stringify({ contents, tools: [] })
     });
 
     if (!res.ok) {
       const err = await res.text();
       if (err.includes('429') || err.includes('quota')) {
         failedKeys.add((currentKeyIndex - 1 + API_KEYS.length) % API_KEYS.length);
-        return sendMessage(); // retry instantly
+        return sendMessage();
       }
       throw new Error(err);
     }
@@ -130,6 +166,7 @@ async function sendMessage() {
     addMessage('bot', reply);
 
   } catch (e) {
+    console.error(e);
     showError("Retrying...");
     addMessage('bot', "One moment — switching keys...");
   } finally {
