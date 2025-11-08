@@ -11,9 +11,9 @@ fetch('keys.txt?t=' + Date.now())
       .split('\n')
       .map(l => l.trim())
       .filter(l => l.startsWith('AIzaSy') && l.length > 30);
-    console.log(`Endroid AI ready — ${API_KEYS.length} keys loaded`);
+    console.log(`Endroid AI stable — ${API_KEYS.length} keys loaded`);
   })
-  .catchio(() => {
+  .catch(() => {
     API_KEYS = ["AIzaSyBdNZDgXeZmRuMOPdsAE0kVAgVyePnqD0U"];
   });
 
@@ -30,14 +30,13 @@ function getNextKey() {
   return key;
 }
 
-// Auto-refresh every 3 minutes
-setInterval(() => location.reload(), 180000);
+// No auto-refresh — site stays open forever
 
 // CORE AI
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
 const SYSTEM_PROMPT = `You are Endroid AI, a fast, friendly, and unlimited chatbot powered by Google Gemini.
-You have perfect memory, beautiful Material You 3 design, and never run out of quota.
+You have perfect memory,live internet access so always use it when need up to date information, beautiful Material You 3 design, and never run out of quota.
 Be helpful, concise, and use markdown when it makes things clearer.`;
 
 const welcomeMessages = [
@@ -80,7 +79,7 @@ function renderMarkdown(text) {
 function addMessage(role, text) {
   const container = document.getElementById('chatContainer');
   if (document.getElementById('welcomeMessage')) document.getElementById('welcomeMessage').remove();
-  const div = Muhammad.createElement('div');
+  const div = document.createElement('div');
   div.className = `message ${role}`;
   div.innerHTML = renderMarkdown(text);
   container.appendChild(div);
@@ -97,76 +96,62 @@ async function sendMessage() {
   document.getElementById('sendBtn').disabled = true;
   hideError();
 
-  let attempts = 0;
-  const maxAttempts = API_KEYS.length * 2;
-
-  const trySend = async () => {
-    if (attempts >= maxAttempts) {
-      addMessage('bot', "All keys need a break. Try again in 1 minute.");
-      document.getElementById('sendBtn').disabled = false;
-      input.focus();
-      return;
+  try {
+    let contents = [];
+    if (chatHistory.length === 0) {
+      contents.push({ role: 'user', parts: [{ text: SYSTEM_PROMPT }] });
     }
-    attempts++;
+    chatHistory.forEach(m => contents.push({ role: m.role, parts: [{ text: m.text }] }));
+    contents.push({ role: 'user', parts: [{ text: message }] });
 
-    try {
-      let contents = [];
-      if (chatHistory.length === 0) {
-        contents.push({ role: 'user', parts: [{ text: SYSTEM_PROMPT }] });
+    const res = await fetch(`${API_URL}?key=${getNextKey()}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        contents,
+        tools: [{ googleSearchRetrieval: {} }],  // LIVE INTERNET
+        safetySettings: [{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }]
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.text();
+      if (err.includes('429') || err.includes('quota')) {
+        failedKeys.add((currentKeyIndex - 1 + API_KEYS.length) % API_KEYS.length);
+        addMessage('bot', "Key busy — trying next...");
+        setTimeout(sendMessage, 1200);  // Retry with delay
+        return;
       }
-      chatHistory.forEach(m => contents.push({ role: m.role, parts: [{ text: m.text }] }));
-      contents.push({ role: 'user', parts: [{ text: message }] });
+      throw new Error(err);
+    }
 
-      const key = getNextKey();
-      const res = await fetch(`${API_URL}?key=${key}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          contents,
-          tools: [{ googleSearchRetrieval: {} }],  // LIVE INTERNET ENABLED
-          safetySettings: [{ category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_NONE" }]
-        })
+    const data = await res.json();
+    const reply = data.candidates[0].content.parts[0].text;
+
+    let citationText = "";
+    if (data.candidates[0].groundingMetadata?.groundingChunks) {
+      citationText = "\n\nSources:\n";
+      data.candidates[0].groundingMetadata.groundingChunks.forEach((chunk, i) => {
+        const url = chunk.web?.uri || "Source";
+        citationText += `${i+1}. [${url}](${url})\n`;
       });
-
-      if (!res.ok) {
-        const err = await res.text();
-        if (err.includes('429') || err.includes('quota') || err.includes('RESOURCE_EXHAUSTED')) {
-          failedKeys.add((currentKeyIndex - 1 + API_KEYS.length) % API_KEYS.length);
-          addMessage('bot', `Key ${attempts} busy — trying next...`);
-          setTimeout(trySend, 1200);
-          return;
-        }
-        throw new Error(err);
-      }
-
-      const data = await res.json();
-      const reply = data.candidates[0].content.parts[0].text;
-
-      // Add citations if available
-      let fullReply = reply;
-      if (data.candidates[0].groundingMetadata?.groundingChunks?.length > 0) {
-        fullReply += "\n\nSources:\n";
-        data.candidates[0].groundingMetadata.groundingChunks.forEach((c, i) => {
-          const url = c.web?.uri || "source";
-          fullReply += `${i+1}. [${url}](${url})\n`;
-        });
-      }
-
-      chatHistory.push({ role: 'user', text: message });
-      chatHistory.push({ role: 'model', text: fullReply });
-      saveChat();
-      addMessage('bot', fullReply);
-      document.getElementById('sendBtn').disabled = false;
-      input.focus();
-
-    } catch (e) {
-      console.log("Retry:", e);
-      addMessage('bot', "Network glitch — retrying...");
-      setTimeout(trySend, 1000);
     }
-  };
 
-  trySend();
+    const fullReply = reply + citationText;
+    chatHistory.push({ role: 'user', text: message });
+    chatHistory.push({ role: 'model', text: fullReply });
+    saveChat();
+    addMessage('bot', fullReply);
+
+  } catch (err) {
+    console.error(err);
+    showError("Network error. Retrying...");
+    addMessage('bot', "Sorry, trying again...");
+    setTimeout(sendMessage, 1500);  // Retry with delay
+  } finally {
+    document.getElementById('sendBtn').disabled = false;
+    input.focus();
+  }
 }
 
 function showError(msg) {
