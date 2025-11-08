@@ -40,6 +40,8 @@ const welcomeMessages = [
 ];
 
 let chatHistory = [];
+let retryCount = 0;
+const MAX_RETRIES = 3;  // Prevent infinite loop
 
 window.onload = () => {
   loadChat();
@@ -105,11 +107,19 @@ async function sendMessage() {
       if (err.includes('429') || err.includes('quota')) {
         failedKeys.add((currentKeyIndex - 1 + API_KEYS.length) % API_KEYS.length);
         console.warn(`Key failed — rotating (${failedKeys.size} dead)`);
-        return sendMessage();
+        retryCount++;
+        if (retryCount < MAX_RETRIES) {
+          addMessage('bot', "Switching key — please wait...");
+          setTimeout(sendMessage, 1000); // Delay retry
+          return;
+        } else {
+          throw new Error("Max retries reached");
+        }
       }
       throw new Error(err);
     }
 
+    retryCount = 0; // Reset on success
     const data = await res.json();
     const reply = data.candidates[0].content.parts[0].text;
 
@@ -130,9 +140,15 @@ async function sendMessage() {
 
   } catch (err) {
     console.error(err);
-    showError("Retrying with next key...");
-    addMessage('bot', "Switching key — please wait...");
-    setTimeout(sendMessage, 800);
+    retryCount = 0; // Reset on general error
+    if (err.message.includes('Max retries')) {
+      showError("All keys temporarily exhausted. Try later.");
+      addMessage('bot', "All keys on cooldown — check quota or add more.");
+    } else {
+      showError("Network error. Retrying...");
+      addMessage('bot', "Network issue — retrying in 1s...");
+      setTimeout(sendMessage, 1000);
+    }
   } finally {
     document.getElementById('sendBtn').disabled = false;
     input.focus();
