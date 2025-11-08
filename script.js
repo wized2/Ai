@@ -32,7 +32,6 @@ function getNextKey() {
 }
 
 // Auto-refresh every 3 minutes when new keys are added
-setInterval(() => location.reload(), 180000);
 
 // CORE AI
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
