@@ -30,9 +30,6 @@ function getNextKey() {
   return key;
 }
 
-// Auto-refresh every 3 minutes
-setInterval(() => location.reload(), 180000);
-
 // CORE AI – NO GOOGLE SEARCH TOOL ANYMORE
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
 
