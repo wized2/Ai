@@ -35,25 +35,28 @@ setInterval(() => location.reload(), 180000);
 
 // CORE AI
 const API_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent';
-
 const SYSTEM_PROMPT = `You are Endroid AI, a fast, friendly, and unlimited chatbot powered by Google Gemini.
 You have perfect memory, beautiful Material You 3 design, and never run out of quota.
 Be helpful, concise, and use markdown when it makes things clearer.`;
 
-// --- NEW FEATURE: DuckDuckGo Web Search (Free, No API key needed) ---
+// --- SMART DUCKDUCKGO FETCH ---
 async function duckDuckGoSearch(query) {
   try {
     const url = `https://api.duckduckgo.com/?q=${encodeURIComponent(query)}&format=json&no_redirect=1&no_html=1`;
     const res = await fetch(url);
     const data = await res.json();
-    const summary =
-      data.Abstract ||
-      (data.RelatedTopics && data.RelatedTopics[0]?.Text) ||
-      "No live data found.";
-    return summary;
+    let sources = [];
+    if (data.Abstract) sources.push(data.Abstract);
+    if (data.RelatedTopics) {
+      for (let i = 0; i < Math.min(3, data.RelatedTopics.length); i++) {
+        if (data.RelatedTopics[i].Text) sources.push(data.RelatedTopics[i].Text);
+      }
+    }
+    if (sources.length === 0) sources.push("No live data found.");
+    return sources;
   } catch (err) {
     console.warn("DuckDuckGo fetch failed:", err);
-    return "No live data available.";
+    return ["No live data available."];
   }
 }
 
@@ -105,7 +108,7 @@ function addMessage(role, text) {
   container.scrollTop = container.scrollHeight;
 }
 
-// MAIN SEND FUNCTION — now with DuckDuckGo integration
+// MAIN SEND FUNCTION — smarter and richer
 async function sendMessage() {
   const input = document.getElementById('messageInput');
   const message = input.value.trim();
@@ -117,17 +120,17 @@ async function sendMessage() {
   hideError();
 
   try {
-    // Step 1: Fetch live data (if user asks for web info)
-    let liveData = "";
-    const triggerWords = ["search", "latest", "news", "today", "update", "info", "information"];
+    // Step 1: Fetch top 3 live sources from DuckDuckGo
+    let liveSources = [];
+    const triggerWords = ["search","latest","news","today","update","info","information"];
     if (triggerWords.some(w => message.toLowerCase().includes(w))) {
-      liveData = await duckDuckGoSearch(message);
-      if (liveData && liveData !== "No live data found.") {
+      liveSources = await duckDuckGoSearch(message);
+      if (liveSources[0] !== "No live data found.") {
         addMessage("system", "_Fetching live info..._");
       }
     }
 
-    // Step 2: Prepare prompt
+    // Step 2: Build prompt for Gemini
     let contents = [];
     if (chatHistory.length === 0) {
       contents.push({ role: 'user', parts: [{ text: SYSTEM_PROMPT }] });
@@ -135,13 +138,15 @@ async function sendMessage() {
     chatHistory.forEach(m => contents.push({ role: m.role, parts: [{ text: m.text }] }));
 
     let finalPrompt = message;
-    if (liveData && liveData !== "No live data found.") {
-      finalPrompt = `User asked: "${message}"\n\nHere is the latest web info:\n${liveData}\n\nNow respond based on this data.`;
+    if (liveSources.length > 0) {
+      finalPrompt = `User asked: "${message}"\n\nHere are the latest sources:\n` +
+        liveSources.map((s,i)=>`${i+1}. ${s}`).join('\n') +
+        `\n\nPlease provide a detailed, actionable, and easy-to-read answer using these sources. Format with Markdown if needed.`;
     }
 
     contents.push({ role: 'user', parts: [{ text: finalPrompt }] });
 
-    // Step 3: Ask Gemini
+    // Step 3: Call Gemini API
     const res = await fetch(`${API_URL}?key=${getNextKey()}`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
