@@ -128,14 +128,14 @@ async function sendMessage() {
   document.getElementById("sendBtn").disabled = true;
 
   try {
-    addMessage("system", "Fetching Wikipedia data...");
+    addMessage("system", "");
     const wiki = await wikipediaSearch(message);
 
-    addMessage("system", "_🤖 Querying Gemini..._");
+    addMessage("system", "");
     const reply = await geminiReply(message, wiki);
 
     addMessage("bot", reply, true); // typing animation
-    addMessage("system", "📚 Source: Wikipedia + Gemini.");
+    addMessage("system", "");
   } catch (e) {
     console.error(e);
     addMessage("bot", "⚠️ Failed to get a response. Try again later.", true);
