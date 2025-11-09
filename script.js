@@ -1,16 +1,17 @@
-// ENDROID AI — GEMINI + WIKIPEDIA + TYPING ANIMATION (FINAL)
+// ENDROID AI — GEMINI + WIKIPEDIA + TYPING ANIMATION (FIXED CHAT SAVE + SMART WIKI)
 
 let API_KEYS = [];
 let currentKey = 0;
 let failedKeys = new Set();
+let chatHistory = [];
 
 const MODEL_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent";
 const SYSTEM_PROMPT = `You are Endroid AI — an intelligent, friendly assistant powered by Gemini.
 Use the given Wikipedia context as the main truth source.
 If context is empty, respond from your own knowledge.
-Do NOT use Wikipedia for simple greetings like "hi" or "hello".`;
+Do NOT use Wikipedia for simple greetings like "hi", "hello", "hey", or "good morning".`;
 
-// Load API keys
+// ---------- LOAD API KEYS ----------
 fetch("keys.txt?t=" + Date.now())
   .then(r => r.text())
   .then(text => {
@@ -95,7 +96,7 @@ function renderMarkdown(t) {
 function addMessage(role, text, typing = false) {
   const chat = document.getElementById("chatContainer");
 
-  // Remove welcome message if chat is not empty
+  // Remove welcome message if chat not empty
   const welcomeEl = document.getElementById("welcomeMessage");
   if (welcomeEl) welcomeEl.remove();
 
@@ -111,10 +112,14 @@ function addMessage(role, text, typing = false) {
       i++;
       chat.scrollTop = chat.scrollHeight;
       if (i >= text.length) clearInterval(interval);
-    }, 20); // typing speed: 20ms per character
+    }, 20);
   } else {
     msg.innerHTML = renderMarkdown(text);
   }
+
+  // --- Save message to chat history ---
+  chatHistory.push({ role, text });
+  saveChat();
 }
 
 // ---------- MAIN ----------
@@ -128,14 +133,13 @@ async function sendMessage() {
   document.getElementById("sendBtn").disabled = true;
 
   try {
-    addMessage("system", "");
-    const wiki = await wikipediaSearch(message);
+    // --- Skip Wikipedia for greetings ---
+    const isGreeting = /^(hi|hello|hey|good\s(morning|afternoon|evening))$/i.test(message);
+    let wiki = isGreeting ? "" : await wikipediaSearch(message);
 
-    addMessage("system", "");
     const reply = await geminiReply(message, wiki);
+    addMessage("bot", reply, true);
 
-    addMessage("bot", reply, true); // typing animation
-    addMessage("system", "");
   } catch (e) {
     console.error(e);
     addMessage("bot", "⚠️ Failed to get a response. Try again later.", true);
@@ -154,18 +158,15 @@ function clearHistory() {
   }
 }
 
-// ---------- EVENTS ----------
-document.getElementById("messageInput").addEventListener("keypress", e => {
-  if (e.key === "Enter") sendMessage();
-});
-
-// ---------- LOCAL STORAGE ----------
-function saveChat() { localStorage.setItem('endroid_chat', JSON.stringify(chatHistory)); }
+// ---------- STORAGE ----------
+function saveChat() {
+  localStorage.setItem('endroid_chat', JSON.stringify(chatHistory));
+}
 function loadChat() {
   const saved = localStorage.getItem('endroid_chat');
   if (saved) {
     chatHistory = JSON.parse(saved);
-    chatHistory.forEach(m => addMessage(m.role === 'model' ? 'bot' : 'user', m.text));
+    chatHistory.forEach(m => addMessage(m.role, m.text));
   }
 }
 
@@ -183,6 +184,11 @@ function showRandomWelcome() {
   const el = document.getElementById('welcomeMessage');
   if (el) el.textContent = msg;
 }
+
+// ---------- EVENTS ----------
+document.getElementById("messageInput").addEventListener("keypress", e => {
+  if (e.key === "Enter") sendMessage();
+});
 
 window.onload = () => {
   loadChat();
