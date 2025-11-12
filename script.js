@@ -1,5 +1,7 @@
-// ENDROID AI — GEMINI + WIKIPEDIA + STRONG DECISION LOGIC + WEATHER
+// ENDROID AI — GEMINI + WIKIPEDIA + OPEN-METEO WEATHER + STRONG DECISION LOGIC (FINAL)
 // Keep keys.txt in root — never edit this file manually
+// All Gemini API keys are in key.txt .
+// Please don't miss use my Gemini API keys and these keys are on free tire.
 
 let API_KEYS = [];
 let currentKey = 0;
@@ -10,17 +12,9 @@ const MODEL_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemin
 const SYSTEM_PROMPT = `You are Endroid AI — an intelligent, friendly assistant powered by Gemini.
 Use the given Wikipedia context as the main truth source.
 If context is empty, respond from your own knowledge.
-Do NOT use Wikipedia for simple greetings like "hi" or "hello".
-
-Additionally, handle weather queries smartly:
-- If the user is asking for local weather, respond with live data from Open-Meteo (use geolocation if allowed or city if mentioned).
-- If the user is asking how you know the weather, or where the weather data comes from, reply with a short explanation:
-  "I get live weather data from the Open-Meteo service. 
-   If you allow location access, I use your device's geolocation (only in your browser) to fetch local weather. 
-   No API key is required. You can also ask 'weather in <city>' to get city weather."
-- Always check if the message is about weather first.
-- Only fetch Wikipedia data if the user’s message is about general knowledge, definitions, biographies, history, or similar factual information.
-- For casual chat or greetings, answer naturally without external lookups.`;
+You can decide when to fetch real weather data using Open-Meteo API.
+Do NOT fetch weather data for questions like "how do you know my weather" — just explain naturally.
+Do NOT use Wikipedia for simple greetings like "hi" or "hello".`;
 
 // ---------------- LOAD KEYS ----------------
 fetch("keys.txt?t=" + Date.now())
@@ -70,43 +64,6 @@ async function wikipediaSearch(query) {
   }
 }
 
-// ---------------- WEATHER ----------------
-async function getWeather(city = null) {
-  return new Promise((resolve, reject) => {
-    const fetchWeather = (lat, lon) => {
-      fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`)
-        .then(r => r.json())
-        .then(data => {
-          if (!data || !data.current_weather) return resolve("Weather data not available.");
-          const cw = data.current_weather;
-          resolve(`🌤 Current temperature: ${cw.temperature}°C, wind speed: ${cw.windspeed} km/h, weather code: ${cw.weathercode}`);
-        })
-        .catch(() => resolve("Failed to fetch weather."));
-    };
-
-    if (city) {
-      // simple geocoding using Open-Meteo Geo API
-      fetch(`https://geocoding-api.open-meteo.com/v1/search?name=${encodeURIComponent(city)}&count=1`)
-        .then(r => r.json())
-        .then(data => {
-          if (data.results && data.results.length) {
-            const loc = data.results[0];
-            fetchWeather(loc.latitude, loc.longitude);
-          } else {
-            resolve(`City "${city}" not found.`);
-          }
-        }).catch(() => resolve("Failed to fetch city location."));
-    } else if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        pos => fetchWeather(pos.coords.latitude, pos.coords.longitude),
-        err => resolve("Location access denied or unavailable.")
-      );
-    } else {
-      resolve("Geolocation not supported in this browser.");
-    }
-  });
-}
-
 // ---------------- SMART DECISION LOGIC ----------------
 function shouldUseWikipedia(message) {
   if (!message || typeof message !== "string") return false;
@@ -116,7 +73,6 @@ function shouldUseWikipedia(message) {
   const lower = m.toLowerCase();
   const casual = /^(hi|hello|hey|ok|okay|thanks|thank you|please|yes|no|sure|man|hmm|wow|lol|haha|huh|alright|cool|good|fine|great|awesome|bye|goodbye|yo|sup)$/i;
   if (casual.test(lower)) return false;
-
   if (m.length <= 4 && !/[?]/.test(m)) return false;
 
   const strongKeywords = [
@@ -125,9 +81,12 @@ function shouldUseWikipedia(message) {
     "biography", "born", "age of", "population", "capital of", "how to", "how do i",
     "steps to", "recipe", "ingredients", "stats", "statistics", "convert", "meaning of"
   ];
-  for (const k of strongKeywords) if (lower.includes(k)) return true;
+  for (const k of strongKeywords) {
+    if (lower.includes(k)) return true;
+  }
 
-  if (/^(who|what|when|where|why|how)\b/i.test(lower)) return true;
+  const questionStart = /^(who|what|when|where|why|how)\b/i;
+  if (questionStart.test(lower)) return true;
   if (/\?/.test(lower)) return true;
   if (m.length >= 60) return true;
 
@@ -160,22 +119,52 @@ async function geminiReply(prompt, wikiContext) {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(body)
       });
+
       if (!res.ok) {
         const errText = await res.text();
+        console.warn("Gemini response not ok:", res.status, errText);
         if (res.status === 429 || /quota|exhausted/i.test(errText)) {
           failedKeys.add((currentKey - 1 + API_KEYS.length) % API_KEYS.length);
         }
         continue;
       }
+
       const data = await res.json();
       const text = data?.candidates?.[0]?.content?.parts?.[0]?.text;
       if (text) return text;
     } catch (e) {
+      console.warn("Gemini call error:", e);
       failedKeys.add((currentKey - 1 + API_KEYS.length) % API_KEYS.length);
       continue;
     }
   }
+
   throw new Error("All keys failed or returned empty.");
+}
+
+// ---------------- WEATHER ----------------
+async function getWeather() {
+  if (!navigator.geolocation) return "⚠️ Geolocation not supported.";
+  let lat, lon;
+  try {
+    const pos = await new Promise((resolve, reject) => {
+      navigator.geolocation.getCurrentPosition(resolve, reject);
+    });
+    lat = pos.coords.latitude;
+    lon = pos.coords.longitude;
+  } catch (e) {
+    return "⚠️ Unable to get your location.";
+  }
+
+  const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true`;
+  try {
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+    if (!data.current_weather) return "⚠️ Weather data unavailable.";
+    return `🌤 Weather at your location:\nTemperature: ${data.current_weather.temperature}°C\nWind: ${data.current_weather.windspeed} km/h\nWeather code: ${data.current_weather.weathercode}`;
+  } catch (e) {
+    return "⚠️ Failed to fetch weather.";
+  }
 }
 
 // ---------------- RENDER / UI ----------------
@@ -193,6 +182,7 @@ function addMessage(role, text, typing = false) {
   const container = document.getElementById("chatContainer");
   const welcomeEl = document.getElementById("welcomeMessage");
   if (welcomeEl) welcomeEl.remove();
+
   const div = document.createElement("div");
   div.className = `message ${role}`;
   container.appendChild(div);
@@ -219,17 +209,24 @@ function addMessage(role, text, typing = false) {
 function showRandomWelcome() {
   const container = document.getElementById("chatContainer");
   if (chatHistory.length === 0 && !document.getElementById("welcomeMessage")) {
-    const msg = ["Hey there! What can I help with?","Ready when you are.","Ask me anything — I'm all ears.","What's on your mind?","Hello! How can I assist you today?"];
+    const msg = [
+      "Hey there! What can I help with?",
+      "Ready when you are.",
+      "Ask me anything — I'm all ears.",
+      "What's on your mind?",
+      "Hello! How can I assist you today?"
+    ][Math.floor(Math.random() * 5)];
     const div = document.createElement("div");
     div.className = "welcome";
     div.id = "welcomeMessage";
-    div.textContent = msg[Math.floor(Math.random() * msg.length)];
+    div.textContent = msg;
     container.appendChild(div);
   }
 }
 
+// ---------------- SAVE / LOAD CHAT ----------------
 function saveChat() {
-  try { localStorage.setItem("endroid_chat", JSON.stringify(chatHistory)); }
+  try { localStorage.setItem("endroid_chat", JSON.stringify(chatHistory)); } 
   catch (e) { console.warn("saveChat failed", e); }
 }
 
@@ -252,6 +249,7 @@ function loadChat() {
   } catch (e) { console.warn("loadChat failed", e); }
 }
 
+// ---------------- CLEAR HISTORY ----------------
 function clearHistory() {
   if (confirm("Clear chat history?")) {
     chatHistory = [];
@@ -262,7 +260,7 @@ function clearHistory() {
   }
 }
 
-// ---------------- SEND MESSAGE ----------------
+// ---------------- SEND MESSAGE (MAIN) ----------------
 async function sendMessage() {
   const input = document.getElementById("messageInput");
   const message = input.value.trim();
@@ -275,21 +273,20 @@ async function sendMessage() {
   if (sendBtn) sendBtn.disabled = true;
 
   try {
-    // ---------------- GEMINI FIRST ----------------
-    addMessage("system", "");
-    let wiki = shouldUseWikipedia(message) ? await wikipediaSearch(message) : "";
+    const useWiki = shouldUseWikipedia(message);
+    let wiki = "";
+    if (useWiki) {
+      addMessage("system", "Getting latest data....");
+      wiki = await wikipediaSearch(message);
+    }
 
+    addMessage("system", "");
     let reply = await geminiReply(message, wiki);
 
-    // ---------------- WEATHER LOGIC ----------------
-    // If Gemini mentions "fetch local weather" or "Open-Meteo", trigger actual weather fetch
-    const weatherKeywords = /local weather|open-meteo|weather in/i;
-    if (weatherKeywords.test(reply)) {
-      // extract city if mentioned
-      const cityMatch = message.match(/weather in ([a-zA-Z\s]+)/i);
-      const city = cityMatch ? cityMatch[1].trim() : null;
-      const weatherText = await getWeather(city);
-      reply = weatherText;
+    // --- Weather integration ---
+    const weatherTrigger = /fetch local weather|open-meteo|current weather|weather at my location|local weather|forecast/i;
+    if (weatherTrigger.test(reply)) {
+      reply = await getWeather();
     }
 
     addMessage("bot", reply, true);
