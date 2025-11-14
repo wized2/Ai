@@ -1,5 +1,6 @@
 // ENDROID AI — GEMINI + WIKIPEDIA + OPEN-METEO WEATHER + STRONG DECISION LOGIC (FINAL)
-// Keep keys.txt in root — never edit this file manually
+// All GEMINI API keys in keys.txt please don't miss use it and don't copy it.
+// All API keys are at free tire.
 
 let API_KEYS = [];
 let currentKey = 0;
@@ -12,12 +13,13 @@ You have a great memory, you always remember everything from previous chats with
 Use the given Wikipedia context as the main truth source.
 If context is empty, respond from your own knowledge.
 When the user's intent requires *real-time local weather*, output the exact token [GET_WEATHER] at the point in your reply where live weather data should appear.
+Do NOT forget something from previous chat, always remember everything and answer according to previous messages ( chat ).
 Do NOT output [GET_WEATHER] for source/explanation questions such as "How do you know my weather?" — those should be answered naturally with an explanation.
 Do NOT invent or hallucinate locations — if you need a location and the user didn't provide a city, assume the client will provide coordinates (via browser geolocation).
 Do NOT use Wikipedia for simple greetings like "hi" or "hello".`;
 
 // ---------------- LOAD KEYS ----------------
-fetch("keys.txt?t=" + Date.now())
+fetch(".env?t=" + Date.now())
   .then(r => r.text())
   .then(text => {
     API_KEYS = text.split(/\r?\n/).map(k => k.trim()).filter(k => k.startsWith("AIzaSy"));
