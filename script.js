@@ -1,28 +1,33 @@
-// ============================================================================
-// ENDROID AI - COMPLETE SCRIPT.JS
-// Using OpenRouter API with DeepSeek model
-// ============================================================================
+// ============================================
+// ENDROID AI - INTEGRATED SCRIPT.JS
+// Combines your working API logic with new Material 3 UI
+// ============================================
 
-// Configuration
-const OPENROUTER_API_KEY = "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";
+// Configuration - Use your working API key
+const OPENROUTER_API_KEY = "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";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 // State management
 let conversationHistory = [];
 const MAX_HISTORY = 8;
 
-// ============================================================================
-// API FUNCTIONS
-// ============================================================================
+// System prompt for DeepSeek
+const SYSTEM_PROMPT = `You are Endroid AI, a helpful and friendly assistant powered by DeepSeek.
+You remember conversation context and provide useful, accurate responses.
+Be conversational and engaging in your replies.`;
 
-async function callOpenRouterAPI(userMessage) {
-    console.log("🔧 API Debug: Starting API call with message:", userMessage.substring(0, 50) + "...");
+// ============================================
+// API FUNCTIONS (From your working script)
+// ============================================
+
+async function callDeepSeekAPI(userMessage) {
+    console.log("🤖 API: Calling DeepSeek...");
     
     try {
-        // Build the messages array
+        // Build messages array with conversation context
         const messages = buildMessagesArray(userMessage);
         
-        // Create request body
+        // Prepare request body
         const requestBody = {
             model: "deepseek/deepseek-chat",
             messages: messages,
@@ -31,7 +36,7 @@ async function callOpenRouterAPI(userMessage) {
             stream: false
         };
         
-        console.log("📤 API Debug: Sending request to OpenRouter...");
+        console.log("📤 API: Sending request...");
         
         // Make API call
         const response = await fetch(OPENROUTER_URL, {
@@ -45,17 +50,24 @@ async function callOpenRouterAPI(userMessage) {
             body: JSON.stringify(requestBody)
         });
         
-        console.log(`📥 API Debug: Response Status - ${response.status} ${response.statusText}`);
+        console.log(`📥 API: Response status - ${response.status}`);
         
         // Handle errors
         if (!response.ok) {
-            await handleAPIError(response);
-            return;
+            const errorText = await response.text();
+            console.error("❌ API Error:", errorText);
+            
+            let errorMessage = `API Error: ${response.status}`;
+            if (response.status === 401) errorMessage = "Invalid API key";
+            if (response.status === 429) errorMessage = "Rate limit exceeded";
+            if (response.status === 402) errorMessage = "Insufficient credits";
+            
+            throw new Error(errorMessage);
         }
         
         // Parse successful response
         const data = await response.json();
-        console.log("✅ API Debug: Success! Received response");
+        console.log("✅ API: Success!");
         
         if (data.choices && data.choices[0] && data.choices[0].message) {
             return data.choices[0].message.content;
@@ -72,15 +84,13 @@ async function callOpenRouterAPI(userMessage) {
 function buildMessagesArray(userMessage) {
     const messages = [];
     
-    // System prompt
+    // Add system prompt
     messages.push({
         role: "system",
-        content: "You are Endroid AI, a helpful and friendly assistant. " +
-                 "You remember conversation context and provide accurate, useful responses. " +
-                 "Be conversational and engaging in your replies."
+        content: SYSTEM_PROMPT
     });
     
-    // Add conversation history
+    // Add conversation history (last MAX_HISTORY messages)
     const recentHistory = conversationHistory
         .filter(msg => msg.role === "user" || msg.role === "assistant")
         .slice(-MAX_HISTORY);
@@ -101,148 +111,23 @@ function buildMessagesArray(userMessage) {
     return messages;
 }
 
-async function handleAPIError(response) {
-    let errorMessage = "";
-    
-    try {
-        const errorData = await response.json();
-        errorMessage = errorData.error?.message || `HTTP ${response.status}: ${response.statusText}`;
+// ============================================
+// CHAT HISTORY MANAGEMENT
+// ============================================
+
+function addToHistory(role, text) {
+    // Only store user and assistant messages
+    if (role === "user" || role === "assistant") {
+        conversationHistory.push({ role, text });
         
-        // Map common OpenRouter errors to user-friendly messages
-        const errorMap = {
-            401: "Invalid API key. Please check your OpenRouter API key.",
-            402: "Insufficient credits. Please add funds to your OpenRouter account.",
-            429: "Rate limit exceeded. Free tier allows 50 requests/day. Please wait or upgrade.",
-            404: "Model not found. The 'deepseek/deepseek-chat' model might be unavailable.",
-            400: "Bad request. There might be an issue with the request format."
-        };
-        
-        if (errorMap[response.status]) {
-            errorMessage = errorMap[response.status];
+        // Keep history manageable
+        if (conversationHistory.length > MAX_HISTORY * 2) {
+            conversationHistory = conversationHistory.slice(-MAX_HISTORY * 2);
         }
         
-    } catch (e) {
-        errorMessage = `HTTP ${response.status}: ${await response.text()}`;
-    }
-    
-    throw new Error(errorMessage);
-}
-
-// ============================================================================
-// UI FUNCTIONS
-// ============================================================================
-
-function addMessageToUI(role, text) {
-    const container = document.getElementById("chatContainer");
-    
-    // Remove welcome message if this is the first real message
-    const welcomeEl = document.getElementById("welcomeMessage");
-    if (welcomeEl && container.contains(welcomeEl) && (role === 'user' || role === 'assistant')) {
-        welcomeEl.remove();
-    }
-    
-    // Create message element
-    const messageDiv = document.createElement("div");
-    messageDiv.className = `message ${role === 'assistant' ? 'bot' : role}`;
-    
-    // Format text (basic markdown support)
-    const formattedText = formatMessageText(text);
-    messageDiv.innerHTML = formattedText;
-    
-    // Add to container
-    container.appendChild(messageDiv);
-    
-    // Scroll to bottom
-    setTimeout(() => {
-        container.scrollTop = container.scrollHeight;
-    }, 50);
-    
-    // Save to history (but not system messages)
-    if (role === 'user' || role === 'assistant') {
-        conversationHistory.push({ role, text });
         saveToStorage();
     }
-    
-    console.log(`💬 UI: Added ${role} message`);
 }
-
-function formatMessageText(text) {
-    if (!text) return "";
-    
-    return text
-        .replace(/</g, "&lt;")
-        .replace(/>/g, "&gt;")
-        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
-        .replace(/\*(.*?)\*/g, '<i>$1</i>')
-        .replace(/`([^`]+)`/g, '<code style="background:rgba(0,0,0,0.1);padding:2px 6px;border-radius:4px;font-family:monospace;">$1</code>')
-        .replace(/\n/g, '<br>');
-}
-
-function showTypingIndicator() {
-    const container = document.getElementById("chatContainer");
-    const typingDiv = document.createElement("div");
-    typingDiv.className = "message bot";
-    typingDiv.id = "typingIndicator";
-    typingDiv.innerHTML = `
-        <div style="display:flex;align-items:center;gap:8px;">
-            <div class="typing-dots">
-                <div class="dot"></div>
-                <div class="dot"></div>
-                <div class="dot"></div>
-            </div>
-            <span>Endroid AI is thinking...</span>
-        </div>
-    `;
-    container.appendChild(typingDiv);
-    
-    // Add typing animation styles
-    if (!document.querySelector('#typing-styles')) {
-        const style = document.createElement('style');
-        style.id = 'typing-styles';
-        style.textContent = `
-            .typing-dots { display: flex; gap: 4px; }
-            .dot {
-                width: 8px; height: 8px; background: var(--md-sys-color-primary);
-                border-radius: 50%; animation: typing-bounce 1.4s infinite;
-            }
-            .dot:nth-child(2) { animation-delay: 0.2s; }
-            .dot:nth-child(3) { animation-delay: 0.4s; }
-            @keyframes typing-bounce {
-                0%, 60%, 100% { transform: translateY(0); }
-                30% { transform: translateY(-6px); }
-            }
-        `;
-        document.head.appendChild(style);
-    }
-    
-    // Scroll to show typing indicator
-    container.scrollTop = container.scrollHeight;
-}
-
-function hideTypingIndicator() {
-    const typingDiv = document.getElementById("typingIndicator");
-    if (typingDiv) {
-        typingDiv.remove();
-    }
-}
-
-function showError(message) {
-    const errorDiv = document.getElementById("error");
-    if (errorDiv) {
-        errorDiv.textContent = message;
-        errorDiv.classList.remove("hidden");
-        
-        // Auto-hide after 5 seconds
-        setTimeout(() => {
-            errorDiv.classList.add("hidden");
-        }, 5000);
-    }
-    console.error("❌ Error:", message);
-}
-
-// ============================================================================
-// STORAGE FUNCTIONS
-// ============================================================================
 
 function saveToStorage() {
     try {
@@ -260,13 +145,27 @@ function loadFromStorage() {
             if (Array.isArray(parsed)) {
                 conversationHistory = parsed;
                 
-                // Display all saved messages
+                // Display saved messages using new UI functions
                 const container = document.getElementById("chatContainer");
-                container.innerHTML = "";
+                const welcomeEl = document.getElementById("welcomeMessage");
                 
+                // Hide welcome if we have history
+                if (parsed.length > 0 && welcomeEl && container.contains(welcomeEl)) {
+                    welcomeEl.style.display = 'none';
+                }
+                
+                // Add each message to UI
                 parsed.forEach(msg => {
-                    const uiRole = msg.role === "assistant" ? "bot" : msg.role;
-                    addMessageToUI(msg.role, msg.text);
+                    if (msg.role === "assistant") {
+                        // Use new UI function for bot messages
+                        if (window.addMessageToUI) {
+                            window.addMessageToUI(msg.role, msg.text, false);
+                        }
+                    } else if (msg.role === "user") {
+                        if (window.addMessageToUI) {
+                            window.addMessageToUI(msg.role, msg.text, false);
+                        }
+                    }
                 });
                 
                 console.log("📂 Loaded", parsed.length, "messages from storage");
@@ -284,15 +183,34 @@ function clearHistory() {
         localStorage.removeItem("endroid_conversation");
         
         const container = document.getElementById("chatContainer");
-        container.innerHTML = '<div class="welcome" id="welcomeMessage">What can I help with?</div>';
+        const welcomeEl = document.getElementById("welcomeMessage");
+        
+        // Clear container and show welcome
+        container.innerHTML = '';
+        
+        if (welcomeEl) {
+            welcomeEl.style.display = 'flex';
+            container.appendChild(welcomeEl);
+        } else {
+            // Create welcome if it doesn't exist
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.className = 'welcome-container';
+            welcomeDiv.id = 'welcomeMessage';
+            welcomeDiv.innerHTML = `
+                <span class="material-symbols-outlined welcome-icon">psychology</span>
+                <h1 class="welcome-title">Hello, I'm Endroid</h1>
+                <p class="welcome-subtitle">Your AI assistant powered by DeepSeek. Ask me anything!</p>
+            `;
+            container.appendChild(welcomeDiv);
+        }
         
         console.log("🗑️ Chat history cleared");
     }
 }
 
-// ============================================================================
+// ============================================
 // MAIN MESSAGE HANDLING
-// ============================================================================
+// ============================================
 
 async function sendMessage() {
     console.log("🚀 sendMessage() called");
@@ -317,33 +235,49 @@ async function sendMessage() {
     input.value = "";
     sendBtn.disabled = true;
     
-    // Add user message to UI
-    addMessageToUI("user", userMessage);
+    // Add user message to UI using new function
+    if (window.addMessageToUI) {
+        window.addMessageToUI("user", userMessage, false);
+    }
     
-    // Show typing indicator
-    showTypingIndicator();
+    // Save to history
+    addToHistory("user", userMessage);
+    
+    // Show typing indicator using new function
+    if (window.addMessageToUI) {
+        window.addMessageToUI("assistant", "", true);
+    }
     
     try {
         console.log("Calling API...");
         
         // Call the API
-        const aiResponse = await callOpenRouterAPI(userMessage);
+        const aiResponse = await callDeepSeekAPI(userMessage);
         
         console.log("Got response:", aiResponse.substring(0, 100) + "...");
         
-        // Hide typing indicator
-        hideTypingIndicator();
+        // Remove typing indicator using new function
+        if (window.removeTypingIndicator) {
+            window.removeTypingIndicator();
+        }
         
-        // Add AI response to UI
-        addMessageToUI("assistant", aiResponse);
+        // Add AI response to UI using new function
+        if (window.addMessageToUI) {
+            window.addMessageToUI("assistant", aiResponse, false);
+        }
+        
+        // Save to history
+        addToHistory("assistant", aiResponse);
         
     } catch (error) {
         console.error("sendMessage error:", error);
         
-        // Hide typing indicator
-        hideTypingIndicator();
+        // Remove typing indicator
+        if (window.removeTypingIndicator) {
+            window.removeTypingIndicator();
+        }
         
-        // Show user-friendly error in chat
+        // Show error in UI using new function
         let userFriendlyError = "I encountered an error. ";
         
         if (error.message.includes("API key") || error.message.includes("401")) {
@@ -351,19 +285,31 @@ async function sendMessage() {
         } else if (error.message.includes("credits") || error.message.includes("402")) {
             userFriendlyError += "Your OpenRouter account needs more credits.";
         } else if (error.message.includes("rate") || error.message.includes("429")) {
-            userFriendlyError += "Rate limit reached. Free tier: 50 requests/day.";
+            userFriendlyError += "Rate limit reached. Free tier allows 50 requests/day.";
         } else if (error.message.includes("network")) {
             userFriendlyError += "Network error. Please check your connection.";
         } else {
             userFriendlyError += error.message.substring(0, 100);
         }
         
-        addMessageToUI("assistant", userFriendlyError);
-        showError(error.message);
+        // Use new UI function for error
+        if (window.addMessageToUI) {
+            window.addMessageToUI("assistant", userFriendlyError, false);
+        }
+        
+        // Also show in error box
+        if (window.showErrorInUI) {
+            window.showErrorInUI(error.message);
+        }
         
     } finally {
         // Re-enable send button
         sendBtn.disabled = false;
+        
+        // Reset textarea height
+        if (input) {
+            input.style.height = 'auto';
+        }
         
         // Focus input for next message
         setTimeout(() => {
@@ -372,17 +318,17 @@ async function sendMessage() {
     }
 }
 
-// ============================================================================
-// INITIALIZATION & EVENT LISTENERS
-// ============================================================================
+// ============================================
+// EVENT HANDLERS
+// ============================================
 
 function setupEventListeners() {
     const input = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
     const clearBtn = document.getElementById("clearBtn");
     
+    // Send message on Enter (but allow Shift+Enter for new line)
     if (input) {
-        // Enter to send (Shift+Enter for new line)
         input.addEventListener("keydown", function(e) {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -397,95 +343,79 @@ function setupEventListeners() {
             }
         });
         
-        // Focus input field
+        // Auto-resize textarea (complementing the one in HTML)
+        input.addEventListener("input", function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+        
+        // Focus input on load
         setTimeout(() => {
-            input.focus();
-            console.log("🎯 Input field focused");
+            if (input) input.focus();
         }, 500);
     }
     
+    // Send button click
     if (sendBtn) {
         sendBtn.addEventListener("click", sendMessage);
-        sendBtn.disabled = true; // Initially disabled
+        sendBtn.disabled = true; // Initially disabled until there's input
     }
     
+    // Clear history button
     if (clearBtn) {
         clearBtn.addEventListener("click", clearHistory);
     }
 }
 
+// ============================================
+// INITIALIZATION
+// ============================================
+
 function initializeApp() {
     console.log("🎬 Initializing Endroid AI...");
     
-    // Load previous conversation
+    // Load previous conversation from storage
     loadFromStorage();
     
     // Set up event listeners
     setupEventListeners();
     
-    // Test API connection (optional)
-    setTimeout(() => {
-        console.log("🔧 App initialized. Ready to send messages.");
-        console.log("💡 Tips: Open browser console (F12) to see debug messages");
-        console.log("🔑 Using API key:", OPENROUTER_API_KEY.substring(0, 10) + "...");
-    }, 1000);
+    console.log("✅ Endroid AI initialized and ready!");
 }
 
-// ============================================================================
-// UTILITY FUNCTIONS (for debugging)
-// ============================================================================
+// ============================================
+// START THE APPLICATION
+// ============================================
 
-async function testAPIConnection() {
+// Wait for DOM to be fully loaded
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initializeApp);
+} else {
+    // DOM already loaded
+    initializeApp();
+}
+
+// Make functions available globally for debugging
+window.testAPI = async function() {
     console.log("🧪 Testing API connection...");
-    
     try {
-        const testResponse = await fetch(OPENROUTER_URL, {
-            method: 'POST',
-            headers: {
-                'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                model: "deepseek/deepseek-chat",
-                messages: [{ role: "user", content: "Say 'API test successful' if you can read this." }],
-                max_tokens: 20
-            })
-        });
-        
-        if (testResponse.ok) {
-            const data = await testResponse.json();
-            console.log("✅ API Connection Test: PASSED", data.choices[0].message.content);
-            return true;
-        } else {
-            const errorText = await testResponse.text();
-            console.error("❌ API Connection Test: FAILED", testResponse.status, errorText);
-            return false;
-        }
+        const testResponse = await callDeepSeekAPI("Say 'API test successful' if you can read this.");
+        console.log("✅ API Test Successful:", testResponse.substring(0, 50));
+        return true;
     } catch (error) {
-        console.error("❌ API Connection Test: ERROR", error);
+        console.error("❌ API Test Failed:", error);
         return false;
     }
-}
+};
 
-function showDebugInfo() {
+window.debugInfo = function() {
     console.log("=== DEBUG INFO ===");
-    console.log("API Key (first 10 chars):", OPENROUTER_API_KEY.substring(0, 10) + "...");
-    console.log("API URL:", OPENROUTER_URL);
-    console.log("Conversation History Length:", conversationHistory.length);
-    console.log("LocalStorage Available:", typeof localStorage !== "undefined");
+    console.log("Conversation History:", conversationHistory.length, "messages");
+    console.log("API Key Configured:", OPENROUTER_API_KEY ? "Yes" : "No");
+    console.log("UI Functions Available:", {
+        addMessageToUI: typeof window.addMessageToUI !== 'undefined',
+        showErrorInUI: typeof window.showErrorInUI !== 'undefined',
+        removeTypingIndicator: typeof window.removeTypingIndicator !== 'undefined'
+    });
     console.log("==================");
-}
-
-// ============================================================================
-// START THE APPLICATION
-// ============================================================================
-
-// Initialize when DOM is fully loaded
-document.addEventListener('DOMContentLoaded', initializeApp);
-
-// Make utility functions available in console
-window.testAPI = testAPIConnection;
-window.debugInfo = showDebugInfo;
-window.clearChat = clearHistory;
-
-console.log("📝 Endroid AI script loaded");
+};
