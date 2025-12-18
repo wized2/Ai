@@ -4,7 +4,7 @@
 // ============================================
 
 // Configuration - Use your working API key
-const OPENROUTER_API_KEY = "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";
+const OPENROUTER_API_KEY = "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";
 const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
 
 // State management
