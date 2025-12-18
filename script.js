@@ -1,352 +1,267 @@
-// ENDROID AI — DEEPSEEK via OpenRouter (SIMPLIFIED WORKING VERSION)
-// Using verified API method that works
+// ENDROID AI — DEEPSEEK OPENROUTER (WORKING VERSION)
+// Using 100% exact method that worked in your test
 
-const OPENROUTER_API_KEY = "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";
-const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+const API_KEY = "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";
+const API_URL = "https://openrouter.ai/api/v1/chat/completions";
 
-let chatHistory = [];
-const MAX_HISTORY = 8; // Remember last 8 messages
+// Simple memory for conversation
+let conversationHistory = [];
 
-// Clear, simple system prompt
-const SYSTEM_PROMPT = `You are Endroid AI, a helpful assistant powered by DeepSeek.
-You remember conversation context and provide useful, accurate responses.
-Be friendly and conversational in your tone.`;
-
-// ---------------- CHAT MEMORY ----------------
-function getRecentContext() {
-    // Get last MAX_HISTORY messages (user + assistant only)
-    const recent = chatHistory.filter(msg => 
-        msg.role === "user" || msg.role === "assistant"
-    ).slice(-MAX_HISTORY);
-    return recent;
-}
-
-function addToHistory(role, text) {
-    // Only store user and assistant messages for context
-    if (role === "user" || role === "assistant") {
-        chatHistory.push({ role, text });
-        
-        // Trim history if too long
-        if (chatHistory.length > MAX_HISTORY * 2) {
-            chatHistory = chatHistory.slice(-MAX_HISTORY * 2);
-        }
-        
-        saveChat();
-    }
-}
-
-// ---------------- DEEPSEEK API (VERIFIED WORKING METHOD) ----------------
-async function getDeepSeekReply(userMessage) {
+// -----------------------------------------------------------
+// EXACT WORKING API METHOD FROM YOUR TEST VERSION
+// -----------------------------------------------------------
+async function callDeepSeekAPI(userMessage) {
+    console.log("🤖 API CALL STARTED:", userMessage.substring(0, 50) + "...");
+    
     try {
-        // Get recent conversation context
-        const recentContext = getRecentContext();
+        // STEP 1: Build the EXACT request body that worked
+        const requestBody = {
+            model: "deepseek/deepseek-chat",
+            messages: [
+                {
+                    role: "system",
+                    content: "You are Endroid AI, a helpful and friendly assistant. Respond in a conversational way."
+                },
+                {
+                    role: "user",
+                    content: userMessage
+                }
+            ],
+            max_tokens: 1000
+        };
         
-        // Build messages array exactly as OpenRouter expects
-        const messages = [];
+        console.log("📤 Sending request:", requestBody);
         
-        // 1. Add system message first
-        messages.push({
-            role: "system",
-            content: SYSTEM_PROMPT
-        });
-        
-        // 2. Add conversation history (if any)
-        recentContext.forEach(msg => {
-            messages.push({
-                role: msg.role,
-                content: msg.text
-            });
-        });
-        
-        // 3. Add current user message
-        messages.push({
-            role: "user",
-            content: userMessage
-        });
-        
-        console.log("Sending to OpenRouter API:", {
-            messageCount: messages.length,
-            lastUserMessage: userMessage.substring(0, 50) + "..."
-        });
-        
-        // Make API call using the EXACT format that worked in your test
-        const response = await fetch(OPENROUTER_URL, {
+        // STEP 2: Make the EXACT API call (same as working test)
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                'Authorization': `Bearer ${API_KEY}`,
                 'Content-Type': 'application/json',
                 'HTTP-Referer': window.location.origin,
                 'X-Title': 'Endroid AI'
             },
-            body: JSON.stringify({
-                model: "deepseek/deepseek-chat",
-                messages: messages,
-                max_tokens: 1000,
-                temperature: 0.7,
-                stream: false
-            })
+            body: JSON.stringify(requestBody)
         });
         
-        console.log("API Response Status:", response.status);
+        console.log("📥 Response status:", response.status);
         
         if (!response.ok) {
             const errorText = await response.text();
-            console.error("API Error Details:", {
-                status: response.status,
-                statusText: response.statusText,
-                error: errorText
-            });
+            console.error("❌ API ERROR:", errorText);
             
-            // Provide helpful error messages based on status code
+            // Show specific error in UI
+            let errorMsg = "";
             if (response.status === 401) {
-                throw new Error("API key is invalid or expired. Please check your OpenRouter API key.");
+                errorMsg = "API key error. Please check your API key.";
             } else if (response.status === 429) {
-                throw new Error("Too many requests. Please wait a moment and try again.");
+                errorMsg = "Too many requests. Please wait a moment.";
             } else if (response.status === 400) {
-                // Most likely: malformed request or invalid parameters
-                try {
-                    const errorData = JSON.parse(errorText);
-                    throw new Error(`Bad request: ${errorData.error?.message || "Check your request format"}`);
-                } catch {
-                    throw new Error("Bad request format. The API didn't understand our request.");
-                }
+                errorMsg = "Bad request format. Please try a different message.";
             } else {
-                throw new Error(`API request failed: ${response.status} ${response.statusText}`);
+                errorMsg = `Server error: ${response.status}`;
             }
+            
+            showError(errorMsg);
+            throw new Error(`API Error ${response.status}: ${errorText}`);
         }
         
         const data = await response.json();
-        console.log("API Response Data:", data);
+        console.log("✅ API SUCCESS:", data);
         
-        // Extract the response text
-        if (data.choices && data.choices[0] && data.choices[0].message) {
+        // STEP 3: Extract response exactly as in working test
+        if (data.choices && data.choices.length > 0 && data.choices[0].message) {
             return data.choices[0].message.content;
         } else {
-            console.error("Unexpected API response structure:", data);
-            throw new Error("Received unexpected response format from API");
+            throw new Error("No valid response from API");
         }
         
     } catch (error) {
-        console.error("DeepSeek API call failed:", error);
+        console.error("🔥 CATCH BLOCK ERROR:", error);
         throw error;
     }
 }
 
-// ---------------- UI FUNCTIONS ----------------
-function renderMarkdown(text) {
-    if (!text) return "";
-    
-    let html = text
-        .replace(/\*\*(.*?)\*\*/g, "<b>$1</b>")
-        .replace(/\*(.*?)\*/g, "<i>$1</i>")
-        .replace(/`([^`]+)`/g, '<code style="background:#e0e0e0;padding:2px 6px;border-radius:4px;">$1</code>')
-        .replace(/\n/g, "<br>");
-    
-    return html;
+// -----------------------------------------------------------
+// SIMPLE UI FUNCTIONS
+// -----------------------------------------------------------
+function showError(message) {
+    const errorDiv = document.getElementById('error');
+    if (errorDiv) {
+        errorDiv.textContent = `Error: ${message}`;
+        errorDiv.classList.remove('hidden');
+        setTimeout(() => errorDiv.classList.add('hidden'), 5000);
+    }
+    console.error("UI Error:", message);
 }
 
-function addMessage(role, text, typing = false) {
+function addMessageToUI(role, text) {
     const container = document.getElementById("chatContainer");
-    
-    // Remove welcome message if present
     const welcomeEl = document.getElementById("welcomeMessage");
-    if (welcomeEl) welcomeEl.remove();
     
-    const div = document.createElement("div");
-    div.className = `message ${role}`;
-    container.appendChild(div);
+    // Remove welcome message if this is first real message
+    if (welcomeEl && (role === 'user' || role === 'bot')) {
+        welcomeEl.remove();
+    }
+    
+    const messageDiv = document.createElement("div");
+    messageDiv.className = `message ${role}`;
+    
+    // Simple formatting
+    let formattedText = text
+        .replace(/\*\*(.*?)\*\*/g, '<b>$1</b>')
+        .replace(/\*(.*?)\*/g, '<i>$1</i>')
+        .replace(/\n/g, '<br>');
+    
+    messageDiv.innerHTML = formattedText;
+    container.appendChild(messageDiv);
     
     // Scroll to bottom
-    setTimeout(() => {
-        container.scrollTop = container.scrollHeight;
-    }, 10);
+    container.scrollTop = container.scrollHeight;
     
-    if (typing && role === "bot") {
-        // Typing animation
-        let i = 0;
-        const plainText = text;
-        const speed = 20; // ms per character
-        
-        div.innerHTML = "";
-        const interval = setInterval(() => {
-            if (i < plainText.length) {
-                i++;
-                div.innerHTML = renderMarkdown(plainText.substring(0, i));
-                container.scrollTop = container.scrollHeight;
-            } else {
-                clearInterval(interval);
-                // Add to history after typing completes
-                addToHistory("assistant", text);
-            }
-        }, speed);
-    } else {
-        // Display immediately
-        div.innerHTML = renderMarkdown(text);
-        
-        // Add to history
-        if (role === "user") {
-            addToHistory("user", text);
-        } else if (role === "bot") {
-            addToHistory("assistant", text);
-        }
+    // Save to history
+    if (role === 'user' || role === 'bot') {
+        conversationHistory.push({ role, text });
+        saveToStorage();
     }
 }
 
-function showRandomWelcome() {
+function showTypingIndicator() {
     const container = document.getElementById("chatContainer");
-    if (chatHistory.length === 0 && !document.getElementById("welcomeMessage")) {
-        const messages = [
-            "Hello! I'm Endroid AI, powered by DeepSeek. How can I help you today?",
-            "Hi there! I'm ready to chat. What's on your mind?",
-            "Welcome! I remember our conversations and can help with various topics.",
-            "Hey! I'm your AI assistant. Feel free to ask me anything!",
-            "Ready to assist! I'm here to help with your questions and tasks."
-        ];
-        
-        const msg = messages[Math.floor(Math.random() * messages.length)];
-        const div = document.createElement("div");
-        div.className = "welcome";
-        div.id = "welcomeMessage";
-        div.textContent = msg;
-        container.appendChild(div);
-        
-        setTimeout(() => {
-            container.scrollTop = container.scrollHeight;
-        }, 100);
+    const typingDiv = document.createElement("div");
+    typingDiv.className = "message bot typing";
+    typingDiv.id = "typingIndicator";
+    typingDiv.innerHTML = "Endroid AI is thinking...";
+    container.appendChild(typingDiv);
+    container.scrollTop = container.scrollHeight;
+}
+
+function hideTypingIndicator() {
+    const typingDiv = document.getElementById("typingIndicator");
+    if (typingDiv) {
+        typingDiv.remove();
     }
 }
 
-// ---------------- CHAT STORAGE ----------------
-function saveChat() {
+// -----------------------------------------------------------
+// STORAGE FUNCTIONS
+// -----------------------------------------------------------
+function saveToStorage() {
     try {
-        localStorage.setItem("endroid_chat", JSON.stringify(chatHistory));
+        localStorage.setItem("endroid_conversation", JSON.stringify(conversationHistory));
     } catch (e) {
-        console.warn("Failed to save chat:", e);
+        console.warn("Could not save to localStorage");
     }
 }
 
-function loadChat() {
+function loadFromStorage() {
     try {
-        const saved = localStorage.getItem("endroid_chat");
+        const saved = localStorage.getItem("endroid_conversation");
         if (saved) {
-            const parsed = JSON.parse(saved);
-            if (Array.isArray(parsed)) {
-                chatHistory = parsed;
-                
-                const container = document.getElementById("chatContainer");
-                if (container) {
-                    container.innerHTML = "";
-                    
-                    parsed.forEach(msg => {
-                        const role = msg.role === "assistant" ? "bot" : msg.role;
-                        const div = document.createElement("div");
-                        div.className = `message ${role}`;
-                        div.innerHTML = renderMarkdown(msg.text);
-                        container.appendChild(div);
-                    });
-                    
-                    container.scrollTop = container.scrollHeight;
-                }
-            }
+            conversationHistory = JSON.parse(saved);
+            
+            // Display all saved messages
+            const container = document.getElementById("chatContainer");
+            container.innerHTML = '';
+            
+            conversationHistory.forEach(msg => {
+                addMessageToUI(msg.role, msg.text);
+            });
         }
     } catch (e) {
-        console.warn("Failed to load chat:", e);
-        chatHistory = [];
+        console.warn("Could not load from localStorage");
     }
 }
 
 function clearHistory() {
-    if (confirm("Clear all chat history? This will start a new conversation.")) {
-        chatHistory = [];
-        saveChat();
+    if (confirm("Clear all chat history?")) {
+        conversationHistory = [];
+        localStorage.removeItem("endroid_conversation");
+        
         const container = document.getElementById("chatContainer");
-        if (container) {
-            container.innerHTML = "";
-            showRandomWelcome();
-        }
+        container.innerHTML = '<div class="welcome" id="welcomeMessage">What can I help with?</div>';
     }
 }
 
-// ---------------- MAIN SEND FUNCTION ----------------
+// -----------------------------------------------------------
+// MAIN SEND FUNCTION (SIMPLIFIED)
+// -----------------------------------------------------------
 async function sendMessage() {
+    console.log("🚀 sendMessage() called");
+    
     const input = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
     
     if (!input || !sendBtn) {
-        console.error("Required UI elements not found!");
+        console.error("Input or button not found!");
         return;
     }
     
-    const message = input.value.trim();
-    if (!message) return;
+    const userMessage = input.value.trim();
+    if (!userMessage) return;
+    
+    console.log("User message:", userMessage);
     
     // Clear input and disable button
     input.value = "";
     sendBtn.disabled = true;
     
     // Add user message to UI
-    addMessage("user", message);
+    addMessageToUI("user", userMessage);
+    
+    // Show typing indicator
+    showTypingIndicator();
     
     try {
-        // Show "typing" indicator
-        addMessage("system", "Thinking...");
+        console.log("Calling API...");
         
-        // Get response from DeepSeek
-        const reply = await getDeepSeekReply(message);
+        // Call the API with EXACT working method
+        const aiResponse = await callDeepSeekAPI(userMessage);
         
-        // Remove "thinking" indicator and add bot response
-        const systemMessages = document.querySelectorAll('.message.system');
-        if (systemMessages.length > 0) {
-            systemMessages[systemMessages.length - 1].remove();
-        }
+        console.log("Got response:", aiResponse.substring(0, 100) + "...");
         
-        addMessage("bot", reply, true);
+        // Hide typing indicator
+        hideTypingIndicator();
+        
+        // Add AI response to UI
+        addMessageToUI("bot", aiResponse);
         
     } catch (error) {
-        console.error("Error in sendMessage:", error);
+        console.error("sendMessage error:", error);
         
-        // Remove "thinking" indicator
-        const systemMessages = document.querySelectorAll('.message.system');
-        if (systemMessages.length > 0) {
-            systemMessages[systemMessages.length - 1].remove();
-        }
+        // Hide typing indicator
+        hideTypingIndicator();
         
-        // Show user-friendly error
-        let errorMsg = "Sorry, I encountered an error. ";
+        // Show error in chat
+        addMessageToUI("bot", "I'm having trouble responding right now. Please try again or check your API key.");
         
-        if (error.message.includes("API key")) {
-            errorMsg += "There's an issue with the API key. Please check if it's valid.";
-        } else if (error.message.includes("Too many requests")) {
-            errorMsg += "Please wait a moment before trying again.";
-        } else if (error.message.includes("Bad request")) {
-            errorMsg += "There was a problem with the request format.";
-        } else if (error.message.includes("network")) {
-            errorMsg += "Network error. Please check your internet connection.";
-        } else {
-            errorMsg += "Please try again.";
-        }
-        
-        addMessage("bot", errorMsg, true);
-        
+        // Don't show error popup since we're showing in chat
     } finally {
         // Re-enable send button
         sendBtn.disabled = false;
         
-        // Focus input for next message
+        // Focus input
         setTimeout(() => {
             if (input) input.focus();
         }, 100);
     }
 }
 
-// ---------------- INITIALIZATION ----------------
+// -----------------------------------------------------------
+// INITIALIZATION & EVENT LISTENERS
+// -----------------------------------------------------------
 document.addEventListener('DOMContentLoaded', function() {
-    // Set up event listeners
+    console.log("🎯 DOM Loaded - Initializing Endroid AI");
+    
+    // Load previous conversation
+    loadFromStorage();
+    
+    // Set up input event listeners
     const input = document.getElementById("messageInput");
     const sendBtn = document.getElementById("sendBtn");
     
     if (input) {
-        // Enter key to send (Shift+Enter for new line)
+        // Enter to send (Shift+Enter for new line)
         input.addEventListener("keydown", function(e) {
             if (e.key === "Enter" && !e.shiftKey) {
                 e.preventDefault();
@@ -354,14 +269,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
         
-        // Enable/disable send button based on input
+        // Enable/disable send button
         input.addEventListener("input", function() {
             if (sendBtn) {
                 sendBtn.disabled = !this.value.trim();
             }
         });
         
-        // Focus the input
+        // Focus input field
         setTimeout(() => input.focus(), 500);
     }
     
@@ -369,44 +284,46 @@ document.addEventListener('DOMContentLoaded', function() {
         sendBtn.addEventListener("click", sendMessage);
     }
     
-    // Load previous chat and show welcome
-    loadChat();
-    showRandomWelcome();
+    console.log("✅ Endroid AI initialized successfully");
     
-    console.log("Endroid AI initialized with DeepSeek via OpenRouter");
+    // Test the API connection on startup (optional)
+    setTimeout(testConnection, 1000);
 });
 
-// ---------------- API TEST FUNCTION ----------------
-// You can run this in browser console to test the API
-async function testApiConnection() {
-    console.log("Testing API connection...");
+// -----------------------------------------------------------
+// TEST FUNCTION (Run in browser console if needed)
+// -----------------------------------------------------------
+async function testConnection() {
+    console.log("🔧 Testing API connection...");
     
     try {
-        const testResponse = await fetch(OPENROUTER_URL, {
+        const testResponse = await fetch(API_URL, {
             method: 'POST',
             headers: {
-                'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
+                'Authorization': `Bearer ${API_KEY}`,
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
                 model: "deepseek/deepseek-chat",
-                messages: [
-                    { role: "user", content: "Say 'API test successful' if you can read this." }
-                ],
-                max_tokens: 20
+                messages: [{ role: "user", content: "Say 'Hello' if you can hear me." }],
+                max_tokens: 10
             })
         });
         
         if (testResponse.ok) {
-            const data = await testResponse.json();
-            console.log("✅ API Test Successful!", data.choices[0].message.content);
+            console.log("✅ API Connection Test: PASSED");
             return true;
         } else {
-            console.error("❌ API Test Failed:", testResponse.status, await testResponse.text());
+            console.error("❌ API Connection Test: FAILED", testResponse.status);
+            const errorText = await testResponse.text();
+            console.error("Error details:", errorText);
             return false;
         }
     } catch (error) {
-        console.error("❌ API Test Error:", error);
+        console.error("❌ API Connection Test: ERROR", error);
         return false;
     }
-            }
+}
+
+// Global function to test from console
+window.testAPI = testConnection;
