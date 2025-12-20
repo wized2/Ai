@@ -3,7 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>Endroid AI</title>
+    
+    <!-- SEO Meta Tags -->
+    <title>Endroid AI - Your Intelligent AI Assistant</title>
+    <meta name="description" content="Endroid AI is a powerful AI assistant powered by DeepSeek. Get intelligent responses, code help, and meaningful conversations.">
+    <meta name="keywords" content="AI Assistant, DeepSeek, Chatbot, AI Chat, Code Help, Programming Assistant">
+    <meta name="author" content="Endroid AI">
+    <meta name="robots" content="index, follow">
+    
+    <!-- Open Graph / Social Media Meta Tags -->
+    <meta property="og:title" content="Endroid AI - Your Intelligent AI Assistant">
+    <meta property="og:description" content="Powerful AI assistant powered by DeepSeek. Get intelligent responses and meaningful conversations.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://endroid-ai.example.com">
+    <meta property="og:image" content="icon.svg">
+    <meta property="og:image:alt" content="Endroid AI Logo">
+    <meta property="og:site_name" content="Endroid AI">
+    
+    <!-- Twitter Card Meta Tags -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Endroid AI - Your Intelligent AI Assistant">
+    <meta name="twitter:description" content="Powerful AI assistant powered by DeepSeek. Get intelligent responses and meaningful conversations.">
+    <meta name="twitter:image" content="icon.svg">
+    <meta name="twitter:image:alt" content="Endroid AI Logo">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="icon.svg" type="image/svg+xml">
+    <link rel="shortcut icon" href="icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="icon.svg">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
     <!-- Material Symbols Outlined Icons -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <!-- Google Fonts for Material You -->
@@ -11,7 +42,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
-    <link rel="manifest" href="manifest.json">
+    
     <style>
         /* ============================================
            CSS THEME VARIABLES (Material 3 Expressive)
@@ -366,6 +397,15 @@
         /* ============================================
            ENHANCED MARKDOWN RENDERING
            ============================================ */
+        .message.bot p {
+            margin-bottom: 1em;
+            line-height: 1.6;
+        }
+
+        .message.bot p:last-child {
+            margin-bottom: 0;
+        }
+
         .message.bot h1,
         .message.bot h2,
         .message.bot h3,
@@ -413,6 +453,7 @@
 
         .message.bot li {
             margin-bottom: 0.4em;
+            line-height: 1.5;
         }
 
         .message.bot blockquote {
@@ -421,6 +462,79 @@
             margin: 1em 0;
             font-style: italic;
             color: var(--md-sys-color-on-surface-variant);
+            background: color-mix(in srgb, var(--md-sys-color-surface-container) 50%, transparent);
+            padding: 1em 1.2em;
+            border-radius: 0 12px 12px 0;
+        }
+
+        /* MARKDOWN TABLES */
+        .message.bot table {
+            border-collapse: collapse;
+            margin: 1em 0;
+            width: 100%;
+            overflow-x: auto;
+            display: block;
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: 12px;
+            box-shadow: var(--md-elevation-level1);
+        }
+
+        .message.bot table thead {
+            background: color-mix(in srgb, var(--md-sys-color-surface-container) 70%, transparent);
+            border-bottom: 2px solid var(--md-sys-color-outline);
+        }
+
+        .message.bot table th {
+            padding: 12px 16px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface);
+            border-right: 1px solid var(--md-sys-color-outline-variant);
+        }
+
+        .message.bot table td {
+            padding: 10px 16px;
+            border-right: 1px solid var(--md-sys-color-outline-variant);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .message.bot table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .message.bot table th:last-child,
+        .message.bot table td:last-child {
+            border-right: none;
+        }
+
+        .message.bot table tr:nth-child(even) {
+            background: color-mix(in srgb, var(--md-sys-color-surface-container) 30%, transparent);
+        }
+
+        .message.bot table tr:hover {
+            background: color-mix(in srgb, var(--md-sys-color-primary-container) 10%, transparent);
+        }
+
+        /* Table cell content styling */
+        .message.bot table td strong,
+        .message.bot table th strong {
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .message.bot table td em,
+        .message.bot table th em {
+            color: var(--md-sys-color-on-surface);
+        }
+
+        .message.bot table td code,
+        .message.bot table th code {
+            background: color-mix(in srgb, var(--md-sys-color-primary-container) 30%, transparent);
+            color: var(--md-sys-color-on-primary-container);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-family: var(--md-ref-typeface-mono);
         }
 
         /* CODE BLOCK with Copy Button */
@@ -445,6 +559,7 @@
             padding: 0;
             color: var(--md-sys-color-on-surface);
             display: block;
+            line-height: 1.4;
         }
 
         .message.bot :not(pre) > code {
@@ -481,6 +596,7 @@
             align-items: center;
             gap: 6px;
             transition: all 0.2s ease;
+            border: none;
         }
 
         .copy-code-btn:hover {
@@ -634,6 +750,15 @@
 
             .message { padding: 14px 18px; max-width: 90%; font-size: 0.98rem; }
 
+            .message.bot table {
+                font-size: 0.9em;
+            }
+            
+            .message.bot table th,
+            .message.bot table td {
+                padding: 8px 12px;
+            }
+
             .input-area { padding: 12px 16px; gap: 10px; }
             #messageInput { padding: 14px 18px; font-size: 1rem; min-height: 52px; }
             .icon-btn { width: 48px; height: 48px; min-width: 48px; }
@@ -723,8 +848,10 @@
         4. Use # for headings, NOT <h1> tags
         5. Use - for bullet points, NOT <ul> or <li> tags
         6. Use \`code\` for inline code and \`\`\`language\ncode\n\`\`\` for code blocks
-        7. NEVER use HTML tags like <br>, <p>, <div>, or any other HTML
-        8. Format all responses in clean, readable markdown
+        7. Use markdown tables when comparing things
+        8. NEVER use HTML tags like <br>, <p>, <div>, or any other HTML
+        9. Format all responses in clean, readable markdown
+        10. You can use markdown inside table cells (like **bold**, *italic*, \`code\`)
 
         You remember conversation context and provide useful, accurate responses.
         Be conversational and engaging in your replies.`;
@@ -736,110 +863,289 @@
         function renderMarkdown(text) {
             if (!text || typeof text !== 'string') return '';
             
-            // Process code blocks first (to avoid interfering with other markdown)
             let processedText = text;
-            const codeBlocks = [];
             
-            // Extract code blocks with language
+            // Store replacements for code blocks
+            const codeBlocks = [];
+            const inlineCodeBlocks = [];
+            
+            // 1. Handle code blocks first (most important)
             processedText = processedText.replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, language, code) {
                 const id = 'code-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 const lang = language || 'text';
-                const escapedCode = code
-                    .replace(/&/g, "&amp;")
-                    .replace(/</g, "&lt;")
-                    .replace(/>/g, "&gt;");
                 
-                codeBlocks.push({
-                    id: id,
-                    html: `
-                    <div class="code-block">
-                        <div class="code-block-header">
-                            <span>${lang}</span>
-                            <button class="copy-code-btn" onclick="copyCodeToClipboard('${id}')">
-                                <span class="material-symbols-outlined" style="font-size:18px">content_copy</span>
-                                Copy
-                            </button>
-                        </div>
-                        <pre><code id="${id}">${escapedCode}</code></pre>
-                    </div>`
-                });
+                // Escape HTML in code
+                const escapedCode = escapeHtml(code);
                 
+                const html = `
+                <div class="code-block">
+                    <div class="code-block-header">
+                        <span>${lang}</span>
+                        <button class="copy-code-btn" data-code-id="${id}">
+                            <span class="material-symbols-outlined" style="font-size:18px">content_copy</span>
+                            Copy
+                        </button>
+                    </div>
+                    <pre><code id="${id}" class="language-${lang}">${escapedCode}</code></pre>
+                </div>`;
+                
+                codeBlocks.push({ id: id, html: html, rawCode: code });
                 return `__CODE_BLOCK_${codeBlocks.length - 1}__`;
             });
 
-            // Process inline code
-            processedText = processedText.replace(/`([^`]+)`/g, '<code>$1</code>');
+            // 2. Handle inline code (store for later replacement)
+            processedText = processedText.replace(/`([^`]+)`/g, function(match, code) {
+                const id = 'inline-code-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
+                inlineCodeBlocks.push({ id: id, code: code });
+                return `__INLINE_CODE_${inlineCodeBlocks.length - 1}__`;
+            });
 
-            // Headers
-            processedText = processedText.replace(/^### (.*$)/gm, '<h3>$1</h3>');
-            processedText = processedText.replace(/^## (.*$)/gm, '<h2>$1</h2>');
-            processedText = processedText.replace(/^# (.*$)/gm, '<h1>$1</h1>');
-
-            // Bold and Italic
-            processedText = processedText.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
-            processedText = processedText.replace(/\*(.*?)\*/g, '<em>$1</em>');
-
-            // Lists
-            processedText = processedText.replace(/^\s*[-*]\s+(.+)$/gm, '<li>$1</li>');
-            processedText = processedText.replace(/^\s*\d+\.\s+(.+)$/gm, '<li>$1</li>');
-            
-            // Wrap list items in ul/ol
-            const lines = processedText.split('\n');
-            let inList = false;
-            let htmlLines = [];
-            
-            for (let line of lines) {
-                if (line.includes('<li>')) {
-                    if (!inList) {
-                        htmlLines.push('<ul>');
-                        inList = true;
+            // 3. Handle tables (markdown tables) - Process markdown inside cells
+            processedText = processedText.replace(/(?:\|.*\|.*\n)(?:\|?:?-+:?\|.*\n)+(?:\|.*\|.*\n)+/g, function(match) {
+                const rows = match.trim().split('\n').filter(row => row.trim());
+                if (rows.length < 2) return match; // Not a valid table
+                
+                let tableHtml = '<table>\n<thead>\n<tr>\n';
+                
+                // Parse header (first row)
+                const headerRow = rows[0].trim();
+                const headers = headerRow.split('|').filter(cell => cell.trim() !== '').map(cell => cell.trim());
+                headers.forEach(header => {
+                    // Process markdown in header
+                    let headerContent = processMarkdownInCell(header);
+                    tableHtml += `<th>${headerContent}</th>\n`;
+                });
+                tableHtml += '</tr>\n</thead>\n<tbody>\n';
+                
+                // Skip separator row (second row) and process data rows
+                for (let i = 2; i < rows.length; i++) {
+                    const row = rows[i].trim();
+                    if (row.includes('---') || row.includes('===')) continue; // Skip separator rows
+                    
+                    const cells = row.split('|').filter(cell => cell.trim() !== '').map(cell => cell.trim());
+                    if (cells.length > 0) {
+                        tableHtml += '<tr>\n';
+                        cells.forEach(cell => {
+                            // Process markdown in cells
+                            let cellContent = processMarkdownInCell(cell);
+                            tableHtml += `<td>${cellContent}</td>\n`;
+                        });
+                        tableHtml += '</tr>\n';
                     }
-                    htmlLines.push(line);
-                } else {
-                    if (inList) {
-                        htmlLines.push('</ul>');
-                        inList = false;
-                    }
-                    htmlLines.push(line);
                 }
-            }
-            if (inList) htmlLines.push('</ul>');
-            
-            processedText = htmlLines.join('\n');
+                
+                tableHtml += '</tbody>\n</table>';
+                return tableHtml;
+            });
 
-            // Blockquotes
-            processedText = processedText.replace(/^>\s+(.+)$/gm, '<blockquote>$1</blockquote>');
+            // 4. Process remaining markdown
+            processedText = processBasicMarkdown(processedText);
 
-            // Links
-            processedText = processedText.replace(/\[([^\]]+)\]\(([^)]+)\)/g, 
-                '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+            // 5. Handle lists
+            processedText = processLists(processedText);
 
-            // Line breaks
-            processedText = processedText.replace(/\n\n/g, '<br><br>');
+            // 6. Restore inline code blocks (after all other processing)
+            inlineCodeBlocks.forEach((block, index) => {
+                processedText = processedText.replace(
+                    `__INLINE_CODE_${index}__`, 
+                    `<code>${escapeHtml(block.code)}</code>`
+                );
+            });
 
-            // Restore code blocks
+            // 7. Restore code blocks
             codeBlocks.forEach((block, index) => {
                 processedText = processedText.replace(`__CODE_BLOCK_${index}__`, block.html);
             });
 
-            // Escape any remaining HTML
-            processedText = processedText
-                .replace(/&/g, "&amp;")
-                .replace(/</g, "&lt;")
-                .replace(/>/g, "&gt;")
-                .replace(/&amp;(lt|gt|amp);/g, '&$1;'); // Fix double escaping
+            // 8. Handle paragraphs and line breaks
+            processedText = processParagraphs(processedText);
 
             return processedText;
         }
 
-        function copyCodeToClipboard(codeId) {
+        // Helper function to process markdown inside table cells
+        function processMarkdownInCell(text) {
+            if (!text) return '';
+            
+            let processed = text;
+            
+            // Handle bold
+            processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Handle italic
+            processed = processed.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Handle inline code
+            processed = processed.replace(/`([^`]+)`/g, '<code>$1</code>');
+            
+            // Handle links
+            processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, 
+                '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+            
+            // Escape HTML
+            processed = escapeHtml(processed);
+            
+            // Unescape the HTML tags we added
+            processed = processed.replace(/&lt;(\/?)(strong|em|code|a\b[^&]*?)&gt;/g, '<$1$2>');
+            
+            return processed;
+        }
+
+        // Helper function to process basic markdown
+        function processBasicMarkdown(text) {
+            let processed = text;
+            
+            // Handle headers
+            processed = processed.replace(/^### (.*$)/gm, '<h3>$1</h3>');
+            processed = processed.replace(/^## (.*$)/gm, '<h2>$1</h2>');
+            processed = processed.replace(/^# (.*$)/gm, '<h1>$1</h1>');
+            
+            // Handle bold (outside of tables)
+            processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+            
+            // Handle italic (outside of tables)
+            processed = processed.replace(/\*(.*?)\*/g, '<em>$1</em>');
+            
+            // Handle blockquotes
+            processed = processed.replace(/^>\s*(.+)$/gm, '<blockquote>$1</blockquote>');
+            
+            // Handle links
+            processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, 
+                '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+            
+            return processed;
+        }
+
+        // Helper function to process lists
+        function processLists(text) {
+            const lines = text.split('\n');
+            let resultLines = [];
+            let inList = false;
+            let listType = 'ul';
+            let listItems = [];
+            
+            for (let i = 0; i < lines.length; i++) {
+                let line = lines[i];
+                
+                // Check for unordered list
+                if (line.match(/^\s*[-*+]\s+/)) {
+                    if (!inList) {
+                        inList = true;
+                        listType = 'ul';
+                    }
+                    const content = line.replace(/^\s*[-*+]\s+/, '');
+                    listItems.push(`<li>${content}</li>`);
+                }
+                // Check for ordered list
+                else if (line.match(/^\s*\d+\.\s+/)) {
+                    if (!inList) {
+                        inList = true;
+                        listType = 'ol';
+                    }
+                    const content = line.replace(/^\s*\d+\.\s+/, '');
+                    listItems.push(`<li>${content}</li>`);
+                } else {
+                    // Close the list if we were in one
+                    if (inList && listItems.length > 0) {
+                        resultLines.push(`<${listType}>${listItems.join('')}</${listType}>`);
+                        inList = false;
+                        listItems = [];
+                    }
+                    resultLines.push(line);
+                }
+            }
+            
+            // Close any remaining list
+            if (inList && listItems.length > 0) {
+                resultLines.push(`<${listType}>${listItems.join('')}</${listType}>`);
+            }
+            
+            return resultLines.join('\n');
+        }
+
+        // Helper function to process paragraphs
+        function processParagraphs(text) {
+            const lines = text.split('\n');
+            const resultLines = [];
+            let currentParagraph = [];
+            
+            for (const line of lines) {
+                const trimmedLine = line.trim();
+                
+                if (trimmedLine === '') {
+                    if (currentParagraph.length > 0) {
+                        resultLines.push(`<p>${currentParagraph.join('<br>')}</p>`);
+                        currentParagraph = [];
+                    }
+                } else if (line.startsWith('<') && (line.endsWith('>') || line.includes('</'))) {
+                    // This is already HTML (h1, ul, table, etc.)
+                    if (currentParagraph.length > 0) {
+                        resultLines.push(`<p>${currentParagraph.join('<br>')}</p>`);
+                        currentParagraph = [];
+                    }
+                    resultLines.push(line);
+                } else {
+                    currentParagraph.push(line);
+                }
+            }
+            
+            if (currentParagraph.length > 0) {
+                resultLines.push(`<p>${currentParagraph.join('<br>')}</p>`);
+            }
+            
+            return resultLines.join('\n');
+        }
+
+        // Helper function to escape HTML
+        function escapeHtml(text) {
+            if (!text) return '';
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        // ============================================
+        // COPY CODE FUNCTIONALITY
+        // ============================================
+
+        function setupCopyButtons() {
+            // Use event delegation for copy buttons
+            document.addEventListener('click', function(e) {
+                if (e.target.closest('.copy-code-btn')) {
+                    const button = e.target.closest('.copy-code-btn');
+                    const codeId = button.getAttribute('data-code-id');
+                    if (codeId) {
+                        copyCodeToClipboard(codeId, button);
+                    }
+                }
+            });
+        }
+
+        function copyCodeToClipboard(codeId, button) {
             const codeElement = document.getElementById(codeId);
             if (!codeElement) return;
             
+            // Get the text content
             const text = codeElement.textContent;
+            
             navigator.clipboard.writeText(text).then(() => {
-                const button = document.querySelector(`button[onclick="copyCodeToClipboard('${codeId}')"]`);
-                if (button) {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">check</span>Copied!';
+                button.classList.add('copied');
+                
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.classList.remove('copied');
+                }, 2000);
+            }).catch(err => {
+                console.error('Failed to copy:', err);
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
                     const originalHTML = button.innerHTML;
                     button.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">check</span>Copied!';
                     button.classList.add('copied');
@@ -848,9 +1154,10 @@
                         button.innerHTML = originalHTML;
                         button.classList.remove('copied');
                     }, 2000);
+                } catch (err) {
+                    console.error('Fallback copy failed:', err);
                 }
-            }).catch(err => {
-                console.error('Failed to copy:', err);
+                document.body.removeChild(textArea);
             });
         }
 
@@ -895,7 +1202,21 @@
             messageDiv.className = `message ${role === 'assistant' ? 'bot' : role}`;
 
             if (role === 'assistant') {
-                messageDiv.innerHTML = renderMarkdown(text);
+                const renderedHtml = renderMarkdown(text);
+                messageDiv.innerHTML = renderedHtml;
+                
+                // Setup copy buttons for any code blocks in this message
+                setTimeout(() => {
+                    const copyButtons = messageDiv.querySelectorAll('.copy-code-btn');
+                    copyButtons.forEach(button => {
+                        if (!button.hasAttribute('data-code-id')) {
+                            const codeId = button.closest('.code-block')?.querySelector('code')?.id;
+                            if (codeId) {
+                                button.setAttribute('data-code-id', codeId);
+                            }
+                        }
+                    });
+                }, 0);
             } else {
                 messageDiv.textContent = text;
             }
@@ -1259,6 +1580,9 @@
         function initializeApp() {
             console.log("🎬 Initializing Endroid AI...");
             
+            // Setup copy button functionality
+            setupCopyButtons();
+            
             // Load previous conversation
             loadFromStorage();
             
@@ -1276,6 +1600,38 @@
         }
 
         // Debug functions
+        window.testMarkdown = function() {
+            const testMarkdown = `# Markdown Test with Tables
+
+## Feature Comparison Table
+| Feature | **Python** | **JavaScript** |
+|---------|-----------|---------------|
+| Typing | Dynamic | Dynamic |
+| Speed | \`Fast\` for ML | *Fast* for Web |
+| Learning Curve | **Easy** | Moderate |
+| Use Case | Data Science | Web Development |
+
+## Code with Formatting
+\`\`\`python
+def greet(name: str) -> str:
+    """Greet someone with emphasis!"""
+    return f"**Hello**, {name}!"
+\`\`\`
+
+## List Example
+- **Important Item 1**
+- *Italic Item 2*
+- Normal Item 3 with \`inline code\`
+
+> This is a **blockquote** with *emphasis*`;
+            
+            const container = document.getElementById('chatContainer');
+            const welcomeEl = document.getElementById('welcomeMessage');
+            if (welcomeEl) welcomeEl.style.display = 'none';
+            
+            addMessageToUI('assistant', testMarkdown, false);
+        };
+        
         window.testAPI = async function() {
             console.log("🧪 Testing API connection...");
             try {
