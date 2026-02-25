@@ -6,14 +6,14 @@
     
     <!-- SEO Meta Tags -->
     <title>Endroid AI - Your Intelligent AI Assistant</title>
-    <meta name="description" content="Endroid AI is a powerful AI assistant powered by DeepSeek. Get intelligent responses, code help, and meaningful conversations.">
-    <meta name="keywords" content="AI Assistant, DeepSeek, Chatbot, AI Chat, Code Help, Programming Assistant">
+    <meta name="description" content="Endroid AI is a powerful AI assistant powered by Gemini. Get intelligent responses, code help, and meaningful conversations.">
+    <meta name="keywords" content="AI Assistant, Gemini, Chatbot, AI Chat, Code Help, Programming Assistant">
     <meta name="author" content="Endroid AI">
     <meta name="robots" content="index, follow">
     
     <!-- Open Graph / Social Media Meta Tags -->
     <meta property="og:title" content="Endroid AI - Your Intelligent AI Assistant">
-    <meta property="og:description" content="Powerful AI assistant powered by DeepSeek. Get intelligent responses and meaningful conversations.">
+    <meta property="og:description" content="Powerful AI assistant powered by Gemini. Get intelligent responses and meaningful conversations.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://endroid-ai.example.com">
     <meta property="og:image" content="icon.svg">
@@ -23,7 +23,7 @@
     <!-- Twitter Card Meta Tags -->
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="Endroid AI - Your Intelligent AI Assistant">
-    <meta name="twitter:description" content="Powerful AI assistant powered by DeepSeek. Get intelligent responses and meaningful conversations.">
+    <meta name="twitter:description" content="Powerful AI assistant powered by Gemini. Get intelligent responses and meaningful conversations.">
     <meta name="twitter:image" content="icon.svg">
     <meta name="twitter:image:alt" content="Endroid AI Logo">
     
@@ -46,27 +46,51 @@
     <style>
         /* ============================================
            CSS THEME VARIABLES (Material 3 Expressive)
+           Based on your provided color schemes:
+           Light: Colorgreen.kt
+           Dark:  Colorgreendark.kt
            ============================================ */
         :root {
-            /* Primary Color Palette - Dynamic & Vivid */
-            --md-sys-color-primary: rgb(103, 80, 164);
-            --md-sys-color-primary-container: rgb(234, 221, 255);
-            --md-sys-color-on-primary: rgb(255, 255, 255);
-            --md-sys-color-on-primary-container: rgb(33, 0, 94);
+            /* Light theme (default) */
+            --md-sys-color-primary: #3B6939;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #BCF0B4;
+            --md-sys-color-on-primary-container: #235024;
+            --md-sys-color-secondary: #52634F;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #D5E8CF;
+            --md-sys-color-on-secondary-container: #3B4B38;
+            --md-sys-color-tertiary: #38656A;
+            --md-sys-color-on-tertiary: #FFFFFF;
+            --md-sys-color-tertiary-container: #BCEBF0;
+            --md-sys-color-on-tertiary-container: #1F4D52;
 
-            /* Surface & Background Colors */
-            --md-sys-color-surface: rgb(255, 251, 254);
-            --md-sys-color-surface-dim: rgb(222, 217, 221);
-            --md-sys-color-surface-bright: rgb(255, 251, 254);
-            --md-sys-color-surface-container: rgb(247, 242, 247);
-            --md-sys-color-surface-container-high: rgb(241, 235, 241);
-            --md-sys-color-on-surface: rgb(28, 27, 31);
-            --md-sys-color-on-surface-variant: rgb(73, 69, 78);
+            --md-sys-color-surface: #F7FBF1;
+            --md-sys-color-surface-dim: #D8DBD2;
+            --md-sys-color-surface-bright: #F7FBF1;
+            --md-sys-color-surface-container: #ECEFE6;
+            --md-sys-color-surface-container-high: #E6E9E0;
+            --md-sys-color-surface-container-highest: #E0E4DB;
+            --md-sys-color-surface-container-low: #F1F5EC;
+            --md-sys-color-surface-container-lowest: #FFFFFF;
 
-            /* Outline & Shadows */
-            --md-sys-color-outline: rgb(121, 116, 126);
-            --md-sys-color-outline-variant: rgb(196, 199, 197);
+            --md-sys-color-on-surface: #191D17;
+            --md-sys-color-on-surface-variant: #424940;
 
+            --md-sys-color-outline: #72796F;
+            --md-sys-color-outline-variant: #C2C9BD;
+
+            --md-sys-color-inverse-surface: #2D322C;
+            --md-sys-color-inverse-on-surface: #EFF2E9;
+
+            --md-sys-color-error: #BA1A1A;
+            --md-sys-color-on-error: #FFFFFF;
+            --md-sys-color-error-container: #FFDAD6;
+            --md-sys-color-on-error-container: #93000A;
+
+            --md-sys-color-scrim: #000000;
+
+            /* Elevation */
             --md-elevation-level1: 0 1px 3px 0 rgba(0,0,0,0.12);
             --md-elevation-level2: 0 3px 6px rgba(0,0,0,0.16);
             --md-elevation-level3: 0 10px 20px rgba(0,0,0,0.19);
@@ -76,39 +100,58 @@
             --md-ref-typeface-plain: 'Roboto', system-ui, sans-serif;
             --md-ref-typeface-mono: 'Roboto Mono', monospace;
 
-            /* Glassmorphism Effects */
+            /* Glassmorphism Effects (optional) */
             --glass-background-light: rgba(255, 255, 255, 0.7);
             --glass-background-dark: rgba(30, 30, 35, 0.7);
             --glass-backdrop-blur: blur(20px);
-            --glass-border-light: 1px solid rgba(255, 255, 255, 0.3);
-            --glass-border-dark: 1px solid rgba(255, 255, 255, 0.1);
 
             /* Animation Timing */
             --motion-easing-emphasized: cubic-bezier(0.2, 0.0, 0.0, 1.0);
             --motion-duration-medium: 300ms;
 
-            /* Current Theme Mode */
             color-scheme: light;
         }
 
         /* DARK MODE THEME VARIABLES */
         @media (prefers-color-scheme: dark) {
             :root {
-                --md-sys-color-primary: rgb(208, 188, 255);
-                --md-sys-color-primary-container: rgb(79, 55, 139);
-                --md-sys-color-on-primary: rgb(56, 30, 114);
-                --md-sys-color-on-primary-container: rgb(234, 221, 255);
+                --md-sys-color-primary: #A1D39A;
+                --md-sys-color-on-primary: #0A390F;
+                --md-sys-color-primary-container: #235024;
+                --md-sys-color-on-primary-container: #BCF0B4;
+                --md-sys-color-secondary: #BACCB3;
+                --md-sys-color-on-secondary: #253423;
+                --md-sys-color-secondary-container: #3B4B38;
+                --md-sys-color-on-secondary-container: #D5E8CF;
+                --md-sys-color-tertiary: #A0CFD4;
+                --md-sys-color-on-tertiary: #00363B;
+                --md-sys-color-tertiary-container: #1F4D52;
+                --md-sys-color-on-tertiary-container: #BCEBF0;
 
-                --md-sys-color-surface: rgb(20, 18, 24);
-                --md-sys-color-surface-dim: rgb(20, 18, 24);
-                --md-sys-color-surface-bright: rgb(59, 56, 62);
-                --md-sys-color-surface-container: rgb(30, 27, 33);
-                --md-sys-color-surface-container-high: rgb(40, 37, 43);
-                --md-sys-color-on-surface: rgb(230, 225, 229);
-                --md-sys-color-on-surface-variant: rgb(196, 199, 197);
+                --md-sys-color-surface: #10140F;
+                --md-sys-color-surface-dim: #10140F;
+                --md-sys-color-surface-bright: #363A34;
+                --md-sys-color-surface-container: #1D211B;
+                --md-sys-color-surface-container-high: #272B25;
+                --md-sys-color-surface-container-highest: #323630;
+                --md-sys-color-surface-container-low: #191D17;
+                --md-sys-color-surface-container-lowest: #0B0F0A;
 
-                --md-sys-color-outline: rgb(141, 143, 141);
-                --md-sys-color-outline-variant: rgb(68, 72, 70);
+                --md-sys-color-on-surface: #E0E4DB;
+                --md-sys-color-on-surface-variant: #C2C9BD;
+
+                --md-sys-color-outline: #8C9388;
+                --md-sys-color-outline-variant: #424940;
+
+                --md-sys-color-inverse-surface: #E0E4DB;
+                --md-sys-color-inverse-on-surface: #2D322C;
+
+                --md-sys-color-error: #FFB4AB;
+                --md-sys-color-on-error: #690005;
+                --md-sys-color-error-container: #93000A;
+                --md-sys-color-on-error-container: #FFDAD6;
+
+                --md-sys-color-scrim: #000000;
 
                 --md-elevation-level1: 0 1px 3px 0 rgba(0,0,0,0.4);
                 --md-elevation-level2: 0 3px 6px rgba(0,0,0,0.5);
@@ -118,44 +161,98 @@
             }
         }
 
-        /* Forced Dark/Light Mode Classes */
+        /* Forced Dark Mode Class */
         .theme-dark {
-            color-scheme: dark;
-            --md-sys-color-primary: rgb(208, 188, 255);
-            --md-sys-color-primary-container: rgb(79, 55, 139);
-            --md-sys-color-on-primary: rgb(56, 30, 114);
-            --md-sys-color-on-primary-container: rgb(234, 221, 255);
-            --md-sys-color-surface: rgb(20, 18, 24);
-            --md-sys-color-surface-dim: rgb(20, 18, 24);
-            --md-sys-color-surface-bright: rgb(59, 56, 62);
-            --md-sys-color-surface-container: rgb(30, 27, 33);
-            --md-sys-color-surface-container-high: rgb(40, 37, 43);
-            --md-sys-color-on-surface: rgb(230, 225, 229);
-            --md-sys-color-on-surface-variant: rgb(196, 199, 197);
-            --md-sys-color-outline: rgb(141, 143, 141);
-            --md-sys-color-outline-variant: rgb(68, 72, 70);
+            --md-sys-color-primary: #A1D39A;
+            --md-sys-color-on-primary: #0A390F;
+            --md-sys-color-primary-container: #235024;
+            --md-sys-color-on-primary-container: #BCF0B4;
+            --md-sys-color-secondary: #BACCB3;
+            --md-sys-color-on-secondary: #253423;
+            --md-sys-color-secondary-container: #3B4B38;
+            --md-sys-color-on-secondary-container: #D5E8CF;
+            --md-sys-color-tertiary: #A0CFD4;
+            --md-sys-color-on-tertiary: #00363B;
+            --md-sys-color-tertiary-container: #1F4D52;
+            --md-sys-color-on-tertiary-container: #BCEBF0;
+
+            --md-sys-color-surface: #10140F;
+            --md-sys-color-surface-dim: #10140F;
+            --md-sys-color-surface-bright: #363A34;
+            --md-sys-color-surface-container: #1D211B;
+            --md-sys-color-surface-container-high: #272B25;
+            --md-sys-color-surface-container-highest: #323630;
+            --md-sys-color-surface-container-low: #191D17;
+            --md-sys-color-surface-container-lowest: #0B0F0A;
+
+            --md-sys-color-on-surface: #E0E4DB;
+            --md-sys-color-on-surface-variant: #C2C9BD;
+
+            --md-sys-color-outline: #8C9388;
+            --md-sys-color-outline-variant: #424940;
+
+            --md-sys-color-inverse-surface: #E0E4DB;
+            --md-sys-color-inverse-on-surface: #2D322C;
+
+            --md-sys-color-error: #FFB4AB;
+            --md-sys-color-on-error: #690005;
+            --md-sys-color-error-container: #93000A;
+            --md-sys-color-on-error-container: #FFDAD6;
+
+            --md-sys-color-scrim: #000000;
+
             --md-elevation-level1: 0 1px 3px 0 rgba(0,0,0,0.4);
             --md-elevation-level2: 0 3px 6px rgba(0,0,0,0.5);
             --md-elevation-level3: 0 10px 20px rgba(0,0,0,0.6);
+
+            color-scheme: dark;
         }
+
+        /* Forced Light Mode Class */
         .theme-light {
-            color-scheme: light;
-            --md-sys-color-primary: rgb(103, 80, 164);
-            --md-sys-color-primary-container: rgb(234, 221, 255);
-            --md-sys-color-on-primary: rgb(255, 255, 255);
-            --md-sys-color-on-primary-container: rgb(33, 0, 94);
-            --md-sys-color-surface: rgb(255, 251, 254);
-            --md-sys-color-surface-dim: rgb(222, 217, 221);
-            --md-sys-color-surface-bright: rgb(255, 251, 254);
-            --md-sys-color-surface-container: rgb(247, 242, 247);
-            --md-sys-color-surface-container-high: rgb(241, 235, 241);
-            --md-sys-color-on-surface: rgb(28, 27, 31);
-            --md-sys-color-on-surface-variant: rgb(73, 69, 78);
-            --md-sys-color-outline: rgb(121, 116, 126);
-            --md-sys-color-outline-variant: rgb(196, 199, 197);
+            --md-sys-color-primary: #3B6939;
+            --md-sys-color-on-primary: #FFFFFF;
+            --md-sys-color-primary-container: #BCF0B4;
+            --md-sys-color-on-primary-container: #235024;
+            --md-sys-color-secondary: #52634F;
+            --md-sys-color-on-secondary: #FFFFFF;
+            --md-sys-color-secondary-container: #D5E8CF;
+            --md-sys-color-on-secondary-container: #3B4B38;
+            --md-sys-color-tertiary: #38656A;
+            --md-sys-color-on-tertiary: #FFFFFF;
+            --md-sys-color-tertiary-container: #BCEBF0;
+            --md-sys-color-on-tertiary-container: #1F4D52;
+
+            --md-sys-color-surface: #F7FBF1;
+            --md-sys-color-surface-dim: #D8DBD2;
+            --md-sys-color-surface-bright: #F7FBF1;
+            --md-sys-color-surface-container: #ECEFE6;
+            --md-sys-color-surface-container-high: #E6E9E0;
+            --md-sys-color-surface-container-highest: #E0E4DB;
+            --md-sys-color-surface-container-low: #F1F5EC;
+            --md-sys-color-surface-container-lowest: #FFFFFF;
+
+            --md-sys-color-on-surface: #191D17;
+            --md-sys-color-on-surface-variant: #424940;
+
+            --md-sys-color-outline: #72796F;
+            --md-sys-color-outline-variant: #C2C9BD;
+
+            --md-sys-color-inverse-surface: #2D322C;
+            --md-sys-color-inverse-on-surface: #EFF2E9;
+
+            --md-sys-color-error: #BA1A1A;
+            --md-sys-color-on-error: #FFFFFF;
+            --md-sys-color-error-container: #FFDAD6;
+            --md-sys-color-on-error-container: #93000A;
+
+            --md-sys-color-scrim: #000000;
+
             --md-elevation-level1: 0 1px 3px 0 rgba(0,0,0,0.12);
             --md-elevation-level2: 0 3px 6px rgba(0,0,0,0.16);
             --md-elevation-level3: 0 10px 20px rgba(0,0,0,0.19);
+
+            color-scheme: light;
         }
 
         /* ============================================
@@ -188,7 +285,6 @@
             font-size: 1.25rem;
             font-weight: 500;
             color: var(--md-sys-color-primary);
-            box-shadow: var(--md-elevation-level1);
             background: var(--md-sys-color-surface-container);
             display: flex;
             align-items: center;
@@ -610,43 +706,40 @@
         }
 
         /* ============================================
-           INPUT AREA
+           INPUT AREA - Rounded Overlay (M3 Expressive)
            ============================================ */
         .input-area {
-            padding: 16px 20px;
-            background: var(--md-sys-color-surface-container);
-            border-top: 1px solid var(--md-sys-color-outline-variant);
+            margin: 0 16px 16px 16px;
+            padding: 8px 8px 8px 16px;
+            background: var(--md-sys-color-surface-container-high);
+            border-radius: 32px;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 8px;
             position: sticky;
             bottom: 0;
             z-index: 10;
             backdrop-filter: var(--glass-backdrop-blur);
             -webkit-backdrop-filter: var(--glass-backdrop-blur);
+            box-shadow: var(--md-elevation-level2);
             transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
+            border: 1px solid var(--md-sys-color-outline-variant);
         }
 
         #messageInput {
             flex: 1;
-            padding: 16px 20px;
-            border: 2px solid var(--md-sys-color-outline-variant);
+            padding: 12px 16px;
+            border: none;
             border-radius: 28px;
-            background: var(--md-sys-color-surface);
+            background: transparent;
             color: var(--md-sys-color-on-surface);
             font-size: 1.05rem;
             outline: none;
             transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
             font-family: var(--md-ref-typeface-plain);
-            min-height: 56px;
+            min-height: 48px;
             resize: none;
             line-height: 1.4;
-        }
-
-        #messageInput:focus {
-            border-color: var(--md-sys-color-primary);
-            box-shadow: 0 0 0 3px color-mix(in srgb, var(--md-sys-color-primary) 25%, transparent);
-            background: var(--md-sys-color-surface-bright);
         }
 
         #messageInput::placeholder {
@@ -654,59 +747,55 @@
             opacity: 0.7;
         }
 
-        /* Action Buttons */
+        /* Action Buttons inside the overlay */
         .icon-btn {
-            width: 52px;
-            height: 52px;
-            min-width: 52px;
-            border-radius: 26px;
-            background: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
+            width: 48px;
+            height: 48px;
+            min-width: 48px;
+            border-radius: 28px;
+            background: transparent;
+            color: var(--md-sys-color-on-surface-variant);
             border: none;
             display: flex;
             align-items: center;
             justify-content: center;
             cursor: pointer;
             transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
-            box-shadow: var(--md-elevation-level1);
         }
 
-        /* Send Button */
-        #sendBtn {
-            background: var(--md-sys-color-primary);
-            position: relative;
-            overflow: hidden;
+        .icon-btn:hover {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            transform: scale(1.05);
         }
 
-        #sendBtn:hover {
-            transform: scale(1.08);
-            box-shadow: var(--md-elevation-level2);
-            background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
-        }
-
-        #sendBtn:active {
+        .icon-btn:active {
             transform: scale(0.95);
         }
 
+        #sendBtn {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            box-shadow: var(--md-elevation-level1);
+        }
+
+        #sendBtn:hover {
+            background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
+            transform: scale(1.08);
+            box-shadow: var(--md-elevation-level2);
+        }
+
         #sendBtn:disabled {
-            background: var(--md-sys-color-outline-variant);
+            background: var(--md-sys-color-surface-container-highest);
             color: var(--md-sys-color-on-surface-variant);
             transform: none;
             box-shadow: none;
             cursor: not-allowed;
         }
 
-        /* Clear Button */
-        #clearBtn {
-            background: color-mix(in srgb, var(--md-sys-color-surface) 90%, transparent);
-            color: var(--md-sys-color-on-surface-variant);
-            border: 1px solid var(--md-sys-color-outline-variant);
-        }
-
-        #clearBtn:hover {
-            background: color-mix(in srgb, var(--md-sys-color-surface-container-high) 90%, transparent);
-            color: var(--md-sys-color-on-surface);
-            border-color: var(--md-sys-color-outline);
+        #codeToggle.active {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
         }
 
         .icon-btn .material-symbols-outlined {
@@ -718,14 +807,14 @@
            ERROR DISPLAY
            ============================================ */
         .error {
-            background: color-mix(in srgb, #d32f2f 10%, var(--md-sys-color-surface));
-            color: #d32f2f;
+            background: color-mix(in srgb, var(--md-sys-color-error) 10%, var(--md-sys-color-surface));
+            color: var(--md-sys-color-error);
             padding: 16px;
             border-radius: 16px;
             margin: 16px 20px;
             font-size: 0.95rem;
             text-align: center;
-            border-left: 4px solid #d32f2f;
+            border-left: 4px solid var(--md-sys-color-error);
             animation: fadeIn 0.5s;
             box-shadow: var(--md-elevation-level1);
         }
@@ -759,9 +848,9 @@
                 padding: 8px 12px;
             }
 
-            .input-area { padding: 12px 16px; gap: 10px; }
-            #messageInput { padding: 14px 18px; font-size: 1rem; min-height: 52px; }
-            .icon-btn { width: 48px; height: 48px; min-width: 48px; }
+            .input-area { margin: 0 12px 12px 12px; padding: 6px 6px 6px 12px; }
+            #messageInput { padding: 10px 14px; font-size: 1rem; min-height: 44px; }
+            .icon-btn { width: 44px; height: 44px; min-width: 44px; }
         }
 
         /* ============================================
@@ -804,15 +893,18 @@
         <div class="welcome-container" id="welcomeMessage">
             <span class="material-symbols-outlined welcome-icon">psychology</span>
             <h1 class="welcome-title">Hello, I'm Endroid</h1>
-            <p class="welcome-subtitle">Your AI assistant powered by DeepSeek. Ask me anything, and let's have a great conversation!</p>
+            <p class="welcome-subtitle">Your AI assistant powered by Gemini. Ask me anything, and let's have a great conversation!</p>
         </div>
         <!-- Chat messages will be appended here -->
     </div>
 
-    <!-- INPUT AREA -->
+    <!-- INPUT AREA - Rounded Overlay -->
     <div class="input-area">
         <button class="icon-btn" id="clearBtn" title="Clear History">
             <span class="material-symbols-outlined">delete</span>
+        </button>
+        <button class="icon-btn" id="codeToggle" title="Toggle Code Execution">
+            <span class="material-symbols-outlined">code</span>
         </button>
         <textarea id="messageInput" placeholder="Message Endroid AI..." rows="1" autocomplete="off"></textarea>
         <button class="icon-btn" id="sendBtn" title="Send Message">
@@ -829,16 +921,16 @@
         // ============================================
 
         // Configuration
-        const OPENROUTER_API_KEY = "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";
-        const OPENROUTER_URL = "https://openrouter.ai/api/v1/chat/completions";
+        const WORKER_URL = 'https://ai.endroid.workers.dev/api/v1/';
 
         // State management
         let conversationHistory = [];
         const MAX_HISTORY = 8;
         let typingIndicatorId = null;
+        let codeEnabled = false; // Code execution toggle
 
-        // System prompt
-        const SYSTEM_PROMPT = `You are Endroid AI, a helpful and friendly assistant powered by DeepSeek.
+        // System prompt (updated for Gemini)
+        const SYSTEM_PROMPT = `You are Endroid AI, a helpful and friendly assistant powered by Gemini.
         You remember conversation context and provide useful, accurate responses.
         Be conversational and engaging in your replies.
         CRITICAL FORMATTING RULES:
@@ -1282,86 +1374,58 @@
         });
 
         // ============================================
-        // API FUNCTIONS
+        // API FUNCTIONS (UPDATED FOR WORKER)
         // ============================================
 
-        async function callDeepSeekAPI(userMessage) {
-            console.log("🤖 API: Calling DeepSeek...");
+        async function callWorkerAPI(userMessage) {
+            console.log("🤖 API: Calling Worker (Gemini)...");
             
+            // Build history from conversationHistory
+            const recentHistory = conversationHistory
+                .filter(msg => msg.role === "user" || msg.role === "assistant")
+                .slice(-MAX_HISTORY);
+            
+            const history = recentHistory.map(msg => ({
+                role: msg.role === "assistant" ? "model" : "user",
+                content: msg.text
+            }));
+
+            const payload = {
+                prompt: userMessage,
+                system_prompt: SYSTEM_PROMPT,
+                code: codeEnabled,
+                history: history
+            };
+
+            console.log("📤 Sending payload:", payload);
+
             try {
-                // Build messages array
-                const messages = [];
-                messages.push({
-                    role: "system",
-                    content: SYSTEM_PROMPT
-                });
-
-                // Add conversation history
-                const recentHistory = conversationHistory
-                    .filter(msg => msg.role === "user" || msg.role === "assistant")
-                    .slice(-MAX_HISTORY);
-                
-                recentHistory.forEach(msg => {
-                    messages.push({
-                        role: msg.role,
-                        content: msg.text
-                    });
-                });
-
-                // Add current user message
-                messages.push({
-                    role: "user",
-                    content: userMessage
-                });
-
-                // Prepare request
-                const requestBody = {
-                    model: "deepseek/deepseek-chat",
-                    messages: messages,
-                    max_tokens: 1000,
-                    temperature: 0.7,
-                    stream: false
-                };
-
-                console.log("📤 API: Sending request...");
-
-                // Make API call
-                const response = await fetch(OPENROUTER_URL, {
+                const response = await fetch(WORKER_URL, {
                     method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-                        'Content-Type': 'application/json',
-                        'HTTP-Referer': window.location.origin || 'http://localhost',
-                        'X-Title': 'Endroid AI'
-                    },
-                    body: JSON.stringify(requestBody)
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
                 });
 
-                console.log(`📥 API: Response status - ${response.status}`);
+                console.log(`📥 Response status: ${response.status}`);
 
                 if (!response.ok) {
                     const errorText = await response.text();
-                    console.error("❌ API Error:", errorText);
+                    console.error("❌ Worker Error:", errorText);
                     
-                    let errorMessage = `API Error: ${response.status}`;
-                    if (response.status === 401) errorMessage = "Invalid API key";
+                    let errorMessage = `Worker error: ${response.status}`;
+                    if (response.status === 401) errorMessage = "Unauthorized - check your worker";
                     if (response.status === 429) errorMessage = "Rate limit exceeded";
-                    if (response.status === 402) errorMessage = "Insufficient credits";
+                    if (response.status >= 500) errorMessage = "Worker server error";
                     
                     throw new Error(errorMessage);
                 }
 
-                const data = await response.json();
-                console.log("✅ API: Success!");
-
-                if (data.choices && data.choices[0] && data.choices[0].message) {
-                    return data.choices[0].message.content;
-                } else {
-                    throw new Error("Invalid response format from API");
-                }
+                const result = await response.text();
+                console.log("✅ Worker success, response length:", result.length);
+                return result;
 
             } catch (error) {
-                console.error("🔥 API Call Failed:", error);
+                console.error("🔥 Worker API Call Failed:", error);
                 throw error;
             }
         }
@@ -1442,6 +1506,27 @@
         }
 
         // ============================================
+        // CODE TOGGLE FUNCTIONALITY
+        // ============================================
+
+        function setupCodeToggle() {
+            const codeToggleBtn = document.getElementById('codeToggle');
+            if (!codeToggleBtn) return;
+
+            codeToggleBtn.addEventListener('click', () => {
+                codeEnabled = !codeEnabled;
+                if (codeEnabled) {
+                    codeToggleBtn.classList.add('active');
+                    codeToggleBtn.title = "Code execution ON";
+                } else {
+                    codeToggleBtn.classList.remove('active');
+                    codeToggleBtn.title = "Code execution OFF";
+                }
+                console.log("Code execution toggled:", codeEnabled);
+            });
+        }
+
+        // ============================================
         // MAIN MESSAGE HANDLING
         // ============================================
 
@@ -1479,10 +1564,10 @@
             addMessageToUI("assistant", "", true);
             
             try {
-                console.log("Calling API...");
+                console.log("Calling Worker API...");
                 
-                // Call the API
-                const aiResponse = await callDeepSeekAPI(userMessage);
+                // Call the worker
+                const aiResponse = await callWorkerAPI(userMessage);
                 
                 console.log("Got response:", aiResponse.substring(0, 100) + "...");
                 
@@ -1502,16 +1587,14 @@
                 // Show user-friendly error
                 let userFriendlyError = "I encountered an error. ";
                 
-                if (error.message.includes("API key") || error.message.includes("401")) {
-                    userFriendlyError += "Please check your OpenRouter API key.";
-                } else if (error.message.includes("credits") || error.message.includes("402")) {
-                    userFriendlyError += "Your OpenRouter account needs more credits.";
-                } else if (error.message.includes("rate") || error.message.includes("429")) {
-                    userFriendlyError += "Rate limit reached. Free tier allows 50 requests/day.";
+                if (error.message.includes("401")) {
+                    userFriendlyError += "Authentication failed. Please check your worker.";
+                } else if (error.message.includes("429")) {
+                    userFriendlyError += "Rate limit reached. Please try again later.";
                 } else if (error.message.includes("network")) {
                     userFriendlyError += "Network error. Please check your connection.";
                 } else {
-                    userFriendlyError += error.message.substring(0, 100);
+                    userFriendlyError += error.message;
                 }
                 
                 addMessageToUI("assistant", userFriendlyError, false);
@@ -1571,6 +1654,9 @@
             if (clearBtn) {
                 clearBtn.addEventListener("click", clearHistory);
             }
+
+            // Setup code toggle
+            setupCodeToggle();
         }
 
         // ============================================
@@ -1578,7 +1664,7 @@
         // ============================================
 
         function initializeApp() {
-            console.log("🎬 Initializing Endroid AI...");
+            console.log("🎬 Initializing Endroid AI (Gemini)...");
             
             // Setup copy button functionality
             setupCopyButtons();
@@ -1633,9 +1719,9 @@ def greet(name: str) -> str:
         };
         
         window.testAPI = async function() {
-            console.log("🧪 Testing API connection...");
+            console.log("🧪 Testing Worker connection...");
             try {
-                const testResponse = await callDeepSeekAPI("Say 'API test successful' if you can read this.");
+                const testResponse = await callWorkerAPI("Say 'API test successful' if you can read this.");
                 console.log("✅ API Test Successful:", testResponse.substring(0, 50));
                 return true;
             } catch (error) {
