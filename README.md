@@ -2,7 +2,7 @@
 
 ![Endroid AI Banner](https://img.shields.io/badge/Endroid%20AI-v1.0-blue?style=for-the-badge&logo=google&logoColor=white)
 ![Material You 3](https://img.shields.io/badge/Material%20You%203-Expressive-blue?style=flat-square&logo=material-ui&logoColor=white)
-![Gemini 2.0 Flash](https://img.shields.io/badge/Powered%20by-Gemini%202.0%20Flash-34A853?style=flat-square&logo=google&logoColor=white)
+![Gemini 2.0 Flash](https://img.shields.io/badge/Powered%20by-Gemini%202.5%20Flash%20Lite-34A853?style=flat-square&logo=google&logoColor=white)
 ![GitHub Pages](https://img.shields.io/badge/Deployed%20on-GitHub%20Pages-100000?style=flat-square&logo=github&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-yellow?style=flat-square)
 
