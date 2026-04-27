@@ -1,17 +1,41 @@
 {
-  "name": "Endroid Ai",
-  "short_name": "Ai",
-  "description": "Endroid Ai | Ai assistant by Endroid Powdered By DeepSeek Backend",
-  "start_url": "/Ai/",
-  "scope": "/Ai/",
+  "name": "Endroid Elyx ",
+  "short_name": "Elyx",
+  "description": "Endroid Elyx | Ai assistant by Endroid Powdered By Gemini",
+  "start_url": "/Ai",
   "display": "standalone",
-  "background_color": "#FEF7FF",
-  "theme_color": "#BCF0B4",
+  "background_color": "#ffffff",
+  "theme_color": "#91ffa7",
   "icons": [
     {
-      "src": "/Ai/icon.svg",
-      "type": "image/svg+xml",
-      "sizes": "any"
+      "src": "/icons/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-384x384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon-192x192-maskable.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/icons/icon-512x512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
     }
   ]
 }
