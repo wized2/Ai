@@ -53,7 +53,7 @@
     <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1536x2048.png">
     <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/splash/splash-2048x1536.png">
     
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet">
@@ -347,7 +347,7 @@
             transform: scale(0.95);
         }
 
-        .theme-toggle .material-symbols-outlined {
+        .theme-toggle .material-symbols-rounded {
             font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
             transition: transform var(--motion-duration-medium) var(--motion-easing-emphasized);
         }
@@ -372,20 +372,34 @@
             min-height: 60vh;
             text-align: center;
             padding: 40px 20px;
-            animation: fadeInUp 0.6s var(--motion-easing-emphasized);
+            animation: fadeIn 0.8s ease-out;
         }
 
-        .welcome-icon {
-            font-size: 4rem;
-            color: var(--md-sys-color-primary);
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .welcome-logo {
+            width: 120px;
+            height: 120px;
             margin-bottom: 20px;
-            opacity: 0.9;
-            animation: gentlePulse 4s ease-in-out infinite;
+            animation: logoSpin 12s linear infinite alternate, logoFadeIn 1s ease-out;
         }
 
-        @keyframes gentlePulse {
-            0%, 100% { opacity: 0.7; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
+        .welcome-logo svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        @keyframes logoSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes logoFadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
 
         .welcome-title {
@@ -782,12 +796,12 @@
             cursor: not-allowed;
         }
 
-        #codeToggle.active {
+        #webSearchToggle.active {
             background: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
         }
 
-        .icon-btn .material-symbols-outlined {
+        .icon-btn .material-symbols-rounded {
             font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
             font-size: 24px;
         }
@@ -845,7 +859,7 @@
 
             .chat-container { padding: 16px 12px 90px 12px; gap: 16px; }
 
-            .welcome-icon { font-size: 3rem; }
+            .welcome-logo { width: 100px; height: 100px; }
             .welcome-title { font-size: 1.7rem; }
             .welcome-subtitle { font-size: 1rem; max-width: 260px; }
 
@@ -863,11 +877,6 @@
             .input-area { margin: 0 12px 12px 12px; padding: 6px 6px 6px 12px; }
             #messageInput { padding: 10px 14px; font-size: 1rem; min-height: 44px; }
             .icon-btn { width: 44px; height: 44px; min-width: 44px; }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
         }
 
         @keyframes fadeInUp {
@@ -901,13 +910,24 @@
             <span class="header-title">Endroid Elyx</span>
         </div>
         <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-            <span class="material-symbols-outlined" id="themeIcon">dark_mode</span>
+            <span class="material-symbols-rounded" id="themeIcon">dark_mode</span>
         </button>
     </div>
 
     <div class="chat-container" id="chatContainer">
         <div class="welcome-container" id="welcomeMessage">
-            <span class="material-symbols-outlined welcome-icon">psychology</span>
+            <div class="welcome-logo">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#75FB4C">
+                    <path d="M740-283q0 52-26 96.5T643-116l-37 22q-13 7-27 10.5T550-80q-21 0-40-7.5T475-109q-26-26-32-62.5t11-69.5l15-31q4-8 7.5-15.5T482-303q3-8 0-15t-11-10q-8-3-15-.5t-11 9.5q-11 22-26.5 40.5T382-248q-23 13-48 20t-51 7q-52 0-97-25.5T115-317l-21-37q-8-12-11.5-26T79-408q0-21 8-40.5t22-34.5q26-27 62-33t70 11l31 15q8 4 15.5 7.5T303-477q8 3 15-.5t10-11.5q3-8 .5-15.5T318-515q-48-20-73-64.5T220-676q0-52 26-97t71-71l37-20q13-8 27-12t29-4q21 0 40 8t34 22q26 26 32 62.5t-11 69.5l-16 32q-3 8-6.5 15t-6.5 15q-2 8 1.5 15t11.5 10q8 2 15-.5t11-9.5q23-46 66.5-72t94.5-26q52 0 97 25.5t71 70.5l21 37q7 13 10.5 26.5T879-552q0 21-8 41t-22 35q-25 27-61.5 32.5T718-455l-32-16q-8-3-15-6t-15-5q-8-2-15 1t-10 11q-2 8 .5 15t10.5 10q48 20 73 65t25 97ZM576-146l37-22q31-18 49-48.5t18-66.5q0-34-17-63.5T616-392q-29-15-40-46.5t3-61.5q15-32 50-40t68 8l48 24q15 8 32 5.5t29-14.5q12-11 14-28t-6-31l-21-37q-19-32-50-50.5T675-682q-35 0-64 18t-45 49q-14 29-45 39t-61-4q-31-14-41-46t5-63l28-56q8-15 5-31.5T442-805q-11-12-27.5-14.5T383-814l-37 22q-32 18-50 48.5T278-677q0 35 17 64.5t48 45.5q28 15 39.5 43t-.5 57q-14 34-48.5 46t-67.5-5l-52-26q-15-8-31.5-4.5T153-442q-12 12-14 28.5t6 30.5l22 37q18 31 49 48.5t66 17.5q18 0 35-4.5t32-13.5q14-8 24.5-19.5T392-343q17-31 48.5-42t60.5 6q29 17 39 48t-4 60l-28 56q-8 15-5 32t14 29q12 12 28.5 14t30.5-6Zm37-22-37 22q-14 8-31 6t-28-14q-12-12-14.5-29t5.5-32l28-56q14-29 4-60t-39-48q-29-17-60.5-6T392-343q-8 14-18.5 25.5T349-298q-15 9-32 13.5t-35 4.5q-35 0-66-17.5T167-346l-22-37q-8-14-6-31t14-28q12-12 29-15t32 5l52 26q33 17 67.5 5t48.5-46q11-29 0-57.5T343-567q-31-16-48-45.5T278-677q0-36 18.5-66.5T346-792l37-22q14-8 31-5.5t28 14.5q12 12 15 28.5t-5 31.5l-28 56q-15 31-5 63t41 46q30 14 61 4t45-39q15-31 44.5-49t64.5-18q37 0 68.5 18.5T793-613l21 37q8 14 6 31t-14 28q-12 12-29 14.5t-32-5.5l-48-24q-33-17-68.5-8.5T579-500q-14 30-3 61.5t40 46.5q30 16 47 45.5t17 63.5q0 36-18 66.5T613-168Z" fill="url(#gradient-g5fm34e)"/>
+                    <defs>
+                        <linearGradient id="gradient-g5fm34e" x1="0%" y1="50%" x2="100%" y2="50%">
+                            <stop offset="0%" stop-color="#00c0ff"/>
+                            <stop offset="50%" stop-color="#00ff76"/>
+                            <stop offset="100%" stop-color="#00d0ff"/>
+                        </linearGradient>
+                    </defs>
+                </svg>
+            </div>
             <h1 class="welcome-title">Hello, I'm Elyx</h1>
             <p class="welcome-subtitle">Your AI assistant powered by Gemini. Ask me anything, and let's have a great conversation!</p>
         </div>
@@ -915,14 +935,14 @@
 
     <div class="input-area">
         <button class="icon-btn" id="clearBtn" title="Clear History">
-            <span class="material-symbols-outlined">delete</span>
+            <span class="material-symbols-rounded">delete</span>
         </button>
-        <button class="icon-btn" id="codeToggle" title="Toggle Code Execution">
-            <span class="material-symbols-outlined">code</span>
+        <button class="icon-btn" id="webSearchToggle" title="Toggle Web Search">
+            <span class="material-symbols-rounded">travel_explore</span>
         </button>
         <textarea id="messageInput" placeholder="Message Elyx..." rows="1" autocomplete="off"></textarea>
         <button class="icon-btn" id="sendBtn" title="Send Message">
-            <span class="material-symbols-outlined">send</span>
+            <span class="material-symbols-rounded">send</span>
         </button>
     </div>
 
@@ -941,25 +961,25 @@
         let conversationHistory = [];
         const MAX_HISTORY = 8;
         let typingIndicatorId = null;
-        let codeEnabled = false;
+        let webSearchEnabled = false;
 
         const SYSTEM_PROMPT = `You are Endroid Elyx, a helpful and friendly assistant powered by Gemini.
-        You remember conversation context and provide useful, accurate responses.
-        Be conversational and engaging in your replies.
-        CRITICAL FORMATTING RULES:
-        1. ALWAYS respond using PROPER MARKDOWN formatting, NOT HTML
-        2. Use **bold** for emphasis, NOT <strong> tags
-        3. Use *italic* for emphasis, NOT <em> tags
-        4. Use # for headings, NOT <h1> tags
-        5. Use - for bullet points, NOT <ul> or <li> tags
-        6. Use \`code\` for inline code and \`\`\`language\ncode\n\`\`\` for code blocks
-        7. Use markdown tables when comparing things
-        8. NEVER use HTML tags like <br>, <p>, <div>, or any other HTML
-        9. Format all responses in clean, readable markdown
-        10. You can use markdown inside table cells (like **bold**, *italic*, \`code\`)
+You remember conversation context and provide useful, accurate responses.
+Be conversational and engaging in your replies.
+CRITICAL FORMATTING RULES:
+1. ALWAYS respond using PROPER MARKDOWN formatting, NOT HTML
+2. Use **bold** for emphasis, NOT <strong> tags
+3. Use *italic* for emphasis, NOT <em> tags
+4. Use # for headings, NOT <h1> tags
+5. Use - for bullet points, NOT <ul> or <li> tags
+6. Use \`code\` for inline code and \`\`\`language\ncode\n\`\`\` for code blocks
+7. Use markdown tables when comparing things
+8. NEVER use HTML tags like <br>, <p>, <div>, or any other HTML
+9. Format all responses in clean, readable markdown
+10. You can use markdown inside table cells (like **bold**, *italic*, \`code\`)
 
-        You remember conversation context and provide useful, accurate responses.
-        Be conversational and engaging in your replies.`;
+You remember conversation context and provide useful, accurate responses.
+Be conversational and engaging in your replies.`;
 
         function renderMarkdown(text) {
             if (!text || typeof text !== 'string') return '';
@@ -978,7 +998,7 @@
                     <div class="code-block-header">
                         <span>${lang}</span>
                         <button class="copy-code-btn" data-code-id="${id}">
-                            <span class="material-symbols-outlined" style="font-size:18px">content_copy</span>
+                            <span class="material-symbols-rounded" style="font-size:18px">content_copy</span>
                             Copy
                         </button>
                     </div>
@@ -1160,7 +1180,7 @@
             const text = codeElement.textContent;
             navigator.clipboard.writeText(text).then(() => {
                 const originalHTML = button.innerHTML;
-                button.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">check</span>Copied!';
+                button.innerHTML = '<span class="material-symbols-rounded" style="font-size:18px">check</span>Copied!';
                 button.classList.add('copied');
                 setTimeout(() => {
                     button.innerHTML = originalHTML;
@@ -1175,7 +1195,7 @@
                 try {
                     document.execCommand('copy');
                     const originalHTML = button.innerHTML;
-                    button.innerHTML = '<span class="material-symbols-outlined" style="font-size:18px">check</span>Copied!';
+                    button.innerHTML = '<span class="material-symbols-rounded" style="font-size:18px">check</span>Copied!';
                     button.classList.add('copied');
                     setTimeout(() => {
                         button.innerHTML = originalHTML;
@@ -1304,8 +1324,7 @@
             }));
             const payload = {
                 prompt: userMessage,
-                system_prompt: SYSTEM_PROMPT,
-                code: codeEnabled,
+                web_search: webSearchEnabled,
                 history: history
             };
             try {
@@ -1389,17 +1408,17 @@
             }
         }
 
-        function setupCodeToggle() {
-            const codeToggleBtn = document.getElementById('codeToggle');
-            if (!codeToggleBtn) return;
-            codeToggleBtn.addEventListener('click', () => {
-                codeEnabled = !codeEnabled;
-                if (codeEnabled) {
-                    codeToggleBtn.classList.add('active');
-                    codeToggleBtn.title = "Code execution ON";
+        function setupWebSearchToggle() {
+            const btn = document.getElementById('webSearchToggle');
+            if (!btn) return;
+            btn.addEventListener('click', () => {
+                webSearchEnabled = !webSearchEnabled;
+                if (webSearchEnabled) {
+                    btn.classList.add('active');
+                    btn.title = "Web Search ON";
                 } else {
-                    codeToggleBtn.classList.remove('active');
-                    codeToggleBtn.title = "Code execution OFF";
+                    btn.classList.remove('active');
+                    btn.title = "Web Search OFF";
                 }
             });
         }
@@ -1466,7 +1485,7 @@
             if (clearBtn) {
                 clearBtn.addEventListener("click", clearHistory);
             }
-            setupCodeToggle();
+            setupWebSearchToggle();
         }
 
         function initializeApp() {
