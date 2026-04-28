@@ -1,11 +1,13 @@
 {
-  "name": "Endroid Elyx ",
+  "name": "Endroid Elyx",
   "short_name": "Elyx",
-  "description": "Endroid Elyx | Ai assistant by Endroid Powdered By Gemini",
+  "description": "Endroid Elyx | AI assistant by Endroid Powered by Gemini",
   "start_url": "/Ai",
+  "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#91ffa7",
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/icons/icon-192x192.png",
