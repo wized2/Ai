@@ -4,25 +4,25 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 
-    <title>Endroid Elyx - Your Intelligent AI Assistant</title>
-    <meta name="description" content="Endroid Elyx is a powerful AI assistant powered by Gemini. Get intelligent responses, code help, and meaningful conversations." />
+    <title>Aariz - Your Intelligent AI Assistant</title>
+    <meta name="description" content="Aariz is a powerful AI assistant powered by Gemini. Get intelligent responses, code help, and meaningful conversations." />
     <meta name="keywords" content="AI Assistant, Gemini, Chatbot, AI Chat, Code Help, Programming Assistant" />
-    <meta name="author" content="Endroid Elyx" />
+    <meta name="author" content="Aariz" />
     <meta name="robots" content="index, follow" />
 
-    <meta property="og:title" content="Endroid Elyx - Your Intelligent AI Assistant" />
+    <meta property="og:title" content="Aariz - Your Intelligent AI Assistant" />
     <meta property="og:description" content="Powerful AI assistant powered by Gemini. Get intelligent responses and meaningful conversations." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://wized2.github.io/Ai" />
-    <meta property="og:image" content="icon.svg" />
-    <meta property="og:image:alt" content="Endroid Elyx Logo" />
-    <meta property="og:site_name" content="Endroid Elyx" />
+    <meta property="og:image" content="logo.svg" />
+    <meta property="og:image:alt" content="Aariz Logo" />
+    <meta property="og:site_name" content="Aariz" />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Endroid Elyx - Your Intelligent AI Assistant" />
+    <meta name="twitter:title" content="Aariz - Your Intelligent AI Assistant" />
     <meta name="twitter:description" content="Powerful AI assistant powered by Gemini. Get intelligent responses and meaningful conversations." />
-    <meta name="twitter:image" content="favicon.png" />
-    <meta name="twitter:image:alt" content="Endroid Elyx Logo" />
+    <meta name="twitter:image" content="logo.svg" />
+    <meta name="twitter:image:alt" content="Aariz Logo" />
 
     <link rel="icon" href="favicon.png" type="image/png" />
     <link rel="shortcut icon" href="favicon.png" type="image/png" />
@@ -31,10 +31,10 @@
     <link rel="icon" href="/icons/icon-512x512.png" type="image/png" sizes="512x512" />
     <link rel="apple-touch-icon" href="/icons/icon-180x180.png" />
 
-    <meta name="theme-color" content="#91ffa7" />
+    <meta name="theme-color" content="#DB6B46" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-    <meta name="apple-mobile-web-app-title" content="Endroid Elyx" />
+    <meta name="apple-mobile-web-app-title" content="Aariz" />
 
     <link rel="manifest" href="https://wized2.github.io/Ai/manifest.json" />
 
@@ -53,45 +53,50 @@
     <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: portrait)" href="/splash/splash-1536x2048.png" />
     <link rel="apple-touch-startup-image" media="screen and (device-width: 768px) and (device-height: 1024px) and (-webkit-device-pixel-ratio: 2) and (orientation: landscape)" href="/splash/splash-2048x1536.png" />
 
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <!-- Google Fonts: Playfair Display (italic) + Nunito Sans -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
-    <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,300;0,400;0,500;0,700;1,400&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet" />
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js"></script>
 
     <style>
         /* ===== CSS Variables ===== */
         :root {
-            --md-sys-color-primary: #3B6939;
+            /* Branding color #DB6B46 */
+            --md-sys-color-primary: #DB6B46;
             --md-sys-color-on-primary: #FFFFFF;
-            --md-sys-color-primary-container: #BCF0B4;
-            --md-sys-color-on-primary-container: #235024;
-            --md-sys-color-secondary: #52634F;
+            --md-sys-color-primary-container: #FFFFFF;  /* white, no extra hue */
+            --md-sys-color-on-primary-container: #DB6B46; /* brand color for text on white */
+            --md-sys-color-secondary: #5C4B3E;
             --md-sys-color-on-secondary: #FFFFFF;
-            --md-sys-color-secondary-container: #D5E8CF;
-            --md-sys-color-on-secondary-container: #3B4B38;
-            --md-sys-color-tertiary: #38656A;
+            --md-sys-color-secondary-container: #E6DCD6;
+            --md-sys-color-on-secondary-container: #3D2F26;
+            --md-sys-color-tertiary: #5A6B5A;
             --md-sys-color-on-tertiary: #FFFFFF;
-            --md-sys-color-tertiary-container: #BCEBF0;
-            --md-sys-color-on-tertiary-container: #1F4D52;
+            --md-sys-color-tertiary-container: #DDF2DD;
+            --md-sys-color-on-tertiary-container: #3D4F3D;
 
-            --md-sys-color-surface: #F7FBF1;
-            --md-sys-color-surface-dim: #D8DBD2;
-            --md-sys-color-surface-bright: #F7FBF1;
-            --md-sys-color-surface-container: #ECEFE6;
-            --md-sys-color-surface-container-high: #E6E9E0;
-            --md-sys-color-surface-container-highest: #E0E4DB;
-            --md-sys-color-surface-container-low: #F1F5EC;
+            /* Light theme surface = #FEFAE0 (off-white) */
+            --md-sys-color-surface: #FEFAE0;
+            --md-sys-color-surface-dim: #E5E1C9;
+            --md-sys-color-surface-bright: #FEFAE0;
+            --md-sys-color-surface-container: #F5F1D7;
+            --md-sys-color-surface-container-high: #EFEBD1;
+            --md-sys-color-surface-container-highest: #E9E5CB;
+            --md-sys-color-surface-container-low: #FBF7DD;
             --md-sys-color-surface-container-lowest: #FFFFFF;
 
-            --md-sys-color-on-surface: #191D17;
-            --md-sys-color-on-surface-variant: #424940;
+            --md-sys-color-on-surface: #1C1A12;
+            --md-sys-color-on-surface-variant: #4D473D;
 
-            --md-sys-color-outline: #72796F;
-            --md-sys-color-outline-variant: #C2C9BD;
+            --md-sys-color-outline: #7D776C;
+            --md-sys-color-outline-variant: #CBC5B8;
 
-            --md-sys-color-inverse-surface: #2D322C;
-            --md-sys-color-inverse-on-surface: #EFF2E9;
+            --md-sys-color-inverse-surface: #2F2D25;
+            --md-sys-color-inverse-on-surface: #F5F1E7;
 
             --md-sys-color-error: #BA1A1A;
             --md-sys-color-on-error: #FFFFFF;
@@ -100,12 +105,14 @@
 
             --md-sys-color-scrim: #000000;
 
-            --md-elevation-level1: 0 1px 3px 0 rgba(0, 0, 0, 0.12);
-            --md-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.16);
-            --md-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.19);
+            --md-elevation-level1: 0 1px 3px 0 rgba(0, 0, 0, 0.10);
+            --md-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.14);
+            --md-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.17);
 
-            --md-ref-typeface-brand: 'Roboto', system-ui, sans-serif;
-            --md-ref-typeface-plain: 'Roboto', system-ui, sans-serif;
+            /* Branding font: Playfair Display italic */
+            --md-ref-typeface-brand: 'Playfair Display', serif;
+            /* UI font: Nunito Sans */
+            --md-ref-typeface-plain: 'Nunito Sans', system-ui, sans-serif;
             --md-ref-typeface-mono: 'Roboto Mono', monospace;
 
             --glass-background-light: rgba(255, 255, 255, 0.7);
@@ -122,36 +129,32 @@
 
         @media (prefers-color-scheme: dark) {
             :root {
-                --md-sys-color-primary: #A1D39A;
-                --md-sys-color-on-primary: #0A390F;
-                --md-sys-color-primary-container: #235024;
-                --md-sys-color-on-primary-container: #BCF0B4;
-                --md-sys-color-secondary: #BACCB3;
-                --md-sys-color-on-secondary: #253423;
-                --md-sys-color-secondary-container: #3B4B38;
-                --md-sys-color-on-secondary-container: #D5E8CF;
-                --md-sys-color-tertiary: #A0CFD4;
-                --md-sys-color-on-tertiary: #00363B;
-                --md-sys-color-tertiary-container: #1F4D52;
-                --md-sys-color-on-tertiary-container: #BCEBF0;
+                /* Dark theme surface = #000000 (black) */
+                --md-sys-color-surface: #000000;
+                --md-sys-color-surface-dim: #000000;
+                --md-sys-color-surface-bright: #2A2A2A;
+                --md-sys-color-surface-container: #141414;
+                --md-sys-color-surface-container-high: #1E1E1E;
+                --md-sys-color-surface-container-highest: #292929;
+                --md-sys-color-surface-container-low: #0A0A0A;
+                --md-sys-color-surface-container-lowest: #000000;
 
-                --md-sys-color-surface: #10140F;
-                --md-sys-color-surface-dim: #10140F;
-                --md-sys-color-surface-bright: #363A34;
-                --md-sys-color-surface-container: #1D211B;
-                --md-sys-color-surface-container-high: #272B25;
-                --md-sys-color-surface-container-highest: #323630;
-                --md-sys-color-surface-container-low: #191D17;
-                --md-sys-color-surface-container-lowest: #0B0F0A;
+                --md-sys-color-on-surface: #E8E4DA;
+                --md-sys-color-on-surface-variant: #CBC5B8;
 
-                --md-sys-color-on-surface: #E0E4DB;
-                --md-sys-color-on-surface-variant: #C2C9BD;
+                --md-sys-color-outline: #948E82;
+                --md-sys-color-outline-variant: #4D473D;
 
-                --md-sys-color-outline: #8C9388;
-                --md-sys-color-outline-variant: #424940;
+                --md-sys-color-inverse-surface: #E8E4DA;
+                --md-sys-color-inverse-on-surface: #2F2D25;
 
-                --md-sys-color-inverse-surface: #E0E4DB;
-                --md-sys-color-inverse-on-surface: #2D322C;
+                --md-sys-color-primary-container: #FFFFFF;  /* white remains white */
+                --md-sys-color-on-primary-container: #DB6B46; /* brand color on white */
+
+                --md-sys-color-secondary-container: #3D2F26;
+                --md-sys-color-on-secondary-container: #E6DCD6;
+                --md-sys-color-tertiary-container: #3D4F3D;
+                --md-sys-color-on-tertiary-container: #DDF2DD;
 
                 --md-sys-color-error: #FFB4AB;
                 --md-sys-color-on-error: #690005;
@@ -160,45 +163,40 @@
 
                 --md-sys-color-scrim: #000000;
 
-                --md-elevation-level1: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
-                --md-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.5);
-                --md-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.6);
+                --md-elevation-level1: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+                --md-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.6);
+                --md-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.7);
 
                 color-scheme: dark;
             }
         }
 
         .theme-dark {
-            --md-sys-color-primary: #A1D39A;
-            --md-sys-color-on-primary: #0A390F;
-            --md-sys-color-primary-container: #235024;
-            --md-sys-color-on-primary-container: #BCF0B4;
-            --md-sys-color-secondary: #BACCB3;
-            --md-sys-color-on-secondary: #253423;
-            --md-sys-color-secondary-container: #3B4B38;
-            --md-sys-color-on-secondary-container: #D5E8CF;
-            --md-sys-color-tertiary: #A0CFD4;
-            --md-sys-color-on-tertiary: #00363B;
-            --md-sys-color-tertiary-container: #1F4D52;
-            --md-sys-color-on-tertiary-container: #BCEBF0;
+            --md-sys-color-surface: #000000;
+            --md-sys-color-surface-dim: #000000;
+            --md-sys-color-surface-bright: #2A2A2A;
+            --md-sys-color-surface-container: #141414;
+            --md-sys-color-surface-container-high: #1E1E1E;
+            --md-sys-color-surface-container-highest: #292929;
+            --md-sys-color-surface-container-low: #0A0A0A;
+            --md-sys-color-surface-container-lowest: #000000;
 
-            --md-sys-color-surface: #10140F;
-            --md-sys-color-surface-dim: #10140F;
-            --md-sys-color-surface-bright: #363A34;
-            --md-sys-color-surface-container: #1D211B;
-            --md-sys-color-surface-container-high: #272B25;
-            --md-sys-color-surface-container-highest: #323630;
-            --md-sys-color-surface-container-low: #191D17;
-            --md-sys-color-surface-container-lowest: #0B0F0A;
+            --md-sys-color-on-surface: #E8E4DA;
+            --md-sys-color-on-surface-variant: #CBC5B8;
 
-            --md-sys-color-on-surface: #E0E4DB;
-            --md-sys-color-on-surface-variant: #C2C9BD;
+            --md-sys-color-outline: #948E82;
+            --md-sys-color-outline-variant: #4D473D;
 
-            --md-sys-color-outline: #8C9388;
-            --md-sys-color-outline-variant: #424940;
+            --md-sys-color-inverse-surface: #E8E4DA;
+            --md-sys-color-inverse-on-surface: #2F2D25;
 
-            --md-sys-color-inverse-surface: #E0E4DB;
-            --md-sys-color-inverse-on-surface: #2D322C;
+            --md-sys-color-primary-container: #FFFFFF;
+            --md-sys-color-on-primary-container: #DB6B46;
+
+            --md-sys-color-secondary-container: #3D2F26;
+            --md-sys-color-on-secondary-container: #E6DCD6;
+            --md-sys-color-tertiary-container: #3D4F3D;
+            --md-sys-color-on-tertiary-container: #DDF2DD;
 
             --md-sys-color-error: #FFB4AB;
             --md-sys-color-on-error: #690005;
@@ -207,44 +205,39 @@
 
             --md-sys-color-scrim: #000000;
 
-            --md-elevation-level1: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
-            --md-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.5);
-            --md-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.6);
+            --md-elevation-level1: 0 1px 3px 0 rgba(0, 0, 0, 0.5);
+            --md-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.6);
+            --md-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.7);
 
             color-scheme: dark;
         }
 
         .theme-light {
-            --md-sys-color-primary: #3B6939;
-            --md-sys-color-on-primary: #FFFFFF;
-            --md-sys-color-primary-container: #BCF0B4;
-            --md-sys-color-on-primary-container: #235024;
-            --md-sys-color-secondary: #52634F;
-            --md-sys-color-on-secondary: #FFFFFF;
-            --md-sys-color-secondary-container: #D5E8CF;
-            --md-sys-color-on-secondary-container: #3B4B38;
-            --md-sys-color-tertiary: #38656A;
-            --md-sys-color-on-tertiary: #FFFFFF;
-            --md-sys-color-tertiary-container: #BCEBF0;
-            --md-sys-color-on-tertiary-container: #1F4D52;
-
-            --md-sys-color-surface: #F7FBF1;
-            --md-sys-color-surface-dim: #D8DBD2;
-            --md-sys-color-surface-bright: #F7FBF1;
-            --md-sys-color-surface-container: #ECEFE6;
-            --md-sys-color-surface-container-high: #E6E9E0;
-            --md-sys-color-surface-container-highest: #E0E4DB;
-            --md-sys-color-surface-container-low: #F1F5EC;
+            --md-sys-color-surface: #FEFAE0;
+            --md-sys-color-surface-dim: #E5E1C9;
+            --md-sys-color-surface-bright: #FEFAE0;
+            --md-sys-color-surface-container: #F5F1D7;
+            --md-sys-color-surface-container-high: #EFEBD1;
+            --md-sys-color-surface-container-highest: #E9E5CB;
+            --md-sys-color-surface-container-low: #FBF7DD;
             --md-sys-color-surface-container-lowest: #FFFFFF;
 
-            --md-sys-color-on-surface: #191D17;
-            --md-sys-color-on-surface-variant: #424940;
+            --md-sys-color-on-surface: #1C1A12;
+            --md-sys-color-on-surface-variant: #4D473D;
 
-            --md-sys-color-outline: #72796F;
-            --md-sys-color-outline-variant: #C2C9BD;
+            --md-sys-color-outline: #7D776C;
+            --md-sys-color-outline-variant: #CBC5B8;
 
-            --md-sys-color-inverse-surface: #2D322C;
-            --md-sys-color-inverse-on-surface: #EFF2E9;
+            --md-sys-color-inverse-surface: #2F2D25;
+            --md-sys-color-inverse-on-surface: #F5F1E7;
+
+            --md-sys-color-primary-container: #FFFFFF;
+            --md-sys-color-on-primary-container: #DB6B46;
+
+            --md-sys-color-secondary-container: #E6DCD6;
+            --md-sys-color-on-secondary-container: #3D2F26;
+            --md-sys-color-tertiary-container: #DDF2DD;
+            --md-sys-color-on-tertiary-container: #3D4F3D;
 
             --md-sys-color-error: #BA1A1A;
             --md-sys-color-on-error: #FFFFFF;
@@ -253,9 +246,9 @@
 
             --md-sys-color-scrim: #000000;
 
-            --md-elevation-level1: 0 1px 3px 0 rgba(0, 0, 0, 0.12);
-            --md-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.16);
-            --md-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.19);
+            --md-elevation-level1: 0 1px 3px 0 rgba(0, 0, 0, 0.10);
+            --md-elevation-level2: 0 3px 6px rgba(0, 0, 0, 0.14);
+            --md-elevation-level3: 0 10px 20px rgba(0, 0, 0, 0.17);
 
             color-scheme: light;
         }
@@ -314,23 +307,28 @@
         }
 
         .header .logo-icon {
-            font-size: 1.8rem;
-            color: var(--md-sys-color-primary);
-            width: 1.8rem;
-            height: 1.8rem;
+            width: 2rem;
+            height: 2rem;
             display: flex;
             align-items: center;
             justify-content: center;
+            flex-shrink: 0;
         }
-
-        .header .logo-icon svg {
+        .header .logo-icon img {
             width: 100%;
             height: 100%;
+            object-fit: contain;
             display: block;
+            border-radius: 8px;
         }
 
         .header-title {
-            font-weight: 500;
+            font-family: var(--md-ref-typeface-brand);
+            font-style: italic;
+            font-weight: 700;
+            color: var(--md-sys-color-primary);
+            font-size: 1.3rem;
+            letter-spacing: -0.02em;
         }
 
         .hamburger-btn {
@@ -354,9 +352,10 @@
         .hamburger-btn:active {
             transform: scale(0.95);
         }
-        .hamburger-btn .material-symbols-rounded {
-            font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-            font-size: 28px;
+        .hamburger-btn .lucide {
+            width: 28px;
+            height: 28px;
+            stroke-width: 1.8;
         }
 
         .header-right {
@@ -391,8 +390,10 @@
             transform: scale(0.95);
         }
 
-        .theme-toggle .material-symbols-rounded {
-            font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
+        .theme-toggle .lucide {
+            width: 24px;
+            height: 24px;
+            stroke-width: 1.8;
             transition: transform var(--motion-duration-medium) var(--motion-easing-emphasized);
         }
 
@@ -447,6 +448,7 @@
             font-size: 1.1rem;
             font-weight: 600;
             color: var(--md-sys-color-on-surface);
+            font-family: var(--md-ref-typeface-plain);
         }
         .sidebar-close {
             background: transparent;
@@ -464,6 +466,11 @@
         }
         .sidebar-close:hover {
             background: var(--md-sys-color-surface-container-high);
+        }
+        .sidebar-close .lucide {
+            width: 24px;
+            height: 24px;
+            stroke-width: 1.8;
         }
 
         .sidebar-body {
@@ -505,8 +512,10 @@
             border-color: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary-container);
         }
-        .new-chat-btn .material-symbols-rounded {
-            font-size: 22px;
+        .new-chat-btn .lucide {
+            width: 22px;
+            height: 22px;
+            stroke-width: 1.8;
         }
 
         .chat-list {
@@ -553,6 +562,7 @@
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            font-family: var(--md-ref-typeface-plain);
         }
         .chat-item .chat-meta {
             font-size: 0.7rem;
@@ -561,10 +571,13 @@
             align-items: center;
             gap: 6px;
             margin-top: 2px;
+            font-family: var(--md-ref-typeface-plain);
         }
         .chat-item .chat-meta .pin-icon {
-            font-size: 14px;
+            width: 14px;
+            height: 14px;
             color: var(--md-sys-color-primary);
+            stroke-width: 2;
         }
         .chat-item .chat-menu-btn {
             background: transparent;
@@ -583,8 +596,10 @@
         .chat-item .chat-menu-btn:hover {
             background: var(--md-sys-color-surface-container-highest);
         }
-        .chat-item .chat-menu-btn .material-symbols-rounded {
-            font-size: 20px;
+        .chat-item .chat-menu-btn .lucide {
+            width: 20px;
+            height: 20px;
+            stroke-width: 1.8;
         }
 
         .dropdown-menu {
@@ -627,8 +642,10 @@
         .dropdown-menu .dropdown-item.danger {
             color: var(--md-sys-color-error);
         }
-        .dropdown-menu .dropdown-item .material-symbols-rounded {
-            font-size: 20px;
+        .dropdown-menu .dropdown-item .lucide {
+            width: 20px;
+            height: 20px;
+            stroke-width: 1.8;
         }
         .dropdown-divider {
             height: 1px;
@@ -676,12 +693,14 @@
             font-weight: 600;
             margin-bottom: 8px;
             color: var(--md-sys-color-on-surface);
+            font-family: var(--md-ref-typeface-plain);
         }
         .modal-box p {
             font-size: 0.95rem;
             color: var(--md-sys-color-on-surface-variant);
             margin-bottom: 20px;
             line-height: 1.5;
+            font-family: var(--md-ref-typeface-plain);
         }
         .modal-box .modal-input {
             width: 100%;
@@ -775,20 +794,23 @@
             width: 120px;
             height: 120px;
             margin-bottom: 20px;
-            animation: logoSpin 12s linear infinite alternate, logoFadeIn 1s ease-out;
+            animation: logoFloat 4s ease-in-out infinite, logoFadeIn 1s ease-out;
+            flex-shrink: 0;
         }
-
-        .welcome-logo svg {
+        .welcome-logo img {
             width: 100%;
             height: 100%;
+            object-fit: contain;
+            border-radius: 20px;
         }
 
-        @keyframes logoSpin {
-            0% {
-                transform: rotate(0deg);
-            }
+        @keyframes logoFloat {
+            0%,
             100% {
-                transform: rotate(360deg);
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
             }
         }
 
@@ -802,20 +824,20 @@
         }
 
         .welcome-title {
-            font-size: 2rem;
+            font-family: var(--md-ref-typeface-brand);
+            font-style: italic;
+            font-size: 2.4rem;
             font-weight: 700;
-            background: linear-gradient(135deg, var(--md-sys-color-primary), var(--md-sys-color-primary-container));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
+            color: var(--md-sys-color-primary);
             margin-bottom: 8px;
         }
 
         .welcome-subtitle {
             font-size: 1.1rem;
             color: var(--md-sys-color-on-surface-variant);
-            max-width: 300px;
+            max-width: 320px;
             line-height: 1.5;
+            font-family: var(--md-ref-typeface-plain);
         }
 
         /* ===== Messages ===== */
@@ -831,6 +853,7 @@
             position: relative;
             transition: transform 0.2s ease;
             border: 1px solid transparent;
+            font-family: var(--md-ref-typeface-plain);
         }
         .message:hover {
             transform: translateY(-2px);
@@ -891,11 +914,12 @@
             width: 24px;
             height: 24px;
             animation: spin 1.2s linear infinite;
+            color: var(--md-sys-color-primary);
         }
-        .typing-spinner svg {
+        .typing-spinner .lucide {
             width: 100%;
             height: 100%;
-            display: block;
+            stroke-width: 2;
         }
 
         @keyframes spin {
@@ -910,6 +934,7 @@
         .typing-text {
             color: var(--md-sys-color-on-surface-variant);
             font-size: 0.95rem;
+            font-family: var(--md-ref-typeface-plain);
         }
 
         /* Markdown styling */
@@ -931,6 +956,7 @@
             font-weight: 600;
             line-height: 1.3;
             color: var(--md-sys-color-on-surface);
+            font-family: var(--md-ref-typeface-plain);
         }
         .message.bot h1 {
             font-size: 1.6em;
@@ -1108,6 +1134,11 @@
             background: color-mix(in srgb, var(--md-sys-color-primary) 40%, transparent);
             color: var(--md-sys-color-on-primary);
         }
+        .copy-code-btn .lucide {
+            width: 18px;
+            height: 18px;
+            stroke-width: 1.8;
+        }
 
         /* Image inside bot message */
         .message.bot img {
@@ -1190,6 +1221,11 @@
             cursor: not-allowed;
             transform: none !important;
         }
+        .icon-btn .lucide {
+            width: 24px;
+            height: 24px;
+            stroke-width: 1.8;
+        }
         #sendBtn {
             background: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
@@ -1215,10 +1251,6 @@
             background: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
         }
-        .icon-btn .material-symbols-rounded {
-            font-variation-settings: 'FILL' 0, 'wght' 500, 'GRAD' 0, 'opsz' 24;
-            font-size: 24px;
-        }
 
         .error {
             background: color-mix(in srgb, var(--md-sys-color-error) 10%, var(--md-sys-color-surface));
@@ -1231,6 +1263,7 @@
             border-left: 4px solid var(--md-sys-color-error);
             animation: fadeIn 0.5s;
             box-shadow: var(--md-elevation-level1);
+            font-family: var(--md-ref-typeface-plain);
         }
         .hidden {
             display: none !important;
@@ -1253,6 +1286,7 @@
             z-index: 101;
             box-shadow: var(--md-elevation-level2);
             animation: fadeInUp 0.4s ease;
+            font-family: var(--md-ref-typeface-plain);
         }
         .install-banner span {
             font-size: 0.95rem;
@@ -1266,6 +1300,7 @@
             font-size: 0.9rem;
             border: none;
             cursor: pointer;
+            font-family: var(--md-ref-typeface-plain);
         }
 
         @keyframes fadeInUp {
@@ -1286,15 +1321,27 @@
                 font-size: 1.1rem;
             }
             .header .logo-icon {
-                font-size: 1.6rem;
+                width: 1.6rem;
+                height: 1.6rem;
+            }
+            .header-title {
+                font-size: 1.1rem;
             }
             .theme-toggle {
                 width: 40px;
                 height: 40px;
             }
+            .theme-toggle .lucide {
+                width: 22px;
+                height: 22px;
+            }
             .hamburger-btn {
                 width: 40px;
                 height: 40px;
+            }
+            .hamburger-btn .lucide {
+                width: 24px;
+                height: 24px;
             }
 
             .chat-container {
@@ -1307,7 +1354,7 @@
                 height: 100px;
             }
             .welcome-title {
-                font-size: 1.7rem;
+                font-size: 2rem;
             }
             .welcome-subtitle {
                 font-size: 1rem;
@@ -1340,6 +1387,10 @@
                 width: 44px;
                 height: 44px;
                 min-width: 44px;
+            }
+            .icon-btn .lucide {
+                width: 22px;
+                height: 22px;
             }
 
             .sidebar {
@@ -1374,25 +1425,16 @@
     <div class="header">
         <div class="header-left">
             <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open chat list">
-                <span class="material-symbols-rounded">menu</span>
+                <i data-lucide="menu" class="lucide"></i>
             </button>
             <span class="logo-icon">
-                <svg xmlns="http://www.w3.org/2000/svg" height="48px" viewBox="0 -960 960 960" width="48px" fill="#75FB4C">
-                    <path d="M740-283q0 52-26 96.5T643-116l-37 22q-13 7-27 10.5T550-80q-21 0-40-7.5T475-109q-26-26-32-62.5t11-69.5l15-31q4-8 7.5-15.5T482-303q3-8 0-15t-11-10q-8-3-15-.5t-11 9.5q-11 22-26.5 40.5T382-248q-23 13-48 20t-51 7q-52 0-97-25.5T115-317l-21-37q-8-12-11.5-26T79-408q0-21 8-40.5t22-34.5q26-27 62-33t70 11l31 15q8 4 15.5 7.5T303-477q8 3 15-.5t10-11.5q3-8 .5-15.5T318-515q-48-20-73-64.5T220-676q0-52 26-97t71-71l37-20q13-8 27-12t29-4q21 0 40 8t34 22q26 26 32 62.5t-11 69.5l-16 32q-3 8-6.5 15t-6.5 15q-2 8 1.5 15t11.5 10q8 2 15-.5t11-9.5q23-46 66.5-72t94.5-26q52 0 97 25.5t71 70.5l21 37q7 13 10.5 26.5T879-552q0 21-8 41t-22 35q-25 27-61.5 32.5T718-455l-32-16q-8-3-15-6t-15-5q-8-2-15 1t-10 11q-2 8 .5 15t10.5 10q48 20 73 65t25 97ZM576-146l37-22q31-18 49-48.5t18-66.5q0-34-17-63.5T616-392q-29-15-40-46.5t3-61.5q15-32 50-40t68 8l48 24q15 8 32 5.5t29-14.5q12-11 14-28t-6-31l-21-37q-19-32-50-50.5T675-682q-35 0-64 18t-45 49q-14 29-45 39t-61-4q-31-14-41-46t5-63l28-56q8-15 5-31.5T442-805q-11-12-27.5-14.5T383-814l-37 22q-32 18-50 48.5T278-677q0 35 17 64.5t48 45.5q28 15 39.5 43t-.5 57q-14 34-48.5 46t-67.5-5l-52-26q-15-8-31.5-4.5T153-442q-12 12-14 28.5t6 30.5l22 37q18 31 49 48.5t66 17.5q18 0 35-4.5t32-13.5q14-8 24.5-19.5T392-343q17-31 48.5-42t60.5 6q29 17 39 48t-4 60l-28 56q-8 15-5 32t14 29q12 12 28.5 14t30.5-6Zm37-22-37 22q-14 8-31 6t-28-14q-12-12-14.5-29t5.5-32l28-56q14-29 4-60t-39-48q-29-17-60.5-6T392-343q-8 14-18.5 25.5T349-298q-15 9-32 13.5t-35 4.5q-35 0-66-17.5T167-346l-22-37q-8-14-6-31t14-28q12-12 29-15t32 5l52 26q33 17 67.5 5t48.5-46q11-29 0-57.5T343-567q-31-16-48-45.5T278-677q0-36 18.5-66.5T346-792l37-22q14-8 31-5.5t28 14.5q12 12 15 28.5t-5 31.5l-28 56q-15 31-5 63t41 46q30 14 61 4t45-39q15-31 44.5-49t64.5-18q37 0 68.5 18.5T793-613l21 37q8 14 6 31t-14 28q-12 12-29 14.5t-32-5.5l-48-24q-33-17-68.5-8.5T579-500q-14 30-3 61.5t40 46.5q30 16 47 45.5t17 63.5q0 36-18 66.5T613-168Z" fill="url(#gradient-g5fm34e)" />
-                    <defs>
-                        <linearGradient id="gradient-g5fm34e" x1="0%" y1="50%" x2="100%" y2="50%">
-                            <stop offset="0%" stop-color="#00c0ff" />
-                            <stop offset="50%" stop-color="#00ff76" />
-                            <stop offset="100%" stop-color="#00d0ff" />
-                        </linearGradient>
-                    </defs>
-                </svg>
+                <img src="logo.svg" alt="Aariz Logo" />
             </span>
-            <span class="header-title">Endroid Elyx</span>
+            <span class="header-title">Aariz</span>
         </div>
         <div class="header-right">
             <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                <span class="material-symbols-rounded" id="themeIcon">dark_mode</span>
+                <i data-lucide="moon" class="lucide" id="themeIcon"></i>
             </button>
         </div>
     </div>
@@ -1401,34 +1443,24 @@
     <div class="chat-container" id="chatContainer">
         <div class="welcome-container" id="welcomeMessage">
             <div class="welcome-logo">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 -960 960 960" fill="#75FB4C">
-                    <path d="M740-283q0 52-26 96.5T643-116l-37 22q-13 7-27 10.5T550-80q-21 0-40-7.5T475-109q-26-26-32-62.5t11-69.5l15-31q4-8 7.5-15.5T482-303q3-8 0-15t-11-10q-8-3-15-.5t-11 9.5q-11 22-26.5 40.5T382-248q-23 13-48 20t-51 7q-52 0-97-25.5T115-317l-21-37q-8-12-11.5-26T79-408q0-21 8-40.5t22-34.5q26-27 62-33t70 11l31 15q8 4 15.5 7.5T303-477q8 3 15-.5t10-11.5q3-8 .5-15.5T318-515q-48-20-73-64.5T220-676q0-52 26-97t71-71l37-20q13-8 27-12t29-4q21 0 40 8t34 22q26 26 32 62.5t-11 69.5l-16 32q-3 8-6.5 15t-6.5 15q-2 8 1.5 15t11.5 10q8 2 15-.5t11-9.5q23-46 66.5-72t94.5-26q52 0 97 25.5t71 70.5l21 37q7 13 10.5 26.5T879-552q0 21-8 41t-22 35q-25 27-61.5 32.5T718-455l-32-16q-8-3-15-6t-15-5q-8-2-15 1t-10 11q-2 8 .5 15t10.5 10q48 20 73 65t25 97ZM576-146l37-22q31-18 49-48.5t18-66.5q0-34-17-63.5T616-392q-29-15-40-46.5t3-61.5q15-32 50-40t68 8l48 24q15 8 32 5.5t29-14.5q12-11 14-28t-6-31l-21-37q-19-32-50-50.5T675-682q-35 0-64 18t-45 49q-14 29-45 39t-61-4q-31-14-41-46t5-63l28-56q8-15 5-31.5T442-805q-11-12-27.5-14.5T383-814l-37 22q-32 18-50 48.5T278-677q0 35 17 64.5t48 45.5q28 15 39.5 43t-.5 57q-14 34-48.5 46t-67.5-5l-52-26q-15-8-31.5-4.5T153-442q-12 12-14 28.5t6 30.5l22 37q18 31 49 48.5t66 17.5q18 0 35-4.5t32-13.5q14-8 24.5-19.5T392-343q17-31 48.5-42t60.5 6q29 17 39 48t-4 60l-28 56q-8 15-5 32t14 29q12 12 28.5 14t30.5-6Zm37-22-37 22q-14 8-31 6t-28-14q-12-12-14.5-29t5.5-32l28-56q14-29 4-60t-39-48q-29-17-60.5-6T392-343q-8 14-18.5 25.5T349-298q-15 9-32 13.5t-35 4.5q-35 0-66-17.5T167-346l-22-37q-8-14-6-31t14-28q12-12 29-15t32 5l52 26q33 17 67.5 5t48.5-46q11-29 0-57.5T343-567q-31-16-48-45.5T278-677q0-36 18.5-66.5T346-792l37-22q14-8 31-5.5t28 14.5q12 12 15 28.5t-5 31.5l-28 56q-15 31-5 63t41 46q30 14 61 4t45-39q15-31 44.5-49t64.5-18q37 0 68.5 18.5T793-613l21 37q8 14 6 31t-14 28q-12 12-29 14.5t-32-5.5l-48-24q-33-17-68.5-8.5T579-500q-14 30-3 61.5t40 46.5q30 16 47 45.5t17 63.5q0 36-18 66.5T613-168Z" fill="url(#gradient-g5fm34e)" />
-                    <defs>
-                        <linearGradient id="gradient-g5fm34e" x1="0%" y1="50%" x2="100%" y2="50%">
-                            <stop offset="0%" stop-color="#00c0ff" />
-                            <stop offset="50%" stop-color="#00ff76" />
-                            <stop offset="100%" stop-color="#00d0ff" />
-                        </linearGradient>
-                    </defs>
-                </svg>
+                <img src="logo.svg" alt="Aariz Logo" />
             </div>
-            <h1 class="welcome-title">Hello, I'm Elyx</h1>
+            <h1 class="welcome-title">Hello, I'm Aariz</h1>
             <p class="welcome-subtitle">Your AI assistant powered by Gemini. Ask me anything, and let's have a great conversation!</p>
         </div>
     </div>
 
     <!-- ===== INPUT AREA ===== -->
     <div class="input-area">
-        <!-- Image toggle (replaces delete button) -->
         <button class="icon-btn" id="imageToggle" title="Toggle Image Generation">
-            <span class="material-symbols-rounded">photo</span>
+            <i data-lucide="image" class="lucide"></i>
         </button>
         <button class="icon-btn" id="webSearchToggle" title="Toggle Web Search">
-            <span class="material-symbols-rounded">travel_explore</span>
+            <i data-lucide="globe" class="lucide"></i>
         </button>
-        <textarea id="messageInput" placeholder="Message Elyx..." rows="1" autocomplete="off"></textarea>
+        <textarea id="messageInput" placeholder="Message Aariz..." rows="1" autocomplete="off"></textarea>
         <button class="icon-btn" id="sendBtn" title="Send Message">
-            <span class="material-symbols-rounded">send</span>
+            <i data-lucide="send" class="lucide"></i>
         </button>
     </div>
 
@@ -1437,10 +1469,12 @@
 
     <!-- ===== INSTALL BANNER ===== -->
     <div id="installBanner" class="install-banner hidden">
-        <span>Install Elyx for quick access</span>
+        <span>Install Aariz for quick access</span>
         <div style="display:flex; gap:8px;">
             <button id="installBtn" class="icon-btn" style="width:auto; padding:0 16px;">Install</button>
-            <button id="dismissInstall" class="icon-btn" style="background:transparent; color:inherit;">✕</button>
+            <button id="dismissInstall" class="icon-btn" style="background:transparent; color:inherit;">
+                <i data-lucide="x" class="lucide" style="width:20px;height:20px;"></i>
+            </button>
         </div>
     </div>
 
@@ -1449,11 +1483,13 @@
     <div class="sidebar" id="sidebar">
         <div class="sidebar-header">
             <h2>Chats</h2>
-            <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">✕</button>
+            <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+                <i data-lucide="x" class="lucide"></i>
+            </button>
         </div>
         <div class="sidebar-body" id="sidebarBody">
             <button class="new-chat-btn" id="newChatBtn">
-                <span class="material-symbols-rounded">add</span> New Chat
+                <i data-lucide="plus" class="lucide"></i> New Chat
             </button>
             <div class="chat-list" id="chatList">
                 <!-- Rendered by JS -->
@@ -1464,14 +1500,14 @@
     <!-- ===== DROPDOWN MENU ===== -->
     <div class="dropdown-menu" id="dropdownMenu">
         <button class="dropdown-item" id="dropdownPin" data-action="pin">
-            <span class="material-symbols-rounded">push_pin</span> Pin
+            <i data-lucide="pin" class="lucide"></i> Pin
         </button>
         <button class="dropdown-item" id="dropdownRename" data-action="rename">
-            <span class="material-symbols-rounded">edit</span> Rename
+            <i data-lucide="pencil" class="lucide"></i> Rename
         </button>
         <div class="dropdown-divider"></div>
         <button class="dropdown-item danger" id="dropdownDelete" data-action="delete">
-            <span class="material-symbols-rounded">delete</span> Delete
+            <i data-lucide="trash-2" class="lucide"></i> Delete
         </button>
     </div>
 
@@ -1701,7 +1737,7 @@
         };
 
         // ================================================================
-        //  UI RENDERER (extended for image mode)
+        //  UI RENDERER
         // ================================================================
         const UI = {
             chatContainer: document.getElementById('chatContainer'),
@@ -1718,7 +1754,6 @@
             modalCancel: document.getElementById('modalCancel'),
             input: document.getElementById('messageInput'),
             sendBtn: document.getElementById('sendBtn'),
-            // removed clearBtn reference
             error: document.getElementById('error'),
             webSearchBtn: document.getElementById('webSearchToggle'),
             imageToggleBtn: document.getElementById('imageToggle'),
@@ -1730,10 +1765,12 @@
             init() {
                 this._bindEvents();
                 this.render();
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
             },
 
             _bindEvents() {
-                // Hamburger
                 document.getElementById('hamburgerBtn').addEventListener('click', () => this.openSidebar());
                 document.getElementById('sidebarClose').addEventListener('click', () => this.closeSidebar());
                 this.overlay.addEventListener('click', () => this.closeSidebar());
@@ -1743,14 +1780,12 @@
                     this.newChat();
                 });
 
-                // Modal
                 this.modalCancel.addEventListener('click', () => this.closeModal());
                 this.modalOverlay.addEventListener('click', (e) => {
                     if (e.target === this.modalOverlay) this.closeModal();
                 });
                 this.modalConfirm.addEventListener('click', () => this._handleModalConfirm());
 
-                // Dropdown
                 document.addEventListener('click', (e) => {
                     const target = e.target.closest('.dropdown-menu') || e.target.closest('.chat-menu-btn');
                     if (!target) this.closeDropdown();
@@ -1762,6 +1797,7 @@
                     this.closeDropdown();
                     this.render();
                     this.renderChat(chatManager.activeId);
+                    this._recreateIcons();
                 });
                 document.getElementById('dropdownRename').addEventListener('click', () => {
                     const id = this._dropdownTargetId;
@@ -1782,7 +1818,6 @@
                     }
                 });
 
-                // Send
                 this.sendBtn.addEventListener('click', () => this.sendMessage());
                 this.input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -1797,23 +1832,19 @@
                 });
                 this.sendBtn.disabled = true;
 
-                // Clear functionality removed — no clear button
-
-                // Theme
                 document.getElementById('themeToggle').addEventListener('click', () => {
                     const isDark = document.body.classList.contains('theme-dark');
                     applyTheme(isDark ? 'light' : 'dark');
                 });
 
-                // Web search toggle
                 this.webSearchBtn.addEventListener('click', () => {
-                    if (imageModeEnabled) return; // disabled when image mode is on
+                    if (imageModeEnabled) return;
                     webSearchEnabled = !webSearchEnabled;
                     this.webSearchBtn.classList.toggle('active', webSearchEnabled);
                     this.webSearchBtn.title = webSearchEnabled ? 'Web Search ON' : 'Web Search OFF';
+                    this._recreateIcons();
                 });
 
-                // Image toggle (replaces clear button)
                 this.imageToggleBtn.addEventListener('click', () => {
                     imageModeEnabled = !imageModeEnabled;
                     this.imageToggleBtn.classList.toggle('active', imageModeEnabled);
@@ -1827,9 +1858,9 @@
                         this.webSearchBtn.disabled = false;
                         this.webSearchBtn.title = webSearchEnabled ? 'Web Search ON' : 'Web Search OFF';
                     }
+                    this._recreateIcons();
                 });
 
-                // Keyboard shortcuts
                 document.addEventListener('keydown', (e) => {
                     if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
                         e.preventDefault();
@@ -1843,12 +1874,19 @@
                 });
             },
 
+            _recreateIcons() {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            },
+
             // ---- Sidebar ----
             openSidebar() {
                 this.sidebar.classList.add('open');
                 this.overlay.classList.add('open');
                 document.body.style.overflow = 'hidden';
                 this.render();
+                this._recreateIcons();
             },
             closeSidebar() {
                 this.sidebar.classList.remove('open');
@@ -1871,11 +1909,12 @@
                 if (chat) {
                     const pinLabel = chat.pinned ? 'Unpin' : 'Pin';
                     document.getElementById('dropdownPin').innerHTML =
-                        `<span class="material-symbols-rounded">${chat.pinned ? 'push_pin_off' : 'push_pin'}</span> ${pinLabel}`;
+                        `<i data-lucide="${chat.pinned ? 'pin-off' : 'pin'}" class="lucide" style="width:20px;height:20px;stroke-width:1.8;"></i> ${pinLabel}`;
                 }
                 dropdown.style.left = Math.min(rect.left - 140 + rect.width, window.innerWidth - 170) + 'px';
                 dropdown.style.top = (rect.bottom + 8) + 'px';
                 dropdown.classList.add('open');
+                this._recreateIcons();
             },
             closeDropdown() {
                 this.dropdown.classList.remove('open');
@@ -1906,6 +1945,7 @@
                         chatManager.renameChat(chatId, value.trim());
                         this.render();
                         this.renderChat(chatManager.activeId);
+                        this._recreateIcons();
                     }
                 };
                 setTimeout(() => this.modalInput.focus(), 50);
@@ -1920,6 +1960,7 @@
                         chatManager.deleteChat(chatId);
                         this.render();
                         this.renderChat(chatManager.activeId);
+                        this._recreateIcons();
                     }
                 );
             },
@@ -1943,6 +1984,7 @@
                 document.querySelectorAll('.chat-item').forEach(el => {
                     el.classList.toggle('active', el.dataset.chatId === chatManager.activeId);
                 });
+                this._recreateIcons();
             },
 
             _renderChatList() {
@@ -1958,7 +2000,8 @@
                     const title = chatManager.getTitle(chat);
                     const preview = chatManager.getPreview(chat);
                     const isActive = chat.id === chatManager.activeId;
-                    const pinIcon = chat.pinned ? '<span class="pin-icon material-symbols-rounded" style="font-size:14px;">push_pin</span>' :
+                    const pinIcon = chat.pinned ?
+                        `<i data-lucide="pin" class="pin-icon lucide" style="width:14px;height:14px;stroke-width:2;"></i>` :
                         '';
                     html += `
                         <div class="chat-item ${isActive ? 'active' : ''}" data-chat-id="${chat.id}">
@@ -1970,7 +2013,7 @@
                                 </div>
                             </div>
                             <button class="chat-menu-btn" data-chat-id="${chat.id}" aria-label="Chat menu">
-                                <span class="material-symbols-rounded">more_vert</span>
+                                <i data-lucide="more-vertical" class="lucide" style="width:20px;height:20px;stroke-width:1.8;"></i>
                             </button>
                         </div>
                     `;
@@ -1987,6 +2030,7 @@
                             this.renderChat(id);
                             this.closeSidebar();
                             this.input.focus();
+                            this._recreateIcons();
                         }
                     });
                     const menuBtn = el.querySelector('.chat-menu-btn');
@@ -1998,6 +2042,7 @@
                         });
                     }
                 });
+                this._recreateIcons();
             },
 
             renderChat(chatId) {
@@ -2009,6 +2054,7 @@
 
                 if (!chat || chat.messages.length === 0) {
                     if (welcomeEl) welcomeEl.style.display = 'flex';
+                    this._recreateIcons();
                     return;
                 }
                 if (welcomeEl) welcomeEl.style.display = 'none';
@@ -2017,9 +2063,10 @@
                     this._addMessageToDOM(msg.role, msg.text, false);
                 });
                 container.scrollTop = container.scrollHeight;
+                this._recreateIcons();
             },
 
-            // ---- Add message to DOM (extended for image markdown) ----
+            // ---- Add message to DOM ----
             _addMessageToDOM(role, text, isTyping) {
                 const container = this.chatContainer;
                 const welcomeEl = document.getElementById('welcomeMessage');
@@ -2036,16 +2083,15 @@
                     typingDiv.innerHTML = `
                         <div class="typing-indicator">
                             <div class="typing-spinner">
-                                <svg xmlns="http://www.w3.org/2000/svg" height="24px" viewBox="0 -960 960 960" width="24px" fill="var(--md-sys-color-primary)">
-                                    <path d="M740-283q0 52-26 96.5T643-116l-37 22q-13 7-27 10.5T550-80q-21 0-40-7.5T475-109q-26-26-32-62.5t11-69.5l15-31q4-8 7.5-15.5T482-303q3-8 0-15t-11-10q-8-3-15-.5t-11 9.5q-11 22-26.5 40.5T382-248q-23 13-48 20t-51 7q-52 0-97-25.5T115-317l-21-37q-8-12-11.5-26T79-408q0-21 8-40.5t22-34.5q26-27 62-33t70 11l31 15q8 4 15.5 7.5T303-477q8 3 15-.5t10-11.5q3-8 .5-15.5T318-515q-48-20-73-64.5T220-676q0-52 26-97t71-71l37-20q13-8 27-12t29-4q21 0 40 8t34 22q26 26 32 62.5t-11 69.5l-16 32q-3 8-6.5 15t-6.5 15q-2 8 1.5 15t11.5 10q8 2 15-.5t11-9.5q23-46 66.5-72t94.5-26q52 0 97 25.5t71 70.5l21 37q7 13 10.5 26.5T879-552q0 21-8 41t-22 35q-25 27-61.5 32.5T718-455l-32-16q-8-3-15-6t-15-5q-8-2-15 1t-10 11q-2 8 .5 15t10.5 10q48 20 73 65t25 97ZM576-146l37-22q31-18 49-48.5t18-66.5q0-34-17-63.5T616-392q-29-15-40-46.5t3-61.5q15-32 50-40t68 8l48 24q15 8 32 5.5t29-14.5q12-11 14-28t-6-31l-21-37q-19-32-50-50.5T675-682q-35 0-64 18t-45 49q-14 29-45 39t-61-4q-31-14-41-46t5-63l28-56q8-15 5-31.5T442-805q-11-12-27.5-14.5T383-814l-37 22q-32 18-50 48.5T278-677q0 35 17 64.5t48 45.5q28 15 39.5 43t-.5 57q-14 34-48.5 46t-67.5-5l-52-26q-15-8-31.5-4.5T153-442q-12 12-14 28.5t6 30.5l22 37q18 31 49 48.5t66 17.5q18 0 35-4.5t32-13.5q14-8 24.5-19.5T392-343q17-31 48.5-42t60.5 6q29 17 39 48t-4 60l-28 56q-8 15-5 32t14 29q12 12 28.5 14t30.5-6Zm37-22-37 22q-14 8-31 6t-28-14q-12-12-14.5-29t5.5-32l28-56q14-29 4-60t-39-48q-29-17-60.5-6T392-343q-8 14-18.5 25.5T349-298q-15 9-32 13.5t-35 4.5q-35 0-66-17.5T167-346l-22-37q-8-14-6-31t14-28q12-12 29-15t32 5l52 26q33 17 67.5 5t48.5-46q11-29 0-57.5T343-567q-31-16-48-45.5T278-677q0-36 18.5-66.5T346-792l37-22q14-8 31-5.5t28 14.5q12 12 15 28.5t-5 31.5l-28 56q-15 31-5 63t41 46q30 14 61 4t45-39q15-31 44.5-49t64.5-18q37 0 68.5 18.5T793-613l21 37q8 14 6 31t-14 28q-12 12-29 14.5t-32-5.5l-48-24q-33-17-68.5-8.5T579-500q-14 30-3 61.5t40 46.5q30 16 47 45.5t17 63.5q0 36-18 66.5T613-168Z" fill="currentColor"/>
-                                </svg>
+                                <i data-lucide="loader-circle" class="lucide" style="width:24px;height:24px;stroke-width:2;"></i>
                             </div>
-                            <span class="typing-text">Endroid is thinking</span>
+                            <span class="typing-text">Aariz is thinking</span>
                         </div>
                     `;
                     container.appendChild(typingDiv);
                     this._typingId = 'typingIndicator';
                     container.scrollTop = container.scrollHeight;
+                    this._recreateIcons();
                     return typingDiv;
                 }
 
@@ -2062,6 +2108,7 @@
                                 btn.dataset.codeId = codeEl.id;
                             }
                         });
+                        this._recreateIcons();
                     }, 0);
                 } else {
                     messageDiv.textContent = text;
@@ -2069,6 +2116,7 @@
 
                 container.appendChild(messageDiv);
                 container.scrollTop = container.scrollHeight;
+                this._recreateIcons();
                 return messageDiv;
             },
 
@@ -2091,13 +2139,14 @@
                     this.render();
                     this.renderChat(chat.id);
                     this.input.focus();
+                    this._recreateIcons();
                     setTimeout(() => {
                         this.openRenameModal(chat.id, 'New Chat');
                     }, 200);
                 }
             },
 
-            // ---- Send Message (extended for image mode) ----
+            // ---- Send Message ----
             async sendMessage() {
                 const input = this.input;
                 const text = input.value.trim();
@@ -2113,22 +2162,18 @@
                 input.style.height = 'auto';
                 this.sendBtn.disabled = true;
 
-                // Add user message
                 this._addMessageToDOM('user', text, false);
                 chatManager.addMessage(active.id, 'user', text);
                 this.render();
 
                 if (imageModeEnabled) {
-                    // ---- Image Generation Flow ----
-                    // Step 1: Get enhanced prompt from Gemini (strict, only prompt)
                     this._addMessageToDOM('assistant', '', true);
                     try {
                         const enhanced = await this._getEnhancedPrompt(text);
                         this._removeTypingIndicator();
-                        // Do NOT display enhanced prompt
-                        // Step 2: Generate image using Flux
-                        this._addMessageToDOM('assistant', '', true); // typing for image generation
-                        const imageUrl = `https://flux.gtech-apiz.workers.dev/?apikey=Suhail&text=${encodeURIComponent(enhanced)}`;
+                        this._addMessageToDOM('assistant', '', true);
+                        const imageUrl =
+                            `https://flux.gtech-apiz.workers.dev/?apikey=Suhail&text=${encodeURIComponent(enhanced)}`;
                         const finalMessage = `Here is image:\n\n![Generated Image](${imageUrl})`;
                         this._removeTypingIndicator();
                         this._addMessageToDOM('assistant', finalMessage, false);
@@ -2143,9 +2188,9 @@
                         this.sendBtn.disabled = false;
                         setTimeout(() => input.focus(), 100);
                         this.render();
+                        this._recreateIcons();
                     }
                 } else {
-                    // ---- Normal Chat Flow ----
                     this._addMessageToDOM('assistant', '', true);
                     try {
                         const response = await this._callAPI(text, active.id);
@@ -2162,11 +2207,11 @@
                         this.sendBtn.disabled = false;
                         setTimeout(() => input.focus(), 100);
                         this.render();
+                        this._recreateIcons();
                     }
                 }
             },
 
-            // ---- Helper: get enhanced prompt from Gemini (strict) ----
             async _getEnhancedPrompt(userPrompt) {
                 const instruction =
                     `Enhance this prompt for image generation. Return ONLY the enhanced prompt, with no additional text, no markdown, no code fences, no explanations: ${userPrompt}`;
@@ -2174,7 +2219,6 @@
                 return response.trim();
             },
 
-            // ---- API call ----
             async _callAPI(userMessage, chatId, skipHistory = false) {
                 let history = [];
                 if (!skipHistory && chatId) {
@@ -2215,7 +2259,6 @@
                 return `I encountered an error: ${msg}`;
             },
 
-            // ---- Error ----
             showError(msg) {
                 const el = this.error;
                 el.textContent = msg;
@@ -2233,7 +2276,7 @@
         };
 
         // ================================================================
-        //  MARKDOWN RENDERER (extended with image support)
+        //  MARKDOWN RENDERER (with Lucide icons for copy button)
         // ================================================================
         function renderMarkdown(text) {
             if (!text || typeof text !== 'string') return '';
@@ -2242,7 +2285,6 @@
             const codeBlocks = [];
             const inlineCodeBlocks = [];
 
-            // Code blocks
             processedText = processedText.replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, language, code) {
                 const id = 'code-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 const lang = language || 'text';
@@ -2252,7 +2294,7 @@
                         <div class="code-block-header">
                             <span>${lang}</span>
                             <button class="copy-code-btn" data-code-id="${id}">
-                                <span class="material-symbols-rounded" style="font-size:18px">content_copy</span>
+                                <i data-lucide="copy" class="lucide" style="width:18px;height:18px;stroke-width:1.8;"></i>
                                 Copy
                             </button>
                         </div>
@@ -2262,15 +2304,14 @@
                 return `__CODE_BLOCK_${codeBlocks.length - 1}__`;
             });
 
-            // Inline code
             processedText = processedText.replace(/`([^`]+)`/g, function(match, code) {
                 const id = 'inline-code-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 inlineCodeBlocks.push({ id, code });
                 return `__INLINE_CODE_${inlineCodeBlocks.length - 1}__`;
             });
 
-            // Tables
-            processedText = processedText.replace(/(?:\|.*\|.*\n)(?:\|?:?-+:?\|.*\n)+(?:\|.*\|.*\n)+/g, function(match) {
+            processedText = processedText.replace(/(?:\|.*\|.*\n)(?:\|?:?-+:?\|.*\n)+(?:\|.*\|.*\n)+/g, function(
+            match) {
                 const rows = match.trim().split('\n').filter(row => row.trim());
                 if (rows.length < 2) return match;
                 let tableHtml = '<table>\n<thead>\n<tr>\n';
@@ -2296,16 +2337,13 @@
                 return tableHtml;
             });
 
-            // Images: ![alt](url)
             processedText = processedText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
                 return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" style="max-width:100%; border-radius:16px; margin:8px 0; box-shadow: var(--md-elevation-level1);" />`;
             });
 
-            // Basic markdown
             processedText = processBasicMarkdown(processedText);
             processedText = processLists(processedText);
 
-            // Replace inline code and code blocks
             inlineCodeBlocks.forEach((block, index) => {
                 processedText = processedText.replace(
                     `__INLINE_CODE_${index}__`,
@@ -2413,7 +2451,7 @@
             return div.innerHTML;
         }
 
-        // Copy code buttons (delegation)
+        // Copy code buttons (delegation) with Lucide icons
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('.copy-code-btn');
             if (!btn) return;
@@ -2423,12 +2461,16 @@
             if (!codeEl) return;
             const text = codeEl.textContent;
             navigator.clipboard.writeText(text).then(() => {
-                const orig = btn.innerHTML;
                 btn.innerHTML =
-                    '<span class="material-symbols-rounded" style="font-size:18px">check</span>Copied!';
+                    `<i data-lucide="check" class="lucide" style="width:18px;height:18px;stroke-width:1.8;"></i> Copied!`;
                 btn.classList.add('copied');
-                setTimeout(() => { btn.innerHTML = orig;
-                    btn.classList.remove('copied'); }, 2000);
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML =
+                        `<i data-lucide="copy" class="lucide" style="width:18px;height:18px;stroke-width:1.8;"></i> Copy`;
+                    btn.classList.remove('copied');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }, 2000);
             }).catch(() => {
                 const ta = document.createElement('textarea');
                 ta.value = text;
@@ -2436,11 +2478,16 @@
                 ta.select();
                 try { document.execCommand('copy'); } catch (e) {}
                 document.body.removeChild(ta);
-                const orig = btn.innerHTML;
-                btn.innerHTML = '<span class="material-symbols-rounded" style="font-size:18px">check</span>Copied!';
+                btn.innerHTML =
+                    `<i data-lucide="check" class="lucide" style="width:18px;height:18px;stroke-width:1.8;"></i> Copied!`;
                 btn.classList.add('copied');
-                setTimeout(() => { btn.innerHTML = orig;
-                    btn.classList.remove('copied'); }, 2000);
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+                setTimeout(() => {
+                    btn.innerHTML =
+                        `<i data-lucide="copy" class="lucide" style="width:18px;height:18px;stroke-width:1.8;"></i> Copy`;
+                    btn.classList.remove('copied');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }, 2000);
             });
         });
 
@@ -2452,12 +2499,19 @@
 
         function applyTheme(theme) {
             document.body.classList.remove('theme-light', 'theme-dark');
+            const icon = document.getElementById('themeIcon');
             if (theme === 'dark' || (theme === 'system' && prefersDark.matches)) {
                 document.body.classList.add('theme-dark');
-                document.getElementById('themeIcon').textContent = 'light_mode';
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'sun');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }
             } else {
                 document.body.classList.add('theme-light');
-                document.getElementById('themeIcon').textContent = 'dark_mode';
+                if (icon) {
+                    icon.setAttribute('data-lucide', 'moon');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }
             }
             currentTheme = theme;
             localStorage.setItem('endroid-theme', theme);
@@ -2482,8 +2536,8 @@
             UI.init();
             UI.renderChat(chatManager.activeId);
             UI.input.focus();
+            if (typeof lucide !== 'undefined') lucide.createIcons();
 
-            // Install banner
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('/sw.js')
@@ -2518,12 +2572,12 @@
                 });
             }
 
-            // Test function (optional)
             window.testMarkdown = function() {
                 const test = `# Markdown Test\n\n**Bold** and *italic*.\n\n- Item 1\n- Item 2\n\n\`\`\`js\nconsole.log('hi');\n\`\`\``;
                 UI._addMessageToDOM('assistant', test, false);
                 const active = chatManager.getActive();
                 if (active) chatManager.addMessage(active.id, 'assistant', test);
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             };
         });
     </script>
