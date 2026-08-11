@@ -1,12 +1,12 @@
 {
-  "name": "Endroid Elyx",
-  "short_name": "Elyx",
-  "description": "Endroid Elyx | AI assistant by Endroid Powered by Gemini",
+  "name": "Aariz",
+  "short_name": "Aariz",
+  "description": "Aariz | AI assistant by Endroid Powered by Gemini",
   "start_url": "/Ai",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",
-  "theme_color": "#91ffa7",
+  "theme_color": "#db6b46",
   "prefer_related_applications": false,
   "icons": [
     {
