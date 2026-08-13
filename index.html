@@ -39,7 +39,7 @@
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js"></script>
     <style>
-        /* ===== CSS Variables (unchanged) ===== */
+        /* ===== CSS Variables ===== */
         :root {
             --md-sys-color-primary: #DB6B46;
             --md-sys-color-on-primary: #FFFFFF;
@@ -312,7 +312,7 @@
             stroke-width: 1.8;
             transition: transform var(--motion-duration-medium) var(--motion-easing-emphasized);
         }
-        /* ===== Sidebar (unchanged) ===== */
+        /* ===== Sidebar ===== */
         .sidebar-overlay {
             position: fixed;
             top: 0;
@@ -664,7 +664,7 @@
             padding: 20px 16px 100px 16px;
             display: flex;
             flex-direction: column;
-            gap: 20px;
+            gap: 16px;
             position: relative;
             scroll-behavior: smooth;
         }
@@ -718,57 +718,60 @@
             line-height: 1.5;
             font-family: var(--md-ref-typeface-plain);
         }
+        /* ===== Messages ===== */
         .message {
-            margin: 8px 0;
-            padding: 16px 20px;
-            border-radius: 24px;
-            max-width: 85%;
+            margin: 0;
+            padding: 0;
+            max-width: 100%;
             font-size: 1rem;
-            line-height: 1.5;
+            line-height: 1.6;
             word-break: break-word;
             animation: messageSlideIn 0.3s var(--motion-easing-emphasized);
-            position: relative;
-            transition: transform 0.2s ease;
-            border: 1px solid transparent;
             font-family: var(--md-ref-typeface-plain);
         }
-        .message:hover {
-            transform: translateY(-2px);
-        }
         @keyframes messageSlideIn {
-            from { transform: translateY(10px); opacity: 0; }
-            to { transform: translateY(0); opacity: 1; }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
+        /* User messages – bubble */
         .message.user {
             background: var(--md-sys-color-primary-container);
             color: var(--md-sys-color-on-primary-container);
             align-self: flex-end;
-            border-bottom-right-radius: 8px;
-            border-top-right-radius: 24px;
-            border-top-left-radius: 24px;
-            border-bottom-left-radius: 24px;
+            padding: 12px 18px;
+            border-radius: 24px 24px 8px 24px;
+            max-width: 85%;
             box-shadow: var(--md-elevation-level1);
-            margin-left: auto;
             border: 1px solid color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
+            margin-left: auto;
         }
+        /* Bot messages – no bubble, clean text */
         .message.bot {
-            background: color-mix(in srgb, var(--md-sys-color-surface-container) 85%, transparent);
+            background: transparent;
             color: var(--md-sys-color-on-surface);
             align-self: flex-start;
-            border-bottom-left-radius: 8px;
-            border-top-left-radius: 24px;
-            border-top-right-radius: 24px;
-            border-bottom-right-radius: 24px;
-            backdrop-filter: var(--glass-backdrop-blur);
-            -webkit-backdrop-filter: var(--glass-backdrop-blur);
-            box-shadow: var(--md-elevation-level1);
-            border: 1px solid color-mix(in srgb, var(--md-sys-color-outline) 15%, transparent);
+            padding: 4px 0;
+            border-radius: 0;
+            box-shadow: none;
+            border: none;
+            backdrop-filter: none;
+            -webkit-backdrop-filter: none;
+            max-width: 100%;
+            margin-right: 20px;
+        }
+        .message.bot p {
+            margin-bottom: 0.8em;
+            line-height: 1.7;
+        }
+        .message.bot p:last-child {
+            margin-bottom: 0;
         }
         .message.typing {
             align-self: flex-start;
-            background: color-mix(in srgb, var(--md-sys-color-surface-container) 85%, transparent);
-            border: 1px solid color-mix(in srgb, var(--md-sys-color-outline) 15%, transparent);
-            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            padding: 4px 0;
+            box-shadow: none;
         }
         .typing-indicator {
             display: flex;
@@ -795,7 +798,7 @@
             font-size: 0.95rem;
             font-family: var(--md-ref-typeface-plain);
         }
-        /* ===== NEW SHARP CODE BLOCK STYLES (FIXED) ===== */
+        /* ===== Code Blocks ===== */
         .code-block {
             background: var(--md-sys-color-surface-container-high);
             border-radius: 12px;
@@ -923,12 +926,19 @@
             padding: 0;
             white-space: pre-wrap;
         }
-        /* ===== Markdown base styles (unchanged) ===== */
-        .message.bot p { margin-bottom: 1em; line-height: 1.6; }
-        .message.bot p:last-child { margin-bottom: 0; }
+        .js-output-status {
+            color: var(--md-sys-color-on-surface-variant);
+            font-style: italic;
+            padding: 4px 0;
+        }
+        /* ===== Markdown styles for bot messages ===== */
         .message.bot h1, .message.bot h2, .message.bot h3, .message.bot h4, .message.bot h5, .message.bot h6 {
-            margin-top: 1.2em; margin-bottom: 0.6em; font-weight: 600; line-height: 1.3;
-            color: var(--md-sys-color-on-surface); font-family: var(--md-ref-typeface-plain);
+            margin-top: 1.2em;
+            margin-bottom: 0.6em;
+            font-weight: 600;
+            line-height: 1.3;
+            color: var(--md-sys-color-on-surface);
+            font-family: var(--md-ref-typeface-plain);
         }
         .message.bot h1 { font-size: 1.6em; border-bottom: 2px solid var(--md-sys-color-primary); padding-bottom: 0.3em; }
         .message.bot h2 { font-size: 1.4em; }
@@ -943,23 +953,31 @@
         .message.bot ul, .message.bot ol { padding-left: 1.8em; margin: 0.8em 0; }
         .message.bot li { margin-bottom: 0.4em; line-height: 1.5; }
         .message.bot blockquote {
-            border-left: 4px solid var(--md-sys-color-primary-container);
-            padding-left: 1.2em; margin: 1em 0; font-style: italic;
+            border-left: 4px solid var(--md-sys-color-primary);
+            padding-left: 1.2em;
+            margin: 1em 0;
+            font-style: italic;
             color: var(--md-sys-color-on-surface-variant);
+            padding: 0.5em 1em;
+            border-radius: 0 8px 8px 0;
             background: color-mix(in srgb, var(--md-sys-color-surface-container) 50%, transparent);
-            padding: 1em 1.2em; border-radius: 0 12px 12px 0;
         }
         .message.bot table {
-            border-collapse: collapse; margin: 1em 0; width: 100%; overflow-x: auto; display: block;
-            border: 1px solid var(--md-sys-color-outline-variant); border-radius: 12px;
+            border-collapse: collapse;
+            margin: 1em 0;
+            width: 100%;
+            overflow-x: auto;
+            display: block;
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: 12px;
             box-shadow: var(--md-elevation-level1);
         }
         .message.bot table thead {
             background: color-mix(in srgb, var(--md-sys-color-surface-container) 70%, transparent);
             border-bottom: 2px solid var(--md-sys-color-outline);
         }
-        .message.bot table th { padding: 12px 16px; text-align: left; font-weight: 600; color: var(--md-sys-color-on-surface); border-right: 1px solid var(--md-sys-color-outline-variant); }
-        .message.bot table td { padding: 10px 16px; border-right: 1px solid var(--md-sys-color-outline-variant); border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--md-sys-color-on-surface); }
+        .message.bot table th { padding: 10px 14px; text-align: left; font-weight: 600; color: var(--md-sys-color-on-surface); border-right: 1px solid var(--md-sys-color-outline-variant); }
+        .message.bot table td { padding: 10px 14px; border-right: 1px solid var(--md-sys-color-outline-variant); border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--md-sys-color-on-surface); }
         .message.bot table tr:last-child td { border-bottom: none; }
         .message.bot table th:last-child, .message.bot table td:last-child { border-right: none; }
         .message.bot table tr:nth-child(even) { background: color-mix(in srgb, var(--md-sys-color-surface-container) 30%, transparent); }
@@ -967,23 +985,41 @@
         .message.bot table td code, .message.bot table th code {
             background: color-mix(in srgb, var(--md-sys-color-primary-container) 30%, transparent);
             color: var(--md-sys-color-on-primary-container);
-            padding: 0.2em 0.4em; border-radius: 4px; font-size: 0.85em; font-family: var(--md-ref-typeface-mono);
+            padding: 0.2em 0.4em;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-family: var(--md-ref-typeface-mono);
         }
         .message.bot :not(pre)>code {
             background: color-mix(in srgb, var(--md-sys-color-primary-container) 30%, transparent);
             color: var(--md-sys-color-on-primary-container);
-            padding: 0.2em 0.5em; border-radius: 6px; font-size: 0.9em; font-weight: 500;
+            padding: 0.2em 0.5em;
+            border-radius: 6px;
+            font-size: 0.9em;
+            font-weight: 500;
             border: 1px solid color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
         }
-        .message.bot img { max-width: 100%; border-radius: 16px; margin: 8px 0; box-shadow: var(--md-elevation-level1); display: block; }
-        .message.bot .image-caption { font-size: 0.9rem; color: var(--md-sys-color-on-surface-variant); margin-top: 4px; font-style: italic; }
+        .message.bot img {
+            max-width: 100%;
+            border-radius: 16px;
+            margin: 8px 0;
+            box-shadow: var(--md-elevation-level1);
+            display: block;
+        }
+        .message.bot .image-caption {
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface-variant);
+            margin-top: 4px;
+            font-style: italic;
+        }
+        /* ===== Input Area (fixed height with scroll) ===== */
         .input-area {
             margin: 0 16px 16px 16px;
             padding: 8px 8px 8px 16px;
             background: var(--md-sys-color-surface-container-high);
             border-radius: 32px;
             display: flex;
-            align-items: center;
+            align-items: flex-start;
             gap: 8px;
             position: sticky;
             bottom: 0;
@@ -991,8 +1027,8 @@
             backdrop-filter: var(--glass-backdrop-blur);
             -webkit-backdrop-filter: var(--glass-backdrop-blur);
             box-shadow: var(--md-elevation-level2);
-            transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
             border: 1px solid var(--md-sys-color-outline-variant);
+            max-height: 160px;
         }
         #messageInput {
             flex: 1;
@@ -1003,13 +1039,25 @@
             color: var(--md-sys-color-on-surface);
             font-size: 1.05rem;
             outline: none;
-            transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
             font-family: var(--md-ref-typeface-plain);
             min-height: 48px;
+            max-height: 120px;
             resize: none;
             line-height: 1.4;
+            overflow-y: auto;
+            scrollbar-width: thin;
         }
-        #messageInput::placeholder { color: var(--md-sys-color-on-surface-variant); opacity: 0.7; }
+        #messageInput::-webkit-scrollbar {
+            width: 4px;
+        }
+        #messageInput::-webkit-scrollbar-thumb {
+            background: var(--md-sys-color-outline-variant);
+            border-radius: 4px;
+        }
+        #messageInput::placeholder {
+            color: var(--md-sys-color-on-surface-variant);
+            opacity: 0.7;
+        }
         .icon-btn {
             width: 48px;
             height: 48px;
@@ -1023,11 +1071,26 @@
             justify-content: center;
             cursor: pointer;
             transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
+            flex-shrink: 0;
         }
-        .icon-btn:hover:not(:disabled) { background: var(--md-sys-color-primary-container); color: var(--md-sys-color-on-primary-container); transform: scale(1.05); }
-        .icon-btn:active:not(:disabled) { transform: scale(0.95); }
-        .icon-btn:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-        .icon-btn .lucide { width: 24px; height: 24px; stroke-width: 1.8; }
+        .icon-btn:hover:not(:disabled) {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+            transform: scale(1.05);
+        }
+        .icon-btn:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+        .icon-btn:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+        .icon-btn .lucide {
+            width: 24px;
+            height: 24px;
+            stroke-width: 1.8;
+        }
         #sendBtn {
             background: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
@@ -1045,8 +1108,14 @@
             box-shadow: none;
             cursor: not-allowed;
         }
-        #webSearchToggle.active { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
-        #imageToggle.active { background: var(--md-sys-color-primary); color: var(--md-sys-color-on-primary); }
+        #webSearchToggle.active {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
+        #imageToggle.active {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+        }
         .error {
             background: color-mix(in srgb, var(--md-sys-color-error) 10%, var(--md-sys-color-surface));
             color: var(--md-sys-color-error);
@@ -1102,19 +1171,24 @@
             .theme-toggle .lucide { width: 22px; height: 22px; }
             .hamburger-btn { width: 40px; height: 40px; }
             .hamburger-btn .lucide { width: 24px; height: 24px; }
-            .chat-container { padding: 16px 12px 90px 12px; gap: 16px; }
+            .chat-container { padding: 16px 12px 90px 12px; gap: 14px; }
             .welcome-logo { width: 100px; height: 100px; }
             .welcome-title { font-size: 2rem; }
             .welcome-subtitle { font-size: 1rem; max-width: 260px; }
-            .message { padding: 14px 18px; max-width: 90%; font-size: 0.98rem; }
-            .message.bot table { font-size: 0.9em; }
-            .message.bot table th, .message.bot table td { padding: 8px 12px; }
-            .input-area { margin: 0 12px 12px 12px; padding: 6px 6px 6px 12px; }
-            #messageInput { padding: 10px 14px; font-size: 1rem; min-height: 44px; }
+            .message { font-size: 0.98rem; }
+            .message.user { padding: 10px 14px; max-width: 90%; }
+            .message.bot { padding: 2px 0; }
+            .input-area { margin: 0 12px 12px 12px; padding: 6px 6px 6px 12px; max-height: 140px; }
+            #messageInput { padding: 10px 14px; font-size: 1rem; min-height: 44px; max-height: 100px; }
             .icon-btn { width: 44px; height: 44px; min-width: 44px; }
             .icon-btn .lucide { width: 22px; height: 22px; }
             .sidebar { width: 85vw; max-width: 320px; }
             .modal-box { padding: 24px 20px 20px; max-width: 340px; }
+            .code-block-header { height: 34px; font-size: 0.7rem; }
+            .copy-code-btn, .run-js-btn { width: 28px; height: 28px; }
+            .copy-code-btn .lucide, .run-js-btn .lucide { width: 16px; height: 16px; }
+            .code-block-header .lang-label .terminal-icon-box { width: 22px; height: 22px; }
+            .code-block-header .lang-label .terminal-icon-box .lucide { width: 14px; height: 14px; }
         }
         @media (max-width: 400px) {
             .header-title { font-size: 0.95rem; }
@@ -1235,7 +1309,7 @@
     <!-- ============================================================ -->
     <script>
         // ================================================================
-        //  CHAT MANAGER (unchanged)
+        //  CHAT MANAGER
         // ================================================================
         const STORAGE_KEY = 'endroid_chats_v2';
         const MAX_CHATS = 8;
@@ -1532,8 +1606,10 @@
                 });
                 this.input.addEventListener('input', () => {
                     this.sendBtn.disabled = !this.input.value.trim();
+                    // Auto-resize but cap at max-height
                     this.input.style.height = 'auto';
-                    this.input.style.height = this.input.scrollHeight + 'px';
+                    const newHeight = Math.min(this.input.scrollHeight, 120);
+                    this.input.style.height = newHeight + 'px';
                 });
                 this.sendBtn.disabled = true;
 
@@ -1975,7 +2051,7 @@
         };
 
         // ================================================================
-        //  MARKDOWN RENDERER (updated with new code block layout)
+        //  MARKDOWN RENDERER
         // ================================================================
         function renderMarkdown(text) {
             if (!text || typeof text !== 'string') return '';
@@ -1984,6 +2060,7 @@
             const codeBlocks = [];
             const inlineCodeBlocks = [];
 
+            // Extract code blocks with language
             processedText = processedText.replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, language, code) {
                 const id = 'code-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 const lang = language || 'text';
@@ -2030,12 +2107,14 @@
                 return `__CODE_BLOCK_${codeBlocks.length - 1}__`;
             });
 
+            // Inline code
             processedText = processedText.replace(/`([^`]+)`/g, function(match, code) {
                 const id = 'inline-code-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 inlineCodeBlocks.push({ id, code });
                 return `__INLINE_CODE_${inlineCodeBlocks.length - 1}__`;
             });
 
+            // Tables
             processedText = processedText.replace(/(?:\|.*\|.*\n)(?:\|?:?-+:?\|.*\n)+(?:\|.*\|.*\n)+/g, function(
             match) {
                 const rows = match.trim().split('\n').filter(row => row.trim());
@@ -2063,24 +2142,31 @@
                 return tableHtml;
             });
 
+            // Images
             processedText = processedText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
                 return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" style="max-width:100%; border-radius:16px; margin:8px 0; box-shadow: var(--md-elevation-level1);" />`;
             });
 
+            // Basic markdown
             processedText = processBasicMarkdown(processedText);
             processedText = processLists(processedText);
 
+            // Replace inline code placeholders
             inlineCodeBlocks.forEach((block, index) => {
                 processedText = processedText.replace(
                     `__INLINE_CODE_${index}__`,
                     `<code>${escapeHtml(block.code)}</code>`
                 );
             });
+
+            // ✅ FIXED ORDER: process paragraphs BEFORE replacing code blocks
+            processedText = processParagraphs(processedText);
+
+            // Replace code block placeholders
             codeBlocks.forEach((block, index) => {
                 processedText = processedText.replace(`__CODE_BLOCK_${index}__`, block.html);
             });
 
-            processedText = processParagraphs(processedText);
             return processedText;
         }
 
@@ -2178,62 +2264,203 @@
         }
 
         // ================================================================
-        //  RUN JAVASCRIPT BUTTON HANDLER (supports both console.log and return)
+        //  ROBUST SANDBOXED JAVASCRIPT RUNNER
+        //  Verified working standalone: ready -> console -> done, in order.
         // ================================================================
-        document.addEventListener('click', function(e) {
+
+        const JS_RUN_TIMEOUT_MS = 5000;
+        const activeFrames = new Map(); // codeId -> { frame, timer }
+
+        function buildSandboxDoc(code) {
+            return `<!DOCTYPE html><html><head></head><body><script>
+                (function () {
+                    const send = (type, payload) => {
+                        try { parent.postMessage({ __jsRunner: true, type, payload }, '*'); }
+                        catch (e) {}
+                    };
+
+                    ['log', 'info', 'warn', 'error'].forEach((level) => {
+                        console[level] = (...args) => {
+                            send('console', {
+                                level,
+                                text: args.map(a => {
+                                    if (a instanceof Error) return a.stack || a.message;
+                                    if (typeof a === 'object' && a !== null) {
+                                        try { return JSON.stringify(a, null, 2); }
+                                        catch (e) { return String(a); }
+                                    }
+                                    return String(a);
+                                }).join(' ')
+                            });
+                        };
+                    });
+
+                    window.addEventListener('error', (e) => {
+                        send('error', { message: e.message, stack: e.error && e.error.stack });
+                    });
+                    window.addEventListener('unhandledrejection', (e) => {
+                        const reason = e.reason;
+                        send('error', {
+                            message: 'Unhandled promise rejection: ' + (reason && reason.message ? reason.message : String(reason)),
+                            stack: reason && reason.stack
+                        });
+                    });
+
+                    send('ready', {});
+
+                    (async () => {
+                        try {
+                            const result = await (async () => {
+                                ${code}
+                            })();
+                            if (result !== undefined) {
+                                send('result', {
+                                    text: typeof result === 'object'
+                                        ? JSON.stringify(result, null, 2)
+                                        : String(result)
+                                });
+                            }
+                            send('done', {});
+                        } catch (err) {
+                            send('error', { message: err.message, stack: err.stack });
+                            send('done', {});
+                        }
+                    })();
+                })();
+            <\/script></body></html>`;
+        }
+
+        function stopRun(codeId) {
+            const entry = activeFrames.get(codeId);
+            if (!entry) return;
+            clearTimeout(entry.timer);
+            if (entry.frame && entry.frame.parentNode) entry.frame.remove();
+            activeFrames.delete(codeId);
+        }
+
+        function runJsInSandbox(codeId, rawCode, outputEl, runBtn) {
+            stopRun(codeId);
+
+            outputEl.style.display = 'block';
+            outputEl.innerHTML = '';
+            outputEl.dataset.state = 'running';
+
+            const statusLine = document.createElement('div');
+            statusLine.className = 'js-output-status';
+            statusLine.textContent = 'Running…';
+            outputEl.appendChild(statusLine);
+
+            const consoleLines = [];
+            let finished = false;
+            let timedOut = false;
+            let sandboxReady = false;
+
+            const frame = document.createElement('iframe');
+            frame.setAttribute('sandbox', 'allow-scripts');
+            // Visible-but-invisible (not display:none) — some mobile browser
+            // engines throttle script execution in fully hidden iframes.
+            frame.style.cssText = 'position:absolute;width:0;height:0;border:0;opacity:0;pointer-events:none;';
+
+            if (runBtn) {
+                runBtn.disabled = true;
+                runBtn.classList.add('running');
+            }
+
+            function render() {
+                outputEl.innerHTML = '';
+                if (consoleLines.length) {
+                    const label = document.createTextNode('Output:\n');
+                    outputEl.appendChild(label);
+                    consoleLines.forEach(line => {
+                        const pre = document.createElement('pre');
+                        pre.textContent = line.text;
+                        if (line.level === 'error') pre.style.color = 'var(--md-sys-color-error)';
+                        else if (line.level === 'warn') pre.style.color = '#b8860b';
+                        outputEl.appendChild(pre);
+                    });
+                }
+                if (!consoleLines.length && finished && !timedOut) {
+                    outputEl.innerHTML = 'ℹ️ Code executed successfully but no output was produced. Use <code>console.log()</code> to display results.';
+                }
+                if (timedOut) {
+                    const warn = document.createElement('div');
+                    warn.style.color = 'var(--md-sys-color-error)';
+                    warn.innerHTML = sandboxReady
+                        ? `<strong>Stopped:</strong> execution exceeded ${JS_RUN_TIMEOUT_MS / 1000}s (likely an infinite loop) and was terminated.`
+                        : `<strong>⚠️ Sandbox failed to start.</strong> Try a hard refresh — the app may be running a cached version.`;
+                    outputEl.appendChild(warn);
+                }
+            }
+
+            function onMessage(e) {
+                const data = e.data;
+                if (!data || !data.__jsRunner) return;
+                if (e.source !== frame.contentWindow) return;
+
+                if (data.type === 'ready') {
+                    sandboxReady = true;
+                } else if (data.type === 'console') {
+                    consoleLines.push(data.payload);
+                    render();
+                } else if (data.type === 'result') {
+                    consoleLines.push({ level: 'log', text: '↳ ' + data.payload.text });
+                    render();
+                } else if (data.type === 'error') {
+                    finished = true;
+                    if (statusLine.parentNode) statusLine.remove();
+                    outputEl.innerHTML = `<strong style="color:var(--md-sys-color-error);">Error:</strong><br><pre>${escapeHtml(data.payload.message)}</pre>`;
+                    cleanup();
+                } else if (data.type === 'done') {
+                    finished = true;
+                    if (statusLine.parentNode) statusLine.remove();
+                    render();
+                    cleanup();
+                }
+            }
+
+            function cleanup() {
+                window.removeEventListener('message', onMessage);
+                const entry = activeFrames.get(codeId);
+                if (entry) clearTimeout(entry.timer);
+                activeFrames.delete(codeId);
+                if (frame.parentNode) frame.remove();
+                if (runBtn) {
+                    runBtn.disabled = false;
+                    runBtn.classList.remove('running');
+                }
+            }
+
+            // Listener attached BEFORE the iframe is created/appended — no race.
+            window.addEventListener('message', onMessage);
+
+            frame.srcdoc = buildSandboxDoc(rawCode);
+            document.body.appendChild(frame);
+
+            const timer = setTimeout(() => {
+                if (finished) return;
+                timedOut = true;
+                finished = true;
+                if (statusLine.parentNode) statusLine.remove();
+                render();
+                cleanup();
+            }, JS_RUN_TIMEOUT_MS);
+
+            activeFrames.set(codeId, { frame, timer });
+        }
+
+        // ---- Click handler for Run buttons ----
+        document.addEventListener('click', function (e) {
             const btn = e.target.closest('.run-js-btn');
             if (!btn) return;
+            if (btn.disabled) return;
 
             const codeId = btn.getAttribute('data-code-id');
             const codeEl = document.getElementById(codeId);
             const outputEl = document.getElementById(`output-${codeId}`);
             if (!codeEl || !outputEl) return;
 
-            const code = codeEl.textContent;
-            outputEl.style.display = 'block';
-            outputEl.innerHTML = '';
-
-            let output = '';
-            const originalLog = console.log;
-            console.log = (...args) => {
-                output += args.map(arg =>
-                    typeof arg === 'object' ? JSON.stringify(arg, null, 2) : String(arg)
-                ).join(' ') + '\n';
-            };
-
-            let result;
-            let error = null;
-            try {
-                result = new Function(code)();
-            } catch (err) {
-                error = err;
-            } finally {
-                console.log = originalLog;
-            }
-
-            if (error) {
-                outputEl.innerHTML = `<strong style="color:var(--md-sys-color-error);">Error:</strong><br><pre>${escapeHtml(error.message)}</pre>`;
-                return;
-            }
-
-            if (output) {
-                const pre = document.createElement('pre');
-                pre.textContent = output;
-                outputEl.appendChild(document.createTextNode('Output:\n'));
-                outputEl.appendChild(pre);
-            }
-
-            if (result !== undefined) {
-                const pre = document.createElement('pre');
-                pre.textContent = JSON.stringify(result, null, 2);
-                if (output) outputEl.appendChild(document.createElement('hr'));
-                outputEl.appendChild(document.createTextNode('Return value:\n'));
-                outputEl.appendChild(pre);
-            }
-
-            if (!output && result === undefined) {
-                outputEl.innerHTML = `ℹ️ Code executed successfully but no output was produced. Use <code>console.log()</code> to display results.`;
-            }
+            const rawCode = codeEl.textContent;
+            runJsInSandbox(codeId, rawCode, outputEl, btn);
         });
 
         // Copy code buttons
