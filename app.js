@@ -668,7 +668,7 @@ function renderMarkdown(text) {
     });
 
     processedText = processedText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
-        return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" style="max-width:100%; border-radius:14px; margin:6px 0; box-shadow: var(--md-elevation-level1);" />`;
+        return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" style="max-width:100%; border-radius:12px; margin:6px 0; box-shadow: var(--md-elevation-level1);" />`;
     });
 
     processedText = processBasicMarkdown(processedText);
