@@ -447,8 +447,18 @@ const ThemeEngine = {
             this._styleTag.textContent = '';
         }
 
+        // SVG Background - force full screen
         if (svgBackground && typeof svgBackground === 'string' && svgBackground.trim()) {
-            this._svgContainer.innerHTML = svgBackground;
+            // Ensure SVG has proper viewBox and sizing
+            let svgContent = svgBackground;
+            // Inject viewBox if missing
+            if (!svgContent.includes('viewBox')) {
+                svgContent = svgContent.replace('<svg', '<svg viewBox="0 0 100 100"');
+            }
+            // Ensure width and height are 100%
+            svgContent = svgContent.replace(/width="[^"]*"/g, 'width="100%"');
+            svgContent = svgContent.replace(/height="[^"]*"/g, 'height="100%"');
+            this._svgContainer.innerHTML = svgContent;
             this._svgContainer.classList.add('active');
         } else {
             this._svgContainer.innerHTML = '';
@@ -559,8 +569,16 @@ Return ONLY valid JSON in this exact format, with no additional text or markdown
     "speed": 0.5-2,
     "size": 2-8
   },
-  "svgBackground": "<!-- SVG code as a string (optional). Use this for complex vector backgrounds. -->"
+  "svgBackground": "<svg viewBox='0 0 100 100' width='100%' height='100%' xmlns='http://www.w3.org/2000/svg'>...</svg>"
 }
+
+IMPORTANT SVG RULES:
+- The svgBackground MUST be a complete SVG element with viewBox, width="100%", height="100%"
+- Use viewBox="0 0 100 100" for a responsive design
+- Make the SVG cover the entire screen
+- Use shapes that tile or expand to fill the viewBox
+- Avoid hardcoded pixel sizes - use percentages or viewBox coordinates
+- The SVG should look beautiful as a full-screen background
 
 RULES:
 1. mode: choose 'dark' for night, space, dark themes. choose 'light' for bright, sunny, icy, pastel themes.
@@ -573,7 +591,7 @@ RULES:
 8. The "css" field can include @keyframes for background animations, gradients, etc.
 9. All hex values must be 6 characters. Use #RRGGBB format.
 10. Ensure WCAG AA contrast for readability.
-11. You can provide an SVG background in the "svgBackground" field. Use simple SVG shapes to create decorative backgrounds.
+11. The SVG background should be aesthetically pleasing and match the theme.
 
 User's theme request: ${userPrompt}`;
     }
