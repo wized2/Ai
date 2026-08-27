@@ -221,7 +221,13 @@
             display: none;
         }
         #svgBackground.active { display: block; }
-        #svgBackground svg { width: 100%; height: 100%; display: block; }
+        #svgBackground svg {
+            width: 100% !important;
+            height: 100% !important;
+            display: block;
+            position: absolute;
+            top: 0; left: 0;
+        }
         /* ===== App Wrapper ===== */
         .app-wrapper {
             position: relative;
@@ -1541,8 +1547,8 @@
         <!-- ===== DYNAMIC THEME STYLE ===== -->
         <style id="dynamicThemeStyle"></style>
     </div>
-    
+
+    <!-- ===== APP JS ===== -->
     <script src="app.js"></script>
-    
 </body>
 </html>
