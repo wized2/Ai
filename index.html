@@ -31,13 +31,14 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="Aariz" />
     <link rel="manifest" href="https://wized2.github.io/Ai/manifest.json" />
-    <!-- Google Fonts: Prompt (semi‑bold italic) + Nunito Sans -->
+    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet" />
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js"></script>
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js">
+    </script>
     <style>
         /* ===== CSS Variables ===== */
         :root {
@@ -85,6 +86,7 @@
             --motion-duration-medium: 300ms;
             color-scheme: light;
             --sidebar-width: 300px;
+            --safe-area-bottom: env(safe-area-inset-bottom, 0px);
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -187,16 +189,56 @@
             padding: 0;
             box-sizing: border-box;
         }
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
         body {
             font-family: var(--md-ref-typeface-plain);
             background: var(--md-sys-color-surface);
             color: var(--md-sys-color-on-surface);
-            height: 100vh;
-            max-width: 100vw;
-            overflow: hidden;
             display: flex;
             flex-direction: column;
             transition: background-color var(--motion-duration-medium) var(--motion-easing-emphasized);
+            position: relative;
+        }
+        /* ===== Particle Canvas ===== */
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.8s ease;
+        }
+        #particleCanvas.active {
+            opacity: 1;
+        }
+        /* ===== Background Animation Container ===== */
+        #bgAnimationContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            transition: background 0.8s ease;
+        }
+        /* ===== Main App ===== */
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: transparent;
+            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0px);
         }
         .smooth-transition * {
             transition: background-color var(--motion-duration-medium) var(--motion-easing-emphasized),
@@ -223,6 +265,7 @@
             -webkit-backdrop-filter: var(--glass-backdrop-blur);
             border-bottom: 1px solid var(--md-sys-color-outline-variant);
             transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
+            flex-shrink: 0;
         }
         .header-left {
             display: flex;
@@ -657,16 +700,19 @@
         .modal-actions .btn-danger:hover {
             background: color-mix(in srgb, var(--md-sys-color-error) 85%, white);
         }
+        /* ===== Chat container ===== */
         .chat-container {
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 20px 16px 100px 16px;
+            padding: 20px 16px 80px 16px;
             display: flex;
             flex-direction: column;
             gap: 16px;
             position: relative;
             scroll-behavior: smooth;
+            background: transparent;
+            padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
         }
         .welcome-container {
             display: flex;
@@ -679,8 +725,14 @@
             animation: fadeIn 0.8s ease-out;
         }
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         .welcome-logo {
             width: 120px;
@@ -696,12 +748,21 @@
             border-radius: 20px;
         }
         @keyframes logoFloat {
-            0%,100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
+            0%,
+            100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-8px);
+            }
         }
         @keyframes logoFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
         }
         .welcome-title {
             font-family: var(--md-ref-typeface-brand);
@@ -728,12 +789,19 @@
             word-break: break-word;
             animation: messageSlideIn 0.3s var(--motion-easing-emphasized);
             font-family: var(--md-ref-typeface-plain);
+            position: relative;
+            z-index: 2;
         }
         @keyframes messageSlideIn {
-            from { opacity: 0; transform: translateY(8px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(8px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
-        /* User messages – bubble */
         .message.user {
             background: var(--md-sys-color-primary-container);
             color: var(--md-sys-color-on-primary-container);
@@ -745,7 +813,6 @@
             border: 1px solid color-mix(in srgb, var(--md-sys-color-primary) 20%, transparent);
             margin-left: auto;
         }
-        /* Bot messages – no bubble, clean text */
         .message.bot {
             background: transparent;
             color: var(--md-sys-color-on-surface);
@@ -790,8 +857,12 @@
             stroke-width: 2;
         }
         @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+            0% {
+                transform: rotate(0deg);
+            }
+            100% {
+                transform: rotate(360deg);
+            }
         }
         .typing-text {
             color: var(--md-sys-color-on-surface-variant);
@@ -804,7 +875,7 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid var(--md-sys-color-outline-variant);
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
             margin: 0.5em 0;
         }
         .code-block-header {
@@ -931,8 +1002,13 @@
             font-style: italic;
             padding: 4px 0;
         }
-        /* ===== Markdown styles for bot messages ===== */
-        .message.bot h1, .message.bot h2, .message.bot h3, .message.bot h4, .message.bot h5, .message.bot h6 {
+        /* ===== Markdown styles ===== */
+        .message.bot h1,
+        .message.bot h2,
+        .message.bot h3,
+        .message.bot h4,
+        .message.bot h5,
+        .message.bot h6 {
             margin-top: 1.2em;
             margin-bottom: 0.6em;
             font-weight: 600;
@@ -940,18 +1016,53 @@
             color: var(--md-sys-color-on-surface);
             font-family: var(--md-ref-typeface-plain);
         }
-        .message.bot h1 { font-size: 1.6em; border-bottom: 2px solid var(--md-sys-color-primary); padding-bottom: 0.3em; }
-        .message.bot h2 { font-size: 1.4em; }
-        .message.bot h3 { font-size: 1.2em; }
-        .message.bot h4 { font-size: 1.1em; }
-        .message.bot h5 { font-size: 1em; }
-        .message.bot h6 { font-size: 0.95em; color: var(--md-sys-color-on-surface-variant); }
-        .message.bot strong { font-weight: 700; color: color-mix(in srgb, var(--md-sys-color-on-surface) 90%, var(--md-sys-color-primary)); }
-        .message.bot em { font-style: italic; color: color-mix(in srgb, var(--md-sys-color-on-surface) 80%, var(--md-sys-color-primary)); }
-        .message.bot a { color: var(--md-sys-color-primary); text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s; }
-        .message.bot a:hover { color: color-mix(in srgb, var(--md-sys-color-primary) 80%, black); }
-        .message.bot ul, .message.bot ol { padding-left: 1.8em; margin: 0.8em 0; }
-        .message.bot li { margin-bottom: 0.4em; line-height: 1.5; }
+        .message.bot h1 {
+            font-size: 1.6em;
+            border-bottom: 2px solid var(--md-sys-color-primary);
+            padding-bottom: 0.3em;
+        }
+        .message.bot h2 {
+            font-size: 1.4em;
+        }
+        .message.bot h3 {
+            font-size: 1.2em;
+        }
+        .message.bot h4 {
+            font-size: 1.1em;
+        }
+        .message.bot h5 {
+            font-size: 1em;
+        }
+        .message.bot h6 {
+            font-size: 0.95em;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+        .message.bot strong {
+            font-weight: 700;
+            color: color-mix(in srgb, var(--md-sys-color-on-surface) 90%, var(--md-sys-color-primary));
+        }
+        .message.bot em {
+            font-style: italic;
+            color: color-mix(in srgb, var(--md-sys-color-on-surface) 80%, var(--md-sys-color-primary));
+        }
+        .message.bot a {
+            color: var(--md-sys-color-primary);
+            text-decoration: underline;
+            text-underline-offset: 3px;
+            transition: color 0.2s;
+        }
+        .message.bot a:hover {
+            color: color-mix(in srgb, var(--md-sys-color-primary) 80%, black);
+        }
+        .message.bot ul,
+        .message.bot ol {
+            padding-left: 1.8em;
+            margin: 0.8em 0;
+        }
+        .message.bot li {
+            margin-bottom: 0.4em;
+            line-height: 1.5;
+        }
         .message.bot blockquote {
             border-left: 4px solid var(--md-sys-color-primary);
             padding-left: 1.2em;
@@ -976,13 +1087,34 @@
             background: color-mix(in srgb, var(--md-sys-color-surface-container) 70%, transparent);
             border-bottom: 2px solid var(--md-sys-color-outline);
         }
-        .message.bot table th { padding: 10px 14px; text-align: left; font-weight: 600; color: var(--md-sys-color-on-surface); border-right: 1px solid var(--md-sys-color-outline-variant); }
-        .message.bot table td { padding: 10px 14px; border-right: 1px solid var(--md-sys-color-outline-variant); border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--md-sys-color-on-surface); }
-        .message.bot table tr:last-child td { border-bottom: none; }
-        .message.bot table th:last-child, .message.bot table td:last-child { border-right: none; }
-        .message.bot table tr:nth-child(even) { background: color-mix(in srgb, var(--md-sys-color-surface-container) 30%, transparent); }
-        .message.bot table tr:hover { background: color-mix(in srgb, var(--md-sys-color-primary-container) 10%, transparent); }
-        .message.bot table td code, .message.bot table th code {
+        .message.bot table th {
+            padding: 10px 14px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--md-sys-color-on-surface);
+            border-right: 1px solid var(--md-sys-color-outline-variant);
+        }
+        .message.bot table td {
+            padding: 10px 14px;
+            border-right: 1px solid var(--md-sys-color-outline-variant);
+            border-bottom: 1px solid var(--md-sys-color-outline-variant);
+            color: var(--md-sys-color-on-surface);
+        }
+        .message.bot table tr:last-child td {
+            border-bottom: none;
+        }
+        .message.bot table th:last-child,
+        .message.bot table td:last-child {
+            border-right: none;
+        }
+        .message.bot table tr:nth-child(even) {
+            background: color-mix(in srgb, var(--md-sys-color-surface-container) 30%, transparent);
+        }
+        .message.bot table tr:hover {
+            background: color-mix(in srgb, var(--md-sys-color-primary-container) 10%, transparent);
+        }
+        .message.bot table td code,
+        .message.bot table th code {
             background: color-mix(in srgb, var(--md-sys-color-primary-container) 30%, transparent);
             color: var(--md-sys-color-on-primary-container);
             padding: 0.2em 0.4em;
@@ -1012,40 +1144,56 @@
             margin-top: 4px;
             font-style: italic;
         }
-        /* ===== Input Area (fixed height with scroll) ===== */
+
+        /* ===== Input Area ===== */
         .input-area {
             margin: 0 16px 16px 16px;
-            padding: 8px 8px 8px 16px;
-            background: var(--md-sys-color-surface-container-high);
-            border-radius: 32px;
             display: flex;
-            align-items: flex-start;
-            gap: 8px;
-            position: sticky;
-            bottom: 0;
+            flex-direction: column;
+            position: relative;
             z-index: 10;
-            backdrop-filter: var(--glass-backdrop-blur);
-            -webkit-backdrop-filter: var(--glass-backdrop-blur);
+            flex-shrink: 0;
+            padding-bottom: calc(env(safe-area-inset-bottom, 0px));
+        }
+        .composer-pill {
+            background: var(--md-sys-color-surface-container-high);
+            border-radius: 28px;
             box-shadow: var(--md-elevation-level2);
             border: 1px solid var(--md-sys-color-outline-variant);
-            max-height: 160px;
+            backdrop-filter: var(--glass-backdrop-blur);
+            -webkit-backdrop-filter: var(--glass-backdrop-blur);
+            padding: 8px 12px 8px 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            transition: background var(--motion-duration-medium) var(--motion-easing-emphasized),
+                border-color var(--motion-duration-medium) var(--motion-easing-emphasized),
+                box-shadow var(--motion-duration-medium) var(--motion-easing-emphasized);
+        }
+        .text-row {
+            display: flex;
+            align-items: flex-start;
+            width: 100%;
         }
         #messageInput {
             flex: 1;
-            padding: 12px 16px;
             border: none;
-            border-radius: 28px;
             background: transparent;
             color: var(--md-sys-color-on-surface);
-            font-size: 1.05rem;
-            outline: none;
+            font-size: 1rem;
             font-family: var(--md-ref-typeface-plain);
-            min-height: 48px;
+            padding: 4px 0;
+            min-height: 28px;
             max-height: 120px;
             resize: none;
             line-height: 1.4;
+            outline: none;
             overflow-y: auto;
             scrollbar-width: thin;
+        }
+        #messageInput::placeholder {
+            color: var(--md-sys-color-on-surface-variant);
+            opacity: 0.7;
         }
         #messageInput::-webkit-scrollbar {
             width: 4px;
@@ -1054,18 +1202,21 @@
             background: var(--md-sys-color-outline-variant);
             border-radius: 4px;
         }
-        #messageInput::placeholder {
-            color: var(--md-sys-color-on-surface-variant);
-            opacity: 0.7;
+
+        .toolbar-row {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 0 2px 2px 2px;
+            flex-wrap: wrap;
         }
-        .icon-btn {
-            width: 48px;
-            height: 48px;
-            min-width: 48px;
-            border-radius: 28px;
-            background: transparent;
-            color: var(--md-sys-color-on-surface-variant);
+        .plus-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
             border: none;
+            background: var(--md-sys-color-surface-container);
+            color: var(--md-sys-color-on-surface-variant);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -1073,49 +1224,315 @@
             transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
             flex-shrink: 0;
         }
-        .icon-btn:hover:not(:disabled) {
+        .plus-btn:hover {
             background: var(--md-sys-color-primary-container);
             color: var(--md-sys-color-on-primary-container);
             transform: scale(1.05);
         }
-        .icon-btn:active:not(:disabled) {
+        .plus-btn:active {
             transform: scale(0.95);
         }
-        .icon-btn:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-        .icon-btn .lucide {
-            width: 24px;
-            height: 24px;
+        .plus-btn .lucide {
+            width: 20px;
+            height: 20px;
             stroke-width: 1.8;
         }
-        #sendBtn {
+
+        .mode-chip {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 6px 10px 6px 10px;
+            border-radius: 20px;
+            border: 1px solid var(--md-sys-color-outline-variant);
+            background: var(--md-sys-color-surface-container);
+            color: var(--md-sys-color-on-surface);
+            font-size: 0.85rem;
+            font-weight: 500;
+            font-family: var(--md-ref-typeface-plain);
+            cursor: pointer;
+            transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
+            white-space: nowrap;
+            flex-shrink: 0;
+        }
+        .mode-chip:hover {
+            background: var(--md-sys-color-surface-container-high);
+            border-color: var(--md-sys-color-outline);
+        }
+        .mode-chip .lucide {
+            width: 16px;
+            height: 16px;
+            stroke-width: 1.8;
+        }
+        .mode-chip .mode-close {
+            display: none;
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            padding: 0 2px;
+            font-size: 1rem;
+            line-height: 1;
+            margin-left: 2px;
+            transition: color 0.2s;
+        }
+        .mode-chip .mode-close:hover {
+            color: var(--md-sys-color-error);
+        }
+        .mode-chip.active {
             background: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
+            border-color: var(--md-sys-color-primary);
+        }
+        .mode-chip.active .lucide {
+            color: var(--md-sys-color-on-primary);
+        }
+        .mode-chip.active .mode-close {
+            display: inline-block;
+            color: var(--md-sys-color-on-primary);
+            opacity: 0.7;
+        }
+        .mode-chip.active .mode-close:hover {
+            opacity: 1;
+            color: #fff;
+        }
+        .mode-chip:not(.active) .mode-close {
+            display: none;
+        }
+
+        .send-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            border: none;
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all var(--motion-duration-medium) var(--motion-easing-emphasized);
+            flex-shrink: 0;
             box-shadow: var(--md-elevation-level1);
+            margin-left: auto;
         }
-        #sendBtn:hover:not(:disabled) {
-            background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
-            transform: scale(1.08);
+        .send-btn:hover:not(:disabled) {
+            transform: scale(1.06);
             box-shadow: var(--md-elevation-level2);
+            background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
         }
-        #sendBtn:disabled {
+        .send-btn:active:not(:disabled) {
+            transform: scale(0.94);
+        }
+        .send-btn:disabled {
             background: var(--md-sys-color-surface-container-highest);
             color: var(--md-sys-color-on-surface-variant);
-            transform: none;
-            box-shadow: none;
             cursor: not-allowed;
+            box-shadow: none;
+            transform: none;
         }
-        #webSearchToggle.active {
-            background: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
+        .send-btn .lucide {
+            width: 24px;
+            height: 24px;
+            stroke-width: 2;
         }
-        #imageToggle.active {
-            background: var(--md-sys-color-primary);
-            color: var(--md-sys-color-on-primary);
+
+        /* Active mode chips (floating above composer) */
+        .active-chips {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+            margin-bottom: 6px;
+            padding: 0 4px;
         }
+        .active-chip {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 4px 10px 4px 8px;
+            border-radius: 16px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            font-family: var(--md-ref-typeface-plain);
+            background: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            color: var(--md-sys-color-on-surface);
+            cursor: default;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+        .active-chip .chip-icon {
+            width: 14px;
+            height: 14px;
+            stroke-width: 2;
+        }
+        .active-chip .chip-close {
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            padding: 0 2px;
+            font-size: 1rem;
+            line-height: 1;
+            transition: color 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .active-chip .chip-close:hover {
+            color: var(--md-sys-color-error);
+        }
+        .active-chip.image-chip {
+            border-color: var(--md-sys-color-primary);
+            background: color-mix(in srgb, var(--md-sys-color-primary) 15%, var(--md-sys-color-surface));
+        }
+        .active-chip.web-chip {
+            border-color: var(--md-sys-color-secondary);
+            background: color-mix(in srgb, var(--md-sys-color-secondary) 15%, var(--md-sys-color-surface));
+        }
+        .active-chip.theme-chip {
+            border-color: var(--md-sys-color-tertiary);
+            background: color-mix(in srgb, var(--md-sys-color-tertiary) 15%, var(--md-sys-color-surface));
+        }
+
+        /* ===== Popover Panel ===== */
+        .popover-panel {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 0;
+            background: var(--md-sys-color-surface-container);
+            border-radius: 20px;
+            box-shadow: var(--md-elevation-level3);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            padding: 6px 0;
+            min-width: 200px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(8px) scale(0.96);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+            visibility: hidden;
+            z-index: 20;
+            backdrop-filter: var(--glass-backdrop-blur);
+            -webkit-backdrop-filter: var(--glass-backdrop-blur);
+        }
+        .popover-panel.open {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+            visibility: visible;
+        }
+        .popover-panel .popover-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface);
+            background: transparent;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            font-family: var(--md-ref-typeface-plain);
+            transition: background 0.15s;
+            border-radius: 0;
+            text-align: left;
+        }
+        .popover-panel .popover-item:hover {
+            background: var(--md-sys-color-surface-container-high);
+        }
+        .popover-panel .popover-item .lucide {
+            width: 20px;
+            height: 20px;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+        }
+        .popover-panel .popover-item .toggle-indicator {
+            margin-left: auto;
+            font-size: 0.8rem;
+            color: var(--md-sys-color-on-surface-variant);
+        }
+        .popover-panel .popover-item.active .toggle-indicator {
+            color: var(--md-sys-color-primary);
+        }
+        .popover-panel .popover-divider {
+            height: 1px;
+            background: var(--md-sys-color-outline-variant);
+            margin: 4px 12px;
+        }
+
+        /* ===== Theme Applied Banner ===== */
+        .theme-applied-banner {
+            background: color-mix(in srgb, var(--md-sys-color-primary) 12%, var(--md-sys-color-surface-container));
+            border: 1px solid var(--md-sys-color-primary);
+            border-radius: 16px;
+            padding: 12px 18px;
+            margin: 0 4px 12px 4px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface);
+            animation: fadeIn 0.5s ease;
+            box-shadow: var(--md-elevation-level1);
+            flex-wrap: wrap;
+            position: relative;
+            z-index: 2;
+        }
+        .theme-applied-banner .theme-name {
+            font-weight: 600;
+            color: var(--md-sys-color-primary);
+            font-family: var(--md-ref-typeface-brand);
+            font-style: italic;
+        }
+        .theme-applied-banner .theme-badge {
+            font-size: 0.7rem;
+            padding: 2px 10px;
+            border-radius: 12px;
+            background: var(--md-sys-color-surface-container);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            color: var(--md-sys-color-on-surface-variant);
+            font-weight: 500;
+        }
+        .theme-applied-banner .reset-theme-btn {
+            background: transparent;
+            border: 1px solid var(--md-sys-color-outline-variant);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            color: var(--md-sys-color-on-surface-variant);
+            transition: all 0.2s;
+            font-family: var(--md-ref-typeface-plain);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .theme-applied-banner .reset-theme-btn:hover {
+            background: var(--md-sys-color-error-container);
+            color: var(--md-sys-color-on-error-container);
+            border-color: var(--md-sys-color-error);
+        }
+        .theme-applied-banner .reset-theme-btn .lucide {
+            width: 16px;
+            height: 16px;
+            stroke-width: 2;
+        }
+        .theme-applied-banner .banner-dismiss {
+            background: transparent;
+            border: none;
+            color: var(--md-sys-color-on-surface-variant);
+            cursor: pointer;
+            padding: 0 4px;
+            font-size: 1.2rem;
+            line-height: 1;
+            transition: color 0.2s;
+        }
+        .theme-applied-banner .banner-dismiss:hover {
+            color: var(--md-sys-color-error);
+        }
+
+        /* ===== Error ===== */
         .error {
             background: color-mix(in srgb, var(--md-sys-color-error) 10%, var(--md-sys-color-surface));
             color: var(--md-sys-color-error);
@@ -1128,8 +1545,12 @@
             animation: fadeIn 0.5s;
             box-shadow: var(--md-elevation-level1);
             font-family: var(--md-ref-typeface-plain);
+            position: relative;
+            z-index: 2;
         }
-        .hidden { display: none !important; }
+        .hidden {
+            display: none !important;
+        }
         .install-banner {
             position: fixed;
             bottom: 90px;
@@ -1148,7 +1569,10 @@
             animation: fadeInUp 0.4s ease;
             font-family: var(--md-ref-typeface-plain);
         }
-        .install-banner span { font-size: 0.95rem; font-weight: 500; }
+        .install-banner span {
+            font-size: 0.95rem;
+            font-weight: 500;
+        }
         .install-banner button {
             background: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
@@ -1160,156 +1584,632 @@
             font-family: var(--md-ref-typeface-plain);
         }
         @keyframes fadeInUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
         @media (max-width: 600px) {
-            .header { padding: 10px 14px; font-size: 1.1rem; }
-            .header .logo-icon { width: 1.6rem; height: 1.6rem; }
-            .header-title { font-size: 1.1rem; }
-            .theme-toggle { width: 40px; height: 40px; }
-            .theme-toggle .lucide { width: 22px; height: 22px; }
-            .hamburger-btn { width: 40px; height: 40px; }
-            .hamburger-btn .lucide { width: 24px; height: 24px; }
-            .chat-container { padding: 16px 12px 90px 12px; gap: 14px; }
-            .welcome-logo { width: 100px; height: 100px; }
-            .welcome-title { font-size: 2rem; }
-            .welcome-subtitle { font-size: 1rem; max-width: 260px; }
-            .message { font-size: 0.98rem; }
-            .message.user { padding: 10px 14px; max-width: 90%; }
-            .message.bot { padding: 2px 0; }
-            .input-area { margin: 0 12px 12px 12px; padding: 6px 6px 6px 12px; max-height: 140px; }
-            #messageInput { padding: 10px 14px; font-size: 1rem; min-height: 44px; max-height: 100px; }
-            .icon-btn { width: 44px; height: 44px; min-width: 44px; }
-            .icon-btn .lucide { width: 22px; height: 22px; }
-            .sidebar { width: 85vw; max-width: 320px; }
-            .modal-box { padding: 24px 20px 20px; max-width: 340px; }
-            .code-block-header { height: 34px; font-size: 0.7rem; }
-            .copy-code-btn, .run-js-btn { width: 28px; height: 28px; }
-            .copy-code-btn .lucide, .run-js-btn .lucide { width: 16px; height: 16px; }
-            .code-block-header .lang-label .terminal-icon-box { width: 22px; height: 22px; }
-            .code-block-header .lang-label .terminal-icon-box .lucide { width: 14px; height: 14px; }
+            .header {
+                padding: 10px 14px;
+                font-size: 1.1rem;
+            }
+            .header .logo-icon {
+                width: 1.6rem;
+                height: 1.6rem;
+            }
+            .header-title {
+                font-size: 1.1rem;
+            }
+            .theme-toggle {
+                width: 40px;
+                height: 40px;
+            }
+            .theme-toggle .lucide {
+                width: 22px;
+                height: 22px;
+            }
+            .hamburger-btn {
+                width: 40px;
+                height: 40px;
+            }
+            .hamburger-btn .lucide {
+                width: 24px;
+                height: 24px;
+            }
+            .chat-container {
+                padding: 16px 12px 90px 12px;
+                padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
+            }
+            .welcome-logo {
+                width: 100px;
+                height: 100px;
+            }
+            .welcome-title {
+                font-size: 2rem;
+            }
+            .welcome-subtitle {
+                font-size: 1rem;
+                max-width: 260px;
+            }
+            .message {
+                font-size: 0.98rem;
+            }
+            .message.user {
+                padding: 10px 14px;
+                max-width: 90%;
+            }
+            .message.bot {
+                padding: 2px 0;
+            }
+            .input-area {
+                margin: 0 12px 12px 12px;
+            }
+            .composer-pill {
+                padding: 6px 10px 6px 14px;
+                border-radius: 24px;
+            }
+            #messageInput {
+                font-size: 0.95rem;
+                min-height: 24px;
+            }
+            .plus-btn {
+                width: 32px;
+                height: 32px;
+            }
+            .plus-btn .lucide {
+                width: 18px;
+                height: 18px;
+            }
+            .mode-chip {
+                font-size: 0.75rem;
+                padding: 4px 8px;
+            }
+            .mode-chip .lucide {
+                width: 14px;
+                height: 14px;
+            }
+            .send-btn {
+                width: 36px;
+                height: 36px;
+            }
+            .send-btn .lucide {
+                width: 20px;
+                height: 20px;
+            }
+            .popover-panel {
+                min-width: 160px;
+                left: 0;
+                right: auto;
+            }
+            .sidebar {
+                width: 85vw;
+                max-width: 320px;
+            }
+            .modal-box {
+                padding: 24px 20px 20px;
+                max-width: 340px;
+            }
+            .code-block-header {
+                height: 34px;
+                font-size: 0.7rem;
+            }
+            .copy-code-btn,
+            .run-js-btn {
+                width: 28px;
+                height: 28px;
+            }
+            .copy-code-btn .lucide,
+            .run-js-btn .lucide {
+                width: 16px;
+                height: 16px;
+            }
+            .code-block-header .lang-label .terminal-icon-box {
+                width: 22px;
+                height: 22px;
+            }
+            .code-block-header .lang-label .terminal-icon-box .lucide {
+                width: 14px;
+                height: 14px;
+            }
+            .theme-applied-banner {
+                font-size: 0.8rem;
+                padding: 10px 14px;
+            }
+            .active-chip {
+                font-size: 0.7rem;
+                padding: 3px 8px 3px 6px;
+            }
+            .active-chip .chip-icon {
+                width: 12px;
+                height: 12px;
+            }
         }
         @media (max-width: 400px) {
-            .header-title { font-size: 0.95rem; }
-            .chat-item { padding: 8px 10px; }
-            .chat-item .chat-title { font-size: 0.85rem; }
-            .dropdown-menu { min-width: 140px; }
+            .header-title {
+                font-size: 0.95rem;
+            }
+            .chat-item {
+                padding: 8px 10px;
+            }
+            .chat-item .chat-title {
+                font-size: 0.85rem;
+            }
+            .dropdown-menu {
+                min-width: 140px;
+            }
+            .mode-chip span.mode-label {
+                display: none;
+            }
+            .mode-chip {
+                padding: 6px 8px;
+            }
+        }
+
+        /* ===== Background Animation Support ===== */
+        .bg-animated {
+            transition: background 0.8s ease;
+        }
+        .bg-animated-gradient {
+            background-size: 400% 400% !important;
+            animation: gradientShift 12s ease infinite;
+        }
+        @keyframes gradientShift {
+            0% {
+                background-position: 0% 50%;
+            }
+            50% {
+                background-position: 100% 50%;
+            }
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+        #dynamicThemeStyle {
+            display: none;
+        }
+        #particleCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 1.2s ease;
+        }
+        #particleCanvas.active {
+            opacity: 1;
+        }
+        #bgAnimationContainer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            transition: background 0.8s ease;
+        }
+        .app-wrapper {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: transparent;
         }
     </style>
 </head>
-<body class="smooth-transition">
+<body>
 
-    <!-- ===== HEADER ===== -->
-    <div class="header">
-        <div class="header-left">
-            <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open chat list">
-                <i data-lucide="menu" class="lucide"></i>
-            </button>
-            <span class="logo-icon">
-                <img src="logo.svg" alt="Aariz Logo" />
-            </span>
-            <span class="header-title">Aariz</span>
-        </div>
-        <div class="header-right">
-            <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
-                <i data-lucide="moon" class="lucide" id="themeIcon"></i>
-            </button>
-        </div>
-    </div>
+    <!-- ===== BACKGROUND ANIMATION CONTAINER ===== -->
+    <div id="bgAnimationContainer"></div>
+    <!-- ===== PARTICLE CANVAS ===== -->
+    <canvas id="particleCanvas"></canvas>
 
-    <!-- ===== CHAT CONTAINER ===== -->
-    <div class="chat-container" id="chatContainer">
-        <div class="welcome-container" id="welcomeMessage">
-            <div class="welcome-logo">
-                <img src="logo.svg" alt="Aariz Logo" />
+    <!-- ===== APP WRAPPER ===== -->
+    <div class="app-wrapper">
+
+        <!-- ===== HEADER ===== -->
+        <div class="header">
+            <div class="header-left">
+                <button class="hamburger-btn" id="hamburgerBtn" aria-label="Open chat list">
+                    <i data-lucide="menu" class="lucide"></i>
+                </button>
+                <span class="logo-icon">
+                    <img src="logo.svg" alt="Aariz Logo" />
+                </span>
+                <span class="header-title">Aariz</span>
             </div>
-            <h1 class="welcome-title">Hello, I'm Aariz</h1>
-            <p class="welcome-subtitle">Your AI assistant powered by Gemini. Ask me anything, and let's have a great conversation!</p>
-        </div>
-    </div>
-
-    <!-- ===== INPUT AREA ===== -->
-    <div class="input-area">
-        <button class="icon-btn" id="imageToggle" title="Toggle Image Generation">
-            <i data-lucide="image" class="lucide"></i>
-        </button>
-        <button class="icon-btn" id="webSearchToggle" title="Toggle Web Search">
-            <i data-lucide="globe" class="lucide"></i>
-        </button>
-        <textarea id="messageInput" placeholder="Message Aariz..." rows="1" autocomplete="off"></textarea>
-        <button class="icon-btn" id="sendBtn" title="Send Message">
-            <i data-lucide="send" class="lucide"></i>
-        </button>
-    </div>
-
-    <!-- ===== ERROR ===== -->
-    <div id="error" class="error hidden"></div>
-
-    <!-- ===== INSTALL BANNER ===== -->
-    <div id="installBanner" class="install-banner hidden">
-        <span>Install Aariz for quick access</span>
-        <div style="display:flex; gap:8px;">
-            <button id="installBtn" class="icon-btn" style="width:auto; padding:0 16px;">Install</button>
-            <button id="dismissInstall" class="icon-btn" style="background:transparent; color:inherit;">
-                <i data-lucide="x" class="lucide" style="width:20px;height:20px;"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- ===== SIDEBAR ===== -->
-    <div class="sidebar-overlay" id="sidebarOverlay"></div>
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h2>Chats</h2>
-            <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
-                <i data-lucide="x" class="lucide"></i>
-            </button>
-        </div>
-        <div class="sidebar-body" id="sidebarBody">
-            <button class="new-chat-btn" id="newChatBtn">
-                <i data-lucide="plus" class="lucide"></i> New Chat
-            </button>
-            <div class="chat-list" id="chatList">
-                <!-- Rendered by JS -->
+            <div class="header-right">
+                <button class="theme-toggle" id="themeToggle" aria-label="Toggle theme">
+                    <i data-lucide="moon" class="lucide" id="themeIcon"></i>
+                </button>
             </div>
         </div>
-    </div>
 
-    <!-- ===== DROPDOWN MENU ===== -->
-    <div class="dropdown-menu" id="dropdownMenu">
-        <button class="dropdown-item" id="dropdownPin" data-action="pin">
-            <i data-lucide="pin" class="lucide"></i> Pin
-        </button>
-        <button class="dropdown-item" id="dropdownRename" data-action="rename">
-            <i data-lucide="pencil" class="lucide"></i> Rename
-        </button>
-        <div class="dropdown-divider"></div>
-        <button class="dropdown-item danger" id="dropdownDelete" data-action="delete">
-            <i data-lucide="trash-2" class="lucide"></i> Delete
-        </button>
-    </div>
-
-    <!-- ===== MODAL ===== -->
-    <div class="modal-overlay" id="modalOverlay">
-        <div class="modal-box">
-            <h3 id="modalTitle">Confirm</h3>
-            <p id="modalMessage">Are you sure?</p>
-            <input class="modal-input hidden" id="modalInput" type="text" placeholder="New name..." />
-            <div class="modal-actions">
-                <button class="btn-secondary" id="modalCancel">Cancel</button>
-                <button class="btn-primary" id="modalConfirm">Confirm</button>
+        <!-- ===== CHAT CONTAINER ===== -->
+        <div class="chat-container" id="chatContainer">
+            <div class="welcome-container" id="welcomeMessage">
+                <div class="welcome-logo">
+                    <img src="logo.svg" alt="Aariz Logo" />
+                </div>
+                <h1 class="welcome-title">Hello, I'm Aariz</h1>
+                <p class="welcome-subtitle">Your AI assistant powered by Gemini. Ask me anything, and let's have a great conversation!</p>
             </div>
         </div>
-    </div>
 
+        <!-- ===== INPUT AREA ===== -->
+        <div class="input-area" id="inputArea">
+            <!-- Active mode chips appear here -->
+            <div class="active-chips" id="activeChips"></div>
+
+            <div class="composer-pill">
+                <div class="text-row">
+                    <textarea id="messageInput" placeholder="Message Aariz..." rows="1"></textarea>
+                </div>
+                <div class="toolbar-row">
+                    <button class="plus-btn" id="plusBtn" aria-label="More options">
+                        <i data-lucide="plus" class="lucide"></i>
+                    </button>
+                    <button class="mode-chip" id="modeChip" aria-label="Toggle mode">
+                        <i data-lucide="zap" class="lucide"></i>
+                        <span class="mode-label" id="modeLabel">Chat</span>
+                        <span class="mode-close" id="modeClose">×</span>
+                    </button>
+                    <button class="send-btn" id="sendBtn" aria-label="Send message" disabled>
+                        <i data-lucide="arrow-up" class="lucide"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Popover panel -->
+            <div class="popover-panel" id="popoverPanel">
+                <button class="popover-item" id="attachImageBtn">
+                    <i data-lucide="image" class="lucide"></i> Attach image
+                </button>
+                <button class="popover-item" id="imageModeToggle">
+                    <i data-lucide="image" class="lucide"></i> Image generation
+                    <span class="toggle-indicator" id="imageModeIndicator">Off</span>
+                </button>
+                <button class="popover-item" id="clearAttachmentsBtn" disabled style="opacity:0.5;">
+                    <i data-lucide="trash-2" class="lucide"></i> Clear attachments
+                </button>
+                <div class="popover-divider"></div>
+                <button class="popover-item" id="webSearchToggle">
+                    <i data-lucide="globe" class="lucide"></i> Web search
+                    <span class="toggle-indicator" id="webSearchIndicator">Off</span>
+                </button>
+                <button class="popover-item" id="themeModeToggle">
+                    <i data-lucide="palette" class="lucide"></i> Theme mode
+                    <span class="toggle-indicator" id="themeModeIndicator">Off</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== ERROR ===== -->
+        <div id="error" class="error hidden"></div>
+
+        <!-- ===== INSTALL BANNER ===== -->
+        <div id="installBanner" class="install-banner hidden">
+            <span>Install Aariz for quick access</span>
+            <div style="display:flex; gap:8px;">
+                <button id="installBtn" class="icon-btn" style="width:auto; padding:0 16px;">Install</button>
+                <button id="dismissInstall" class="icon-btn" style="background:transparent; color:inherit;">
+                    <i data-lucide="x" class="lucide" style="width:20px;height:20px;"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== SIDEBAR ===== -->
+        <div class="sidebar-overlay" id="sidebarOverlay"></div>
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <h2>Chats</h2>
+                <button class="sidebar-close" id="sidebarClose" aria-label="Close sidebar">
+                    <i data-lucide="x" class="lucide"></i>
+                </button>
+            </div>
+            <div class="sidebar-body" id="sidebarBody">
+                <button class="new-chat-btn" id="newChatBtn">
+                    <i data-lucide="plus" class="lucide"></i> New Chat
+                </button>
+                <div class="chat-list" id="chatList">
+                    <!-- Rendered by JS -->
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== DROPDOWN MENU ===== -->
+        <div class="dropdown-menu" id="dropdownMenu">
+            <button class="dropdown-item" id="dropdownPin" data-action="pin">
+                <i data-lucide="pin" class="lucide"></i> Pin
+            </button>
+            <button class="dropdown-item" id="dropdownRename" data-action="rename">
+                <i data-lucide="pencil" class="lucide"></i> Rename
+            </button>
+            <div class="dropdown-divider"></div>
+            <button class="dropdown-item danger" id="dropdownDelete" data-action="delete">
+                <i data-lucide="trash-2" class="lucide"></i> Delete
+            </button>
+        </div>
+
+        <!-- ===== MODAL ===== -->
+        <div class="modal-overlay" id="modalOverlay">
+            <div class="modal-box">
+                <h3 id="modalTitle">Confirm</h3>
+                <p id="modalMessage">Are you sure?</p>
+                <input class="modal-input hidden" id="modalInput" type="text" placeholder="New name..." />
+                <div class="modal-actions">
+                    <button class="btn-secondary" id="modalCancel">Cancel</button>
+                    <button class="btn-primary" id="modalConfirm">Confirm</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== DYNAMIC THEME STYLE TAG ===== -->
+        <style id="dynamicThemeStyle"></style>
+
+    </div>
+    <!-- end app-wrapper -->
 
     <!-- ============================================================ -->
     <!-- ===== JAVASCRIPT ===== -->
     <!-- ============================================================ -->
     <script>
         // ================================================================
-        //  CHAT MANAGER
+        //  PARTICLE SYSTEM (Canvas-based)
+        // ================================================================
+        class ParticleSystem {
+            constructor() {
+                this.canvas = document.getElementById('particleCanvas');
+                this.ctx = this.canvas.getContext('2d');
+                this.particles = [];
+                this.running = false;
+                this.animationId = null;
+                this.config = {
+                    type: 'none',
+                    count: 60,
+                    color: '#ffffff',
+                    speed: 1,
+                    size: 3,
+                };
+                this._resize();
+                window.addEventListener('resize', () => this._resize());
+            }
+
+            _resize() {
+                this.canvas.width = window.innerWidth;
+                this.canvas.height = window.innerHeight;
+            }
+
+            start(config) {
+                this.stop();
+                this.config = Object.assign({}, this.config, config || {});
+                if (this.config.type === 'none' || !this.config.count) {
+                    this.canvas.classList.remove('active');
+                    return;
+                }
+                this.particles = [];
+                const count = Math.min(this.config.count || 60, 300);
+                const color = this.config.color || '#ffffff';
+                const size = this.config.size || 3;
+                const speed = this.config.speed || 1;
+
+                for (let i = 0; i < count; i++) {
+                    let p = {
+                        x: Math.random() * this.canvas.width,
+                        y: Math.random() * this.canvas.height,
+                        vx: 0,
+                        vy: 0,
+                        size: size * (0.5 + Math.random() * 0.8),
+                        opacity: 0.3 + Math.random() * 0.7,
+                        color: color,
+                        phase: Math.random() * Math.PI * 2,
+                        wobble: 0.5 + Math.random() * 0.5,
+                    };
+
+                    switch (this.config.type) {
+                        case 'snow':
+                            p.vy = (0.5 + Math.random() * 1.5) * speed;
+                            p.vx = (Math.random() - 0.5) * 0.3 * speed;
+                            p.wobble = 0.3 + Math.random() * 0.7;
+                            p.size = size * (0.5 + Math.random() * 0.8);
+                            p.opacity = 0.4 + Math.random() * 0.6;
+                            break;
+                        case 'stars':
+                            p.vy = 0;
+                            p.vx = 0;
+                            p.size = size * (0.3 + Math.random() * 0.7);
+                            p.opacity = 0.2 + Math.random() * 0.8;
+                            p.twinkleSpeed = 0.5 + Math.random() * 1.5;
+                            p.twinkleOffset = Math.random() * Math.PI * 2;
+                            break;
+                        case 'confetti':
+                            p.vy = (1 + Math.random() * 2) * speed;
+                            p.vx = (Math.random() - 0.5) * 1.5 * speed;
+                            p.size = size * (0.6 + Math.random() * 0.8);
+                            p.rotation = Math.random() * Math.PI * 2;
+                            p.rotSpeed = (Math.random() - 0.5) * 0.1;
+                            p.opacity = 0.6 + Math.random() * 0.4;
+                            p.color = `hsl(${Math.random() * 360}, 80%, 60%)`;
+                            break;
+                        case 'bubbles':
+                            p.vy = -(0.3 + Math.random() * 0.8) * speed;
+                            p.vx = (Math.random() - 0.5) * 0.5 * speed;
+                            p.size = size * (0.5 + Math.random() * 1.2);
+                            p.opacity = 0.2 + Math.random() * 0.3;
+                            p.color = color;
+                            p.wobble = 0.5 + Math.random() * 0.5;
+                            break;
+                        case 'rain':
+                            p.vy = (3 + Math.random() * 5) * speed;
+                            p.vx = (Math.random() - 0.5) * 0.5 * speed;
+                            p.size = size * (0.3 + Math.random() * 0.5);
+                            p.opacity = 0.2 + Math.random() * 0.3;
+                            p.color = color;
+                            p.length = size * (3 + Math.random() * 4);
+                            break;
+                        default:
+                            p.vy = (0.5 + Math.random() * 1.5) * speed;
+                            p.vx = (Math.random() - 0.5) * 0.3 * speed;
+                    }
+                    this.particles.push(p);
+                }
+
+                this.canvas.classList.add('active');
+                this.running = true;
+                this._loop();
+            }
+
+            stop() {
+                this.running = false;
+                if (this.animationId) {
+                    cancelAnimationFrame(this.animationId);
+                    this.animationId = null;
+                }
+                this.canvas.classList.remove('active');
+                this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+            }
+
+            _loop() {
+                if (!this.running) return;
+                this.animationId = requestAnimationFrame(() => this._loop());
+                this._update();
+                this._draw();
+            }
+
+            _update() {
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+                const type = this.config.type;
+
+                for (const p of this.particles) {
+                    p.x += p.vx || 0;
+                    p.y += p.vy || 0;
+
+                    if (type === 'snow') {
+                        p.x += Math.sin(p.phase + p.y * 0.01) * 0.3 * p.wobble;
+                        if (p.y > h + 20) { p.y = -20;
+                            p.x = Math.random() * w; }
+                        if (p.x > w + 20) p.x = -20;
+                        if (p.x < -20) p.x = w + 20;
+                    } else if (type === 'stars') {
+                        // twinkle handled in draw
+                    } else if (type === 'confetti') {
+                        p.rotation += p.rotSpeed || 0;
+                        if (p.y > h + 20) { p.y = -20;
+                            p.x = Math.random() * w; }
+                        if (p.x > w + 20) p.x = -20;
+                        if (p.x < -20) p.x = w + 20;
+                    } else if (type === 'bubbles') {
+                        p.x += Math.sin(p.phase + p.y * 0.02) * 0.5 * p.wobble;
+                        if (p.y < -20) { p.y = h + 20;
+                            p.x = Math.random() * w; }
+                        if (p.x > w + 20) p.x = -20;
+                        if (p.x < -20) p.x = w + 20;
+                    } else if (type === 'rain') {
+                        if (p.y > h + 20) { p.y = -20;
+                            p.x = Math.random() * w; }
+                        if (p.x > w + 20) p.x = -20;
+                        if (p.x < -20) p.x = w + 20;
+                    } else {
+                        if (p.y > h + 20) { p.y = -20;
+                            p.x = Math.random() * w; }
+                        if (p.x > w + 20) p.x = -20;
+                        if (p.x < -20) p.x = w + 20;
+                    }
+
+                    if (p.x > w + 50) p.x = -50;
+                    if (p.x < -50) p.x = w + 50;
+                    if (p.y > h + 50) p.y = -50;
+                    if (p.y < -50) p.y = h + 50;
+                }
+            }
+
+            _draw() {
+                const ctx = this.ctx;
+                const w = this.canvas.width;
+                const h = this.canvas.height;
+                ctx.clearRect(0, 0, w, h);
+                const type = this.config.type;
+
+                for (const p of this.particles) {
+                    let opacity = p.opacity || 0.6;
+
+                    if (type === 'stars') {
+                        const twinkle = 0.5 + 0.5 * Math.sin(Date.now() * 0.002 * (p.twinkleSpeed || 1) + (p.twinkleOffset ||
+                            0));
+                        opacity = p.opacity * (0.3 + 0.7 * twinkle);
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size * (0.5 + 0.5 * twinkle), 0, Math.PI * 2);
+                        ctx.fillStyle = p.color || '#ffffff';
+                        ctx.globalAlpha = opacity;
+                        ctx.fill();
+                        ctx.globalAlpha = 1;
+                        continue;
+                    }
+
+                    if (type === 'rain') {
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p.x + p.vx * 3, p.y + p.length || p.size * 4);
+                        ctx.strokeStyle = p.color || '#ffffff';
+                        ctx.globalAlpha = opacity * 0.6;
+                        ctx.lineWidth = p.size * 0.5 || 1;
+                        ctx.stroke();
+                        ctx.globalAlpha = 1;
+                        continue;
+                    }
+
+                    if (type === 'confetti') {
+                        ctx.save();
+                        ctx.translate(p.x, p.y);
+                        ctx.rotate(p.rotation || 0);
+                        ctx.globalAlpha = opacity;
+                        ctx.fillStyle = p.color || '#ff6b6b';
+                        const s = p.size || 3;
+                        ctx.fillRect(-s / 2, -s / 4, s, s / 2);
+                        ctx.globalAlpha = 1;
+                        ctx.restore();
+                        continue;
+                    }
+
+                    if (type === 'bubbles') {
+                        ctx.beginPath();
+                        ctx.arc(p.x, p.y, p.size || 3, 0, Math.PI * 2);
+                        ctx.strokeStyle = p.color || '#ffffff';
+                        ctx.globalAlpha = opacity * 0.5;
+                        ctx.lineWidth = 0.5;
+                        ctx.stroke();
+                        ctx.beginPath();
+                        ctx.arc(p.x - p.size * 0.2, p.y - p.size * 0.2, p.size * 0.2, 0, Math.PI * 2);
+                        ctx.fillStyle = p.color || '#ffffff';
+                        ctx.globalAlpha = opacity * 0.15;
+                        ctx.fill();
+                        ctx.globalAlpha = 1;
+                        continue;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(p.x, p.y, p.size || 3, 0, Math.PI * 2);
+                    ctx.fillStyle = p.color || '#ffffff';
+                    ctx.globalAlpha = opacity || 0.6;
+                    ctx.fill();
+                    ctx.globalAlpha = 1;
+                }
+            }
+        }
+
+        // ================================================================
+        //  CHAT MANAGER (with localStorage)
         // ================================================================
         const STORAGE_KEY = 'endroid_chats_v2';
         const MAX_CHATS = 8;
@@ -1374,15 +2274,6 @@
                 const chat = this.getChat(id);
                 if (!chat) return false;
                 chat.pinned = !chat.pinned;
-                chat.updatedAt = Date.now();
-                this.save();
-                return true;
-            },
-
-            setPinned(id, pinned) {
-                const chat = this.getChat(id);
-                if (!chat) return false;
-                chat.pinned = !!pinned;
                 chat.updatedAt = Date.now();
                 this.save();
                 return true;
@@ -1516,6 +2407,214 @@
         };
 
         // ================================================================
+        //  THEME ENGINE
+        // ================================================================
+        const ThemeEngine = {
+            _appliedTheme: null,
+            _styleTag: null,
+            _defaultVariables: {},
+            _particleSystem: null,
+
+            init() {
+                this._styleTag = document.getElementById('dynamicThemeStyle');
+                if (!this._styleTag) {
+                    const tag = document.createElement('style');
+                    tag.id = 'dynamicThemeStyle';
+                    document.head.appendChild(tag);
+                    this._styleTag = tag;
+                }
+                this._particleSystem = new ParticleSystem();
+                const root = document.documentElement;
+                const styles = getComputedStyle(root);
+                const vars = [
+                    '--md-sys-color-primary', '--md-sys-color-on-primary',
+                    '--md-sys-color-primary-container', '--md-sys-color-on-primary-container',
+                    '--md-sys-color-secondary', '--md-sys-color-on-secondary',
+                    '--md-sys-color-secondary-container', '--md-sys-color-on-secondary-container',
+                    '--md-sys-color-tertiary', '--md-sys-color-on-tertiary',
+                    '--md-sys-color-tertiary-container', '--md-sys-color-on-tertiary-container',
+                    '--md-sys-color-surface', '--md-sys-color-surface-dim',
+                    '--md-sys-color-surface-bright', '--md-sys-color-surface-container',
+                    '--md-sys-color-surface-container-high', '--md-sys-color-surface-container-highest',
+                    '--md-sys-color-surface-container-low', '--md-sys-color-surface-container-lowest',
+                    '--md-sys-color-on-surface', '--md-sys-color-on-surface-variant',
+                    '--md-sys-color-outline', '--md-sys-color-outline-variant',
+                    '--md-sys-color-inverse-surface', '--md-sys-color-inverse-on-surface',
+                    '--md-sys-color-error', '--md-sys-color-on-error',
+                    '--md-sys-color-error-container', '--md-sys-color-on-error-container',
+                    '--md-sys-color-scrim',
+                ];
+                vars.forEach(v => {
+                    const val = styles.getPropertyValue(v).trim();
+                    if (val) this._defaultVariables[v] = val;
+                });
+                return this;
+            },
+
+            apply(themeData) {
+                if (!themeData || typeof themeData !== 'object') return false;
+                const { cssVariables, css, name, mode, particles } = themeData;
+                const root = document.documentElement;
+
+                if (mode === 'dark') {
+                    document.body.classList.remove('theme-light');
+                    document.body.classList.add('theme-dark');
+                    const icon = document.getElementById('themeIcon');
+                    if (icon) {
+                        icon.setAttribute('data-lucide', 'sun');
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
+                    }
+                } else if (mode === 'light') {
+                    document.body.classList.remove('theme-dark');
+                    document.body.classList.add('theme-light');
+                    const icon = document.getElementById('themeIcon');
+                    if (icon) {
+                        icon.setAttribute('data-lucide', 'moon');
+                        if (typeof lucide !== 'undefined') lucide.createIcons();
+                    }
+                }
+
+                if (cssVariables && typeof cssVariables === 'object') {
+                    Object.entries(cssVariables).forEach(([key, value]) => {
+                        if (key.startsWith('--') && value) {
+                            root.style.setProperty(key, value);
+                        }
+                    });
+                }
+
+                if (css && typeof css === 'string' && css.trim()) {
+                    this._styleTag.textContent = css;
+                } else {
+                    this._styleTag.textContent = '';
+                }
+
+                if (particles && particles.type && particles.type !== 'none') {
+                    const pConfig = {
+                        type: particles.type,
+                        count: particles.count || 60,
+                        color: particles.color || '#ffffff',
+                        speed: particles.speed || 1,
+                        size: particles.size || 3,
+                    };
+                    this._particleSystem.start(pConfig);
+                } else {
+                    this._particleSystem.stop();
+                }
+
+                this._appliedTheme = {
+                    name: name || 'Custom Theme',
+                    cssVariables: cssVariables || {},
+                    css: css || '',
+                    mode: mode || 'light',
+                    particles: particles || null,
+                };
+
+                try {
+                    localStorage.setItem('endroid_applied_theme', JSON.stringify(themeData));
+                } catch (e) { console.warn('Theme save failed:', e); }
+
+                return true;
+            },
+
+            reset() {
+                const root = document.documentElement;
+                Object.entries(this._defaultVariables).forEach(([key, value]) => {
+                    root.style.setProperty(key, value);
+                });
+                this._styleTag.textContent = '';
+                this._particleSystem.stop();
+                this._appliedTheme = null;
+                try {
+                    localStorage.removeItem('endroid_applied_theme');
+                } catch (e) { console.warn('Theme remove failed:', e); }
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
+                const currentTheme = localStorage.getItem('endroid-theme') || 'system';
+                if (currentTheme === 'dark' || (currentTheme === 'system' && prefersDark.matches)) {
+                    document.body.classList.remove('theme-light');
+                    document.body.classList.add('theme-dark');
+                } else {
+                    document.body.classList.remove('theme-dark');
+                    document.body.classList.add('theme-light');
+                }
+                return true;
+            },
+
+            getAppliedTheme() {
+                return this._appliedTheme;
+            },
+
+            isApplied() {
+                return this._appliedTheme !== null;
+            },
+
+            getThemePrompt(userPrompt) {
+                return `You are a UI theme generator for a chat application. Based on the user's description, generate a complete visual theme.
+
+        Return ONLY valid JSON in this exact format, with no additional text or markdown:
+
+        {
+          "mode": "dark" | "light",
+          "name": "Theme Name",
+          "cssVariables": {
+            "--md-sys-color-primary": "#HEX",
+            "--md-sys-color-on-primary": "#HEX",
+            "--md-sys-color-primary-container": "#HEX",
+            "--md-sys-color-on-primary-container": "#HEX",
+            "--md-sys-color-secondary": "#HEX",
+            "--md-sys-color-on-secondary": "#HEX",
+            "--md-sys-color-secondary-container": "#HEX",
+            "--md-sys-color-on-secondary-container": "#HEX",
+            "--md-sys-color-tertiary": "#HEX",
+            "--md-sys-color-on-tertiary": "#HEX",
+            "--md-sys-color-tertiary-container": "#HEX",
+            "--md-sys-color-on-tertiary-container": "#HEX",
+            "--md-sys-color-surface": "#HEX",
+            "--md-sys-color-surface-dim": "#HEX",
+            "--md-sys-color-surface-bright": "#HEX",
+            "--md-sys-color-surface-container": "#HEX",
+            "--md-sys-color-surface-container-high": "#HEX",
+            "--md-sys-color-surface-container-highest": "#HEX",
+            "--md-sys-color-surface-container-low": "#HEX",
+            "--md-sys-color-surface-container-lowest": "#HEX",
+            "--md-sys-color-on-surface": "#HEX",
+            "--md-sys-color-on-surface-variant": "#HEX",
+            "--md-sys-color-outline": "#HEX",
+            "--md-sys-color-outline-variant": "#HEX",
+            "--md-sys-color-inverse-surface": "#HEX",
+            "--md-sys-color-inverse-on-surface": "#HEX",
+            "--md-sys-color-error": "#HEX",
+            "--md-sys-color-on-error": "#HEX",
+            "--md-sys-color-error-container": "#HEX",
+            "--md-sys-color-on-error-container": "#HEX",
+            "--md-sys-color-scrim": "#HEX"
+          },
+          "css": "/* Additional CSS for background animations, gradients, effects */",
+          "particles": {
+            "type": "snow" | "stars" | "confetti" | "bubbles" | "rain" | "none",
+            "count": 50-200,
+            "color": "#HEX",
+            "speed": 0.5-2,
+            "size": 2-8
+          }
+        }
+
+        RULES:
+        1. mode: choose 'dark' for night, space, dark themes. choose 'light' for bright, sunny, icy, pastel themes.
+        2. If user mentions: snow, winter, cold, icy, Christmas, frost → particles.type = 'snow'
+        3. If user mentions: stars, night, space, galaxy, cosmic → particles.type = 'stars'
+        4. If user mentions: celebration, party, festive, new year → particles.type = 'confetti'
+        5. If user mentions: ocean, underwater, beach, mermaid → particles.type = 'bubbles'
+        6. If user mentions: rain, storm, gloomy, monsoon → particles.type = 'rain'
+        7. Default: particles.type = 'none'
+        8. The "css" field can include @keyframes for background animations, gradients, etc.
+        9. All hex values must be 6 characters. Use #RRGGBB format.
+        10. Ensure WCAG AA contrast for readability.
+
+        User's theme request: ${userPrompt}`;
+            }
+        };
+
+        // ================================================================
         //  UI RENDERER
         // ================================================================
         const UI = {
@@ -1534,19 +2633,102 @@
             input: document.getElementById('messageInput'),
             sendBtn: document.getElementById('sendBtn'),
             error: document.getElementById('error'),
-            webSearchBtn: document.getElementById('webSearchToggle'),
-            imageToggleBtn: document.getElementById('imageToggle'),
+            plusBtn: document.getElementById('plusBtn'),
+            popoverPanel: document.getElementById('popoverPanel'),
+            modeChip: document.getElementById('modeChip'),
+            modeLabel: document.getElementById('modeLabel'),
+            modeClose: document.getElementById('modeClose'),
+            imageModeToggle: document.getElementById('imageModeToggle'),
+            imageModeIndicator: document.getElementById('imageModeIndicator'),
+            webSearchToggle: document.getElementById('webSearchToggle'),
+            webSearchIndicator: document.getElementById('webSearchIndicator'),
+            themeModeToggle: document.getElementById('themeModeToggle'),
+            themeModeIndicator: document.getElementById('themeModeIndicator'),
+            attachImageBtn: document.getElementById('attachImageBtn'),
+            clearAttachmentsBtn: document.getElementById('clearAttachmentsBtn'),
+            activeChips: document.getElementById('activeChips'),
 
             _typingId: null,
             _dropdownTargetId: null,
             _errorTimer: null,
 
             init() {
+                ThemeEngine.init();
                 this._bindEvents();
                 this.render();
+                this._restoreThemeFromStorage();
+                this._syncUIState();
                 if (typeof lucide !== 'undefined') {
                     lucide.createIcons();
                 }
+            },
+
+            _restoreThemeFromStorage() {
+                try {
+                    const saved = localStorage.getItem('endroid_applied_theme');
+                    if (saved) {
+                        const data = JSON.parse(saved);
+                        if (data && (data.cssVariables || data.mode)) {
+                            ThemeEngine.apply(data);
+                            this._showThemeAppliedBanner(data.name || 'Custom Theme', data.mode || 'light');
+                        }
+                    }
+                } catch (e) { console.warn('Theme restore failed:', e); }
+            },
+
+            _syncUIState() {
+                const isImage = imageModeEnabled;
+                this.modeChip.classList.toggle('active', isImage);
+                this.modeLabel.textContent = isImage ? 'Image' : 'Chat';
+                this.imageModeIndicator.textContent = isImage ? 'On' : 'Off';
+                this.imageModeToggle.classList.toggle('active', isImage);
+                this.webSearchIndicator.textContent = webSearchEnabled ? 'On' : 'Off';
+                this.webSearchToggle.classList.toggle('active', webSearchEnabled);
+                this.themeModeIndicator.textContent = themeModeEnabled ? 'On' : 'Off';
+                this.themeModeToggle.classList.toggle('active', themeModeEnabled);
+                this.sendBtn.disabled = !this.input.value.trim();
+                // Update active chips
+                this._updateActiveChips();
+            },
+
+            _updateActiveChips() {
+                const container = this.activeChips;
+                container.innerHTML = '';
+                if (imageModeEnabled) {
+                    const chip = document.createElement('div');
+                    chip.className = 'active-chip image-chip';
+                    chip.innerHTML = `<i data-lucide="image" class="chip-icon lucide"></i> Image <button class="chip-close" data-mode="image">×</button>`;
+                    container.appendChild(chip);
+                }
+                if (webSearchEnabled) {
+                    const chip = document.createElement('div');
+                    chip.className = 'active-chip web-chip';
+                    chip.innerHTML = `<i data-lucide="globe" class="chip-icon lucide"></i> Web <button class="chip-close" data-mode="web">×</button>`;
+                    container.appendChild(chip);
+                }
+                if (themeModeEnabled) {
+                    const chip = document.createElement('div');
+                    chip.className = 'active-chip theme-chip';
+                    chip.innerHTML = `<i data-lucide="palette" class="chip-icon lucide"></i> Theme <button class="chip-close" data-mode="theme">×</button>`;
+                    container.appendChild(chip);
+                }
+                // Bind close buttons
+                container.querySelectorAll('.chip-close').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        const mode = btn.dataset.mode;
+                        if (mode === 'image') {
+                            imageModeEnabled = false;
+                        } else if (mode === 'web') {
+                            webSearchEnabled = false;
+                        } else if (mode === 'theme') {
+                            themeModeEnabled = false;
+                        }
+                        this._syncUIState();
+                        this._recreateIcons();
+                        this.input.focus();
+                    });
+                });
+                this._recreateIcons();
             },
 
             _bindEvents() {
@@ -1597,6 +2779,7 @@
                     }
                 });
 
+                // Send
                 this.sendBtn.addEventListener('click', () => this.sendMessage());
                 this.input.addEventListener('keydown', (e) => {
                     if (e.key === 'Enter' && !e.shiftKey) {
@@ -1606,51 +2789,126 @@
                 });
                 this.input.addEventListener('input', () => {
                     this.sendBtn.disabled = !this.input.value.trim();
-                    // Auto-resize but cap at max-height
                     this.input.style.height = 'auto';
                     const newHeight = Math.min(this.input.scrollHeight, 120);
                     this.input.style.height = newHeight + 'px';
                 });
                 this.sendBtn.disabled = true;
 
+                // Theme toggle (header)
                 document.getElementById('themeToggle').addEventListener('click', () => {
                     const isDark = document.body.classList.contains('theme-dark');
                     applyTheme(isDark ? 'light' : 'dark');
                 });
 
-                this.webSearchBtn.addEventListener('click', () => {
-                    if (imageModeEnabled) return;
-                    webSearchEnabled = !webSearchEnabled;
-                    this.webSearchBtn.classList.toggle('active', webSearchEnabled);
-                    this.webSearchBtn.title = webSearchEnabled ? 'Web Search ON' : 'Web Search OFF';
-                    this._recreateIcons();
+                // Plus button: toggle popover
+                this.plusBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    this.popoverPanel.classList.toggle('open');
+                });
+                document.addEventListener('click', (e) => {
+                    if (!this.popoverPanel.contains(e.target) && e.target !== this.plusBtn) {
+                        this.popoverPanel.classList.remove('open');
+                    }
                 });
 
-                this.imageToggleBtn.addEventListener('click', () => {
+                // Mode chip click: toggle image mode
+                this.modeChip.addEventListener('click', (e) => {
+                    if (e.target.closest('.mode-close')) return;
                     imageModeEnabled = !imageModeEnabled;
-                    this.imageToggleBtn.classList.toggle('active', imageModeEnabled);
-                    this.imageToggleBtn.title = imageModeEnabled ? 'Image Mode ON' : 'Image Mode OFF';
                     if (imageModeEnabled) {
                         webSearchEnabled = false;
-                        this.webSearchBtn.classList.remove('active');
-                        this.webSearchBtn.title = 'Web Search (disabled)';
-                        this.webSearchBtn.disabled = true;
-                    } else {
-                        this.webSearchBtn.disabled = false;
-                        this.webSearchBtn.title = webSearchEnabled ? 'Web Search ON' : 'Web Search OFF';
+                        themeModeEnabled = false;
                     }
+                    this._syncUIState();
                     this._recreateIcons();
+                    this.input.focus();
                 });
 
-                document.addEventListener('keydown', (e) => {
-                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                        e.preventDefault();
-                        this.toggleSidebar();
+                // Mode close button (×)
+                this.modeClose.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    imageModeEnabled = false;
+                    this._syncUIState();
+                    this._recreateIcons();
+                    this.input.focus();
+                });
+
+                // Popover: Image generation toggle
+                this.imageModeToggle.addEventListener('click', () => {
+                    imageModeEnabled = !imageModeEnabled;
+                    if (imageModeEnabled) {
+                        webSearchEnabled = false;
+                        themeModeEnabled = false;
                     }
+                    this._syncUIState();
+                    this._recreateIcons();
+                    this.popoverPanel.classList.remove('open');
+                });
+
+                // Popover: Web search toggle
+                this.webSearchToggle.addEventListener('click', () => {
+                    if (imageModeEnabled) return;
+                    webSearchEnabled = !webSearchEnabled;
+                    if (webSearchEnabled) {
+                        themeModeEnabled = false;
+                    }
+                    this._syncUIState();
+                    this._recreateIcons();
+                    this.popoverPanel.classList.remove('open');
+                });
+
+                // Popover: Theme mode toggle
+                this.themeModeToggle.addEventListener('click', () => {
+                    themeModeEnabled = !themeModeEnabled;
+                    if (themeModeEnabled) {
+                        imageModeEnabled = false;
+                        webSearchEnabled = false;
+                    }
+                    this._syncUIState();
+                    this._recreateIcons();
+                    this.popoverPanel.classList.remove('open');
+                    this.input.focus();
+                });
+
+                // Attach image: placeholder
+                this.attachImageBtn.addEventListener('click', () => {
+                    const fileInput = document.getElementById('hiddenFileInput') || (() => {
+                        const fi = document.createElement('input');
+                        fi.type = 'file';
+                        fi.accept = 'image/*';
+                        fi.id = 'hiddenFileInput';
+                        fi.style.display = 'none';
+                        document.body.appendChild(fi);
+                        fi.addEventListener('change', (e) => {
+                            if (this.files && this.files[0]) {
+                                UI.showError(`Attached: ${this.files[0].name} (not implemented)`);
+                            }
+                            this.value = '';
+                        });
+                        return fi;
+                    })();
+                    fileInput.click();
+                    this.popoverPanel.classList.remove('open');
+                });
+
+                // Clear attachments: placeholder
+                this.clearAttachmentsBtn.addEventListener('click', () => {
+                    this.showError('No attachments to clear.');
+                    this.popoverPanel.classList.remove('open');
+                });
+
+                // Keyboard shortcuts
+                document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
+                        this.popoverPanel.classList.remove('open');
                         this.closeSidebar();
                         this.closeDropdown();
                         this.closeModal();
+                    }
+                    if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+                        e.preventDefault();
+                        this.toggleSidebar();
                     }
                 });
             },
@@ -1829,9 +3087,11 @@
             renderChat(chatId) {
                 const container = this.chatContainer;
                 const chat = chatManager.getChat(chatId);
+                const existingBanner = container.querySelector('.theme-applied-banner');
                 container.innerHTML = '';
                 const welcomeEl = document.getElementById('welcomeMessage');
                 if (welcomeEl) container.appendChild(welcomeEl);
+                if (existingBanner) container.appendChild(existingBanner);
 
                 if (!chat || chat.messages.length === 0) {
                     if (welcomeEl) welcomeEl.style.display = 'flex';
@@ -1937,6 +3197,17 @@
                 input.style.height = 'auto';
                 this.sendBtn.disabled = true;
 
+                // Theme mode
+                if (themeModeEnabled) {
+                    await this._handleThemeGeneration(text, active);
+                    this.sendBtn.disabled = false;
+                    setTimeout(() => input.focus(), 100);
+                    this.render();
+                    this._recreateIcons();
+                    return;
+                }
+
+                // Normal flow
                 this._addMessageToDOM('user', text, false);
                 chatManager.addMessage(active.id, 'user', text);
                 this.render();
@@ -1947,8 +3218,8 @@
                         const enhanced = await this._getEnhancedPrompt(text);
                         this._removeTypingIndicator();
                         this._addMessageToDOM('assistant', '', true);
-                        const imageUrl =
-                            `https://flux.gtech-apiz.workers.dev/?apikey=Suhail&text=${encodeURIComponent(enhanced)}`;
+                        // NEW: Use the updated Flux API endpoint
+                        const imageUrl = `https://api.omegatech.app/api/ai/flux?prompt=${encodeURIComponent(enhanced)}`;
                         const finalMessage = `Here is image:\n\n![Generated Image](${imageUrl})`;
                         this._removeTypingIndicator();
                         this._addMessageToDOM('assistant', finalMessage, false);
@@ -1987,6 +3258,152 @@
                 }
             },
 
+            // ---- Theme Generation ----
+            async _handleThemeGeneration(prompt, active) {
+                this._addMessageToDOM('user', prompt, false);
+                chatManager.addMessage(active.id, 'user', prompt);
+                this.render();
+
+                this._addMessageToDOM('assistant', '', true);
+                try {
+                    const systemPrompt = ThemeEngine.getThemePrompt(prompt);
+                    const response = await this._callAPI(systemPrompt, active.id, true);
+
+                    this._removeTypingIndicator();
+
+                    let themeData = null;
+                    try {
+                        const jsonMatch = response.match(/\{[\s\S]*\}/);
+                        if (jsonMatch) {
+                            themeData = JSON.parse(jsonMatch[0]);
+                        } else {
+                            themeData = JSON.parse(response);
+                        }
+                    } catch (parseErr) {
+                        console.warn('Failed to parse theme JSON:', parseErr);
+                        const errMsg = 'Sorry, I couldn\'t generate a valid theme. Please try again with a more specific description.';
+                        this._addMessageToDOM('assistant', errMsg, false);
+                        chatManager.addMessage(active.id, 'assistant', errMsg);
+                        return;
+                    }
+
+                    if (!themeData || typeof themeData !== 'object') {
+                        throw new Error('Invalid theme data');
+                    }
+
+                    const applied = ThemeEngine.apply(themeData);
+                    if (!applied) {
+                        throw new Error('Failed to apply theme');
+                    }
+
+                    const themeName = themeData.name || 'Custom Theme';
+                    const mode = themeData.mode || 'light';
+                    this._showThemeAppliedBanner(themeName, mode);
+
+                    let particleEmoji = '';
+                    if (themeData.particles && themeData.particles.type && themeData.particles.type !== 'none') {
+                        const emojis = { snow: '❄️', stars: '✨', confetti: '🎉', bubbles: '🫧', rain: '🌧️' };
+                        particleEmoji = emojis[themeData.particles.type] || '✨';
+                    }
+
+                    const successMsg =
+                        `🎨 **Theme Applied: ${themeName}** ${particleEmoji}\n\nMode: **${mode === 'dark' ? '🌙 Dark' : '☀️ Light'}**\nDouble-click the 🎨 palette button to reset to the default theme.`;
+                    this._addMessageToDOM('assistant', successMsg, false);
+                    chatManager.addMessage(active.id, 'assistant', successMsg);
+
+                    themeModeEnabled = false;
+                    this._syncUIState();
+                    this._recreateIcons();
+
+                } catch (err) {
+                    this._removeTypingIndicator();
+                    const errMsg = this._friendlyError(err);
+                    this._addMessageToDOM('assistant', errMsg, false);
+                    chatManager.addMessage(active.id, 'assistant', errMsg);
+                    this.showError(err.message);
+                } finally {
+                    this.sendBtn.disabled = false;
+                    setTimeout(() => this.input.focus(), 100);
+                    this.render();
+                    this._recreateIcons();
+                }
+            },
+
+            _showThemeAppliedBanner(themeName, mode) {
+                const existing = document.querySelector('.theme-applied-banner');
+                if (existing) existing.remove();
+
+                const container = this.chatContainer;
+                const banner = document.createElement('div');
+                banner.className = 'theme-applied-banner';
+                const modeLabel = mode === 'dark' ? '🌙 Dark' : '☀️ Light';
+                banner.innerHTML = `
+                    <span>🎨 Theme: <span class="theme-name">${this._escapeHtml(themeName)}</span>
+                    <span class="theme-badge">${modeLabel}</span></span>
+                    <span style="display:flex; gap:8px; align-items:center;">
+                        <button class="reset-theme-btn" id="resetThemeBtn">
+                            <i data-lucide="rotate-ccw" class="lucide"></i> Reset
+                        </button>
+                        <button class="banner-dismiss" id="dismissBanner" aria-label="Dismiss">×</button>
+                    </span>
+                `;
+                const welcome = container.querySelector('#welcomeMessage');
+                if (welcome) {
+                    container.insertBefore(banner, welcome.nextSibling);
+                } else {
+                    container.prepend(banner);
+                }
+
+                const resetBtn = banner.querySelector('#resetThemeBtn');
+                if (resetBtn) {
+                    resetBtn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        this._resetTheme();
+                    });
+                }
+                const dismissBtn = banner.querySelector('#dismissBanner');
+                if (dismissBtn) {
+                    dismissBtn.addEventListener('click', () => {
+                        banner.remove();
+                    });
+                }
+
+                this._recreateIcons();
+            },
+
+            _resetTheme() {
+                ThemeEngine.reset();
+                const banner = document.querySelector('.theme-applied-banner');
+                if (banner) banner.remove();
+                const container = this.chatContainer;
+                const note = document.createElement('div');
+                note.className = 'theme-applied-banner';
+                note.style.borderColor = 'var(--md-sys-color-outline-variant)';
+                note.innerHTML = `
+                    <span>↩️ Default theme restored</span>
+                    <button class="reset-theme-btn" style="opacity:0.5;cursor:default;border-color:transparent;">✓</button>
+                    <button class="banner-dismiss" id="dismissBanner2">×</button>
+                `;
+                const welcome = container.querySelector('#welcomeMessage');
+                if (welcome) {
+                    container.insertBefore(note, welcome.nextSibling);
+                } else {
+                    container.prepend(note);
+                }
+                const dismiss2 = note.querySelector('#dismissBanner2');
+                if (dismiss2) dismiss2.addEventListener('click', () => note.remove());
+                setTimeout(() => {
+                    if (note.parentNode) note.remove();
+                }, 5000);
+                this._recreateIcons();
+                const active = chatManager.getActive();
+                if (active) {
+                    const resetMsg = '🔄 Theme reset to default.';
+                    this._addMessageToDOM('assistant', resetMsg, false);
+                    chatManager.addMessage(active.id, 'assistant', resetMsg);
+                }
+            },
+
             async _getEnhancedPrompt(userPrompt) {
                 const instruction =
                     `Enhance this prompt for image generation. Return ONLY the enhanced prompt, with no additional text, no markdown, no code fences, no explanations: ${userPrompt}`;
@@ -2008,7 +3425,7 @@
                 }
                 const payload = {
                     prompt: userMessage,
-                    web_search: webSearchEnabled,
+                    web_search: webSearchEnabled && !themeModeEnabled,
                     history: history,
                 };
                 const resp = await fetch(WORKER_URL, {
@@ -2060,7 +3477,6 @@
             const codeBlocks = [];
             const inlineCodeBlocks = [];
 
-            // Extract code blocks with language
             processedText = processedText.replace(/```(\w+)?\n([\s\S]*?)```/g, function(match, language, code) {
                 const id = 'code-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 const lang = language || 'text';
@@ -2107,14 +3523,12 @@
                 return `__CODE_BLOCK_${codeBlocks.length - 1}__`;
             });
 
-            // Inline code
             processedText = processedText.replace(/`([^`]+)`/g, function(match, code) {
                 const id = 'inline-code-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
                 inlineCodeBlocks.push({ id, code });
                 return `__INLINE_CODE_${inlineCodeBlocks.length - 1}__`;
             });
 
-            // Tables
             processedText = processedText.replace(/(?:\|.*\|.*\n)(?:\|?:?-+:?\|.*\n)+(?:\|.*\|.*\n)+/g, function(
             match) {
                 const rows = match.trim().split('\n').filter(row => row.trim());
@@ -2142,16 +3556,13 @@
                 return tableHtml;
             });
 
-            // Images
             processedText = processedText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
                 return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" style="max-width:100%; border-radius:16px; margin:8px 0; box-shadow: var(--md-elevation-level1);" />`;
             });
 
-            // Basic markdown
             processedText = processBasicMarkdown(processedText);
             processedText = processLists(processedText);
 
-            // Replace inline code placeholders
             inlineCodeBlocks.forEach((block, index) => {
                 processedText = processedText.replace(
                     `__INLINE_CODE_${index}__`,
@@ -2159,10 +3570,8 @@
                 );
             });
 
-            // ✅ FIXED ORDER: process paragraphs BEFORE replacing code blocks
             processedText = processParagraphs(processedText);
 
-            // Replace code block placeholders
             codeBlocks.forEach((block, index) => {
                 processedText = processedText.replace(`__CODE_BLOCK_${index}__`, block.html);
             });
@@ -2265,11 +3674,10 @@
 
         // ================================================================
         //  ROBUST SANDBOXED JAVASCRIPT RUNNER
-        //  Verified working standalone: ready -> console -> done, in order.
         // ================================================================
 
         const JS_RUN_TIMEOUT_MS = 5000;
-        const activeFrames = new Map(); // codeId -> { frame, timer }
+        const activeFrames = new Map();
 
         function buildSandboxDoc(code) {
             return `<!DOCTYPE html><html><head></head><body><script>
@@ -2357,8 +3765,6 @@
 
             const frame = document.createElement('iframe');
             frame.setAttribute('sandbox', 'allow-scripts');
-            // Visible-but-invisible (not display:none) — some mobile browser
-            // engines throttle script execution in fully hidden iframes.
             frame.style.cssText = 'position:absolute;width:0;height:0;border:0;opacity:0;pointer-events:none;';
 
             if (runBtn) {
@@ -2385,9 +3791,9 @@
                 if (timedOut) {
                     const warn = document.createElement('div');
                     warn.style.color = 'var(--md-sys-color-error)';
-                    warn.innerHTML = sandboxReady
-                        ? `<strong>Stopped:</strong> execution exceeded ${JS_RUN_TIMEOUT_MS / 1000}s (likely an infinite loop) and was terminated.`
-                        : `<strong>⚠️ Sandbox failed to start.</strong> Try a hard refresh — the app may be running a cached version.`;
+                    warn.innerHTML = sandboxReady ?
+                        `<strong>Stopped:</strong> execution exceeded ${JS_RUN_TIMEOUT_MS / 1000}s (likely an infinite loop) and was terminated.` :
+                        `<strong>⚠️ Sandbox failed to start.</strong> Try a hard refresh — the app may be running a cached version.`;
                     outputEl.appendChild(warn);
                 }
             }
@@ -2430,7 +3836,6 @@
                 }
             }
 
-            // Listener attached BEFORE the iframe is created/appended — no race.
             window.addEventListener('message', onMessage);
 
             frame.srcdoc = buildSandboxDoc(rawCode);
@@ -2448,8 +3853,7 @@
             activeFrames.set(codeId, { frame, timer });
         }
 
-        // ---- Click handler for Run buttons ----
-        document.addEventListener('click', function (e) {
+        document.addEventListener('click', function(e) {
             const btn = e.target.closest('.run-js-btn');
             if (!btn) return;
             if (btn.disabled) return;
@@ -2463,7 +3867,6 @@
             runJsInSandbox(codeId, rawCode, outputEl, btn);
         });
 
-        // Copy code buttons
         document.addEventListener('click', function(e) {
             const btn = e.target.closest('.copy-code-btn');
             if (!btn) return;
@@ -2500,7 +3903,7 @@
         });
 
         // ================================================================
-        //  THEME
+        //  THEME (light/dark toggle)
         // ================================================================
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
         let currentTheme = localStorage.getItem('endroid-theme') || 'system';
@@ -2535,6 +3938,7 @@
         const WORKER_URL = 'https://ai.endroid.workers.dev/api/v1/';
         let webSearchEnabled = false;
         let imageModeEnabled = false;
+        let themeModeEnabled = false;
 
         // ================================================================
         //  INIT
@@ -2546,6 +3950,7 @@
             UI.input.focus();
             if (typeof lucide !== 'undefined') lucide.createIcons();
 
+            // Service Worker
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('/sw.js')
@@ -2553,6 +3958,7 @@
                         .catch(err => console.error('SW registration failed:', err));
                 });
             }
+            // Install banner
             let deferredPrompt;
             const installBanner = document.getElementById('installBanner');
             const installBtn = document.getElementById('installBtn');
@@ -2579,14 +3985,6 @@
                     if (installBanner) installBanner.classList.add('hidden');
                 });
             }
-
-            window.testMarkdown = function() {
-                const test = `# Markdown Test\n\n**Bold** and *italic*.\n\n- Item 1\n- Item 2\n\n\`\`\`js\nconsole.log('Hello from JS!');\nconst sum = 2 + 2;\nsum;\n\`\`\``;
-                UI._addMessageToDOM('assistant', test, false);
-                const active = chatManager.getActive();
-                if (active) chatManager.addMessage(active.id, 'assistant', test);
-                if (typeof lucide !== 'undefined') lucide.createIcons();
-            };
         });
     </script>
 </body>
