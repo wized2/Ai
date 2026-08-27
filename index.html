@@ -37,8 +37,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Prompt:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet" />
     <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:ital,wght@0,200..1000;1,200..1000&display=swap" rel="stylesheet" />
     <!-- Lucide Icons -->
-    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js">
-    </script>
+    <script src="https://unpkg.com/lucide@0.469.0/dist/umd/lucide.js"></script>
     <style>
         /* ===== CSS Variables ===== */
         :root {
@@ -87,6 +86,7 @@
             color-scheme: light;
             --sidebar-width: 300px;
             --safe-area-bottom: env(safe-area-inset-bottom, 0px);
+            --input-area-bottom: 16px;
         }
         @media (prefers-color-scheme: dark) {
             :root {
@@ -189,8 +189,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        html,
-        body {
+        html, body {
             height: 100%;
             overflow: hidden;
         }
@@ -215,9 +214,7 @@
             opacity: 0;
             transition: opacity 0.8s ease;
         }
-        #particleCanvas.active {
-            opacity: 1;
-        }
+        #particleCanvas.active { opacity: 1; }
         /* ===== Background Animation Container ===== */
         #bgAnimationContainer {
             position: fixed;
@@ -230,6 +227,24 @@
             overflow: hidden;
             transition: background 0.8s ease;
         }
+        /* ===== SVG Background ===== */
+        #svgBackground {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            display: none;
+        }
+        #svgBackground.active { display: block; }
+        #svgBackground svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
         /* ===== Main App ===== */
         .app-wrapper {
             position: relative;
@@ -238,7 +253,6 @@
             flex-direction: column;
             height: 100vh;
             background: transparent;
-            padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 0px);
         }
         .smooth-transition * {
             transition: background-color var(--motion-duration-medium) var(--motion-easing-emphasized),
@@ -313,9 +327,7 @@
             color: var(--md-sys-color-on-primary-container);
             transform: scale(1.05);
         }
-        .hamburger-btn:active {
-            transform: scale(0.95);
-        }
+        .hamburger-btn:active { transform: scale(0.95); }
         .hamburger-btn .lucide {
             width: 28px;
             height: 28px;
@@ -346,9 +358,7 @@
             background: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
         }
-        .theme-toggle:active {
-            transform: scale(0.95);
-        }
+        .theme-toggle:active { transform: scale(0.95); }
         .theme-toggle .lucide {
             width: 24px;
             height: 24px;
@@ -362,7 +372,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.4);
+            background: rgba(0,0,0,0.4);
             z-index: 200;
             opacity: 0;
             pointer-events: none;
@@ -388,9 +398,7 @@
             flex-direction: column;
             border-right: 1px solid var(--md-sys-color-outline-variant);
         }
-        .sidebar.open {
-            transform: translateX(0);
-        }
+        .sidebar.open { transform: translateX(0); }
         .sidebar-header {
             padding: 16px 18px;
             display: flex;
@@ -436,9 +444,7 @@
         .sidebar-body::-webkit-scrollbar {
             width: 4px;
         }
-        .sidebar-body::-webkit-scrollbar-track {
-            background: transparent;
-        }
+        .sidebar-body::-webkit-scrollbar-track { background: transparent; }
         .sidebar-body::-webkit-scrollbar-thumb {
             background: var(--md-sys-color-outline-variant);
             border-radius: 4px;
@@ -606,7 +612,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0,0,0,0.5);
             z-index: 400;
             display: flex;
             align-items: center;
@@ -631,9 +637,7 @@
             transform: scale(0.92);
             transition: transform var(--motion-duration-medium) var(--motion-easing-emphasized);
         }
-        .modal-overlay.open .modal-box {
-            transform: scale(1);
-        }
+        .modal-overlay.open .modal-box { transform: scale(1); }
         .modal-box h3 {
             font-size: 1.2rem;
             font-weight: 600;
@@ -705,14 +709,13 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 20px 16px 80px 16px;
+            padding: 20px 16px calc(80px + var(--safe-area-bottom)) 16px;
             display: flex;
             flex-direction: column;
             gap: 16px;
             position: relative;
             scroll-behavior: smooth;
             background: transparent;
-            padding-bottom: calc(80px + env(safe-area-inset-bottom, 0px));
         }
         .welcome-container {
             display: flex;
@@ -725,14 +728,8 @@
             animation: fadeIn 0.8s ease-out;
         }
         @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .welcome-logo {
             width: 120px;
@@ -748,21 +745,12 @@
             border-radius: 20px;
         }
         @keyframes logoFloat {
-            0%,
-            100% {
-                transform: translateY(0);
-            }
-            50% {
-                transform: translateY(-8px);
-            }
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
         }
         @keyframes logoFadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         .welcome-title {
             font-family: var(--md-ref-typeface-brand);
@@ -793,14 +781,8 @@
             z-index: 2;
         }
         @keyframes messageSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(8px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         .message.user {
             background: var(--md-sys-color-primary-container);
@@ -830,9 +812,7 @@
             margin-bottom: 0.8em;
             line-height: 1.7;
         }
-        .message.bot p:last-child {
-            margin-bottom: 0;
-        }
+        .message.bot p:last-child { margin-bottom: 0; }
         .message.typing {
             align-self: flex-start;
             background: transparent;
@@ -857,12 +837,8 @@
             stroke-width: 2;
         }
         @keyframes spin {
-            0% {
-                transform: rotate(0deg);
-            }
-            100% {
-                transform: rotate(360deg);
-            }
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         .typing-text {
             color: var(--md-sys-color-on-surface-variant);
@@ -875,7 +851,7 @@
             border-radius: 12px;
             overflow: hidden;
             border: 1px solid var(--md-sys-color-outline-variant);
-            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
             margin: 0.5em 0;
         }
         .code-block-header {
@@ -922,8 +898,7 @@
             margin: 0;
             padding: 0;
         }
-        .copy-code-btn,
-        .run-js-btn {
+        .copy-code-btn, .run-js-btn {
             width: 30px;
             height: 30px;
             padding: 0;
@@ -940,20 +915,13 @@
             flex-shrink: 0;
             line-height: 1;
         }
-        .copy-code-btn:hover,
-        .run-js-btn:hover {
+        .copy-code-btn:hover, .run-js-btn:hover {
             background: var(--md-sys-color-primary-container);
             color: var(--md-sys-color-on-primary-container);
         }
-        .copy-code-btn:active,
-        .run-js-btn:active {
-            transform: scale(0.9);
-        }
-        .copy-code-btn.copied {
-            color: var(--md-sys-color-primary);
-        }
-        .copy-code-btn .lucide,
-        .run-js-btn .lucide {
+        .copy-code-btn:active, .run-js-btn:active { transform: scale(0.9); }
+        .copy-code-btn.copied { color: var(--md-sys-color-primary); }
+        .copy-code-btn .lucide, .run-js-btn .lucide {
             width: 18px;
             height: 18px;
             stroke-width: 1.8;
@@ -1003,12 +971,7 @@
             padding: 4px 0;
         }
         /* ===== Markdown styles ===== */
-        .message.bot h1,
-        .message.bot h2,
-        .message.bot h3,
-        .message.bot h4,
-        .message.bot h5,
-        .message.bot h6 {
+        .message.bot h1, .message.bot h2, .message.bot h3, .message.bot h4, .message.bot h5, .message.bot h6 {
             margin-top: 1.2em;
             margin-bottom: 0.6em;
             font-weight: 600;
@@ -1016,53 +979,18 @@
             color: var(--md-sys-color-on-surface);
             font-family: var(--md-ref-typeface-plain);
         }
-        .message.bot h1 {
-            font-size: 1.6em;
-            border-bottom: 2px solid var(--md-sys-color-primary);
-            padding-bottom: 0.3em;
-        }
-        .message.bot h2 {
-            font-size: 1.4em;
-        }
-        .message.bot h3 {
-            font-size: 1.2em;
-        }
-        .message.bot h4 {
-            font-size: 1.1em;
-        }
-        .message.bot h5 {
-            font-size: 1em;
-        }
-        .message.bot h6 {
-            font-size: 0.95em;
-            color: var(--md-sys-color-on-surface-variant);
-        }
-        .message.bot strong {
-            font-weight: 700;
-            color: color-mix(in srgb, var(--md-sys-color-on-surface) 90%, var(--md-sys-color-primary));
-        }
-        .message.bot em {
-            font-style: italic;
-            color: color-mix(in srgb, var(--md-sys-color-on-surface) 80%, var(--md-sys-color-primary));
-        }
-        .message.bot a {
-            color: var(--md-sys-color-primary);
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            transition: color 0.2s;
-        }
-        .message.bot a:hover {
-            color: color-mix(in srgb, var(--md-sys-color-primary) 80%, black);
-        }
-        .message.bot ul,
-        .message.bot ol {
-            padding-left: 1.8em;
-            margin: 0.8em 0;
-        }
-        .message.bot li {
-            margin-bottom: 0.4em;
-            line-height: 1.5;
-        }
+        .message.bot h1 { font-size: 1.6em; border-bottom: 2px solid var(--md-sys-color-primary); padding-bottom: 0.3em; }
+        .message.bot h2 { font-size: 1.4em; }
+        .message.bot h3 { font-size: 1.2em; }
+        .message.bot h4 { font-size: 1.1em; }
+        .message.bot h5 { font-size: 1em; }
+        .message.bot h6 { font-size: 0.95em; color: var(--md-sys-color-on-surface-variant); }
+        .message.bot strong { font-weight: 700; color: color-mix(in srgb, var(--md-sys-color-on-surface) 90%, var(--md-sys-color-primary)); }
+        .message.bot em { font-style: italic; color: color-mix(in srgb, var(--md-sys-color-on-surface) 80%, var(--md-sys-color-primary)); }
+        .message.bot a { color: var(--md-sys-color-primary); text-decoration: underline; text-underline-offset: 3px; transition: color 0.2s; }
+        .message.bot a:hover { color: color-mix(in srgb, var(--md-sys-color-primary) 80%, black); }
+        .message.bot ul, .message.bot ol { padding-left: 1.8em; margin: 0.8em 0; }
+        .message.bot li { margin-bottom: 0.4em; line-height: 1.5; }
         .message.bot blockquote {
             border-left: 4px solid var(--md-sys-color-primary);
             padding-left: 1.2em;
@@ -1087,34 +1015,13 @@
             background: color-mix(in srgb, var(--md-sys-color-surface-container) 70%, transparent);
             border-bottom: 2px solid var(--md-sys-color-outline);
         }
-        .message.bot table th {
-            padding: 10px 14px;
-            text-align: left;
-            font-weight: 600;
-            color: var(--md-sys-color-on-surface);
-            border-right: 1px solid var(--md-sys-color-outline-variant);
-        }
-        .message.bot table td {
-            padding: 10px 14px;
-            border-right: 1px solid var(--md-sys-color-outline-variant);
-            border-bottom: 1px solid var(--md-sys-color-outline-variant);
-            color: var(--md-sys-color-on-surface);
-        }
-        .message.bot table tr:last-child td {
-            border-bottom: none;
-        }
-        .message.bot table th:last-child,
-        .message.bot table td:last-child {
-            border-right: none;
-        }
-        .message.bot table tr:nth-child(even) {
-            background: color-mix(in srgb, var(--md-sys-color-surface-container) 30%, transparent);
-        }
-        .message.bot table tr:hover {
-            background: color-mix(in srgb, var(--md-sys-color-primary-container) 10%, transparent);
-        }
-        .message.bot table td code,
-        .message.bot table th code {
+        .message.bot table th { padding: 10px 14px; text-align: left; font-weight: 600; color: var(--md-sys-color-on-surface); border-right: 1px solid var(--md-sys-color-outline-variant); }
+        .message.bot table td { padding: 10px 14px; border-right: 1px solid var(--md-sys-color-outline-variant); border-bottom: 1px solid var(--md-sys-color-outline-variant); color: var(--md-sys-color-on-surface); }
+        .message.bot table tr:last-child td { border-bottom: none; }
+        .message.bot table th:last-child, .message.bot table td:last-child { border-right: none; }
+        .message.bot table tr:nth-child(even) { background: color-mix(in srgb, var(--md-sys-color-surface-container) 30%, transparent); }
+        .message.bot table tr:hover { background: color-mix(in srgb, var(--md-sys-color-primary-container) 10%, transparent); }
+        .message.bot table td code, .message.bot table th code {
             background: color-mix(in srgb, var(--md-sys-color-primary-container) 30%, transparent);
             color: var(--md-sys-color-on-primary-container);
             padding: 0.2em 0.4em;
@@ -1147,13 +1054,14 @@
 
         /* ===== Input Area ===== */
         .input-area {
-            margin: 0 16px 16px 16px;
+            margin: 0 16px var(--input-area-bottom) 16px;
             display: flex;
             flex-direction: column;
-            position: relative;
+            position: sticky;
+            bottom: calc(var(--safe-area-bottom) + 0px);
             z-index: 10;
             flex-shrink: 0;
-            padding-bottom: calc(env(safe-area-inset-bottom, 0px));
+            padding-bottom: var(--safe-area-bottom);
         }
         .composer-pill {
             background: var(--md-sys-color-surface-container-high);
@@ -1229,15 +1137,14 @@
             color: var(--md-sys-color-on-primary-container);
             transform: scale(1.05);
         }
-        .plus-btn:active {
-            transform: scale(0.95);
-        }
+        .plus-btn:active { transform: scale(0.95); }
         .plus-btn .lucide {
             width: 20px;
             height: 20px;
             stroke-width: 1.8;
         }
 
+        /* Mode chip – now behaves as a dropdown trigger */
         .mode-chip {
             display: flex;
             align-items: center;
@@ -1264,21 +1171,6 @@
             height: 16px;
             stroke-width: 1.8;
         }
-        .mode-chip .mode-close {
-            display: none;
-            background: transparent;
-            border: none;
-            color: var(--md-sys-color-on-surface-variant);
-            cursor: pointer;
-            padding: 0 2px;
-            font-size: 1rem;
-            line-height: 1;
-            margin-left: 2px;
-            transition: color 0.2s;
-        }
-        .mode-chip .mode-close:hover {
-            color: var(--md-sys-color-error);
-        }
         .mode-chip.active {
             background: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
@@ -1287,17 +1179,70 @@
         .mode-chip.active .lucide {
             color: var(--md-sys-color-on-primary);
         }
-        .mode-chip.active .mode-close {
-            display: inline-block;
-            color: var(--md-sys-color-on-primary);
-            opacity: 0.7;
+
+        /* Mode selection dropdown */
+        .mode-select-panel {
+            position: absolute;
+            bottom: calc(100% + 10px);
+            left: 0;
+            background: var(--md-sys-color-surface-container);
+            border-radius: 16px;
+            box-shadow: var(--md-elevation-level3);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            padding: 6px 0;
+            min-width: 160px;
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(8px) scale(0.96);
+            transition: opacity 0.2s ease, transform 0.2s ease, visibility 0.2s ease;
+            visibility: hidden;
+            z-index: 20;
+            backdrop-filter: var(--glass-backdrop-blur);
+            -webkit-backdrop-filter: var(--glass-backdrop-blur);
         }
-        .mode-chip.active .mode-close:hover {
+        .mode-select-panel.open {
             opacity: 1;
-            color: #fff;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+            visibility: visible;
         }
-        .mode-chip:not(.active) .mode-close {
+        .mode-select-panel .mode-option {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 18px;
+            font-size: 0.9rem;
+            color: var(--md-sys-color-on-surface);
+            background: transparent;
+            border: none;
+            width: 100%;
+            cursor: pointer;
+            font-family: var(--md-ref-typeface-plain);
+            transition: background 0.15s;
+            border-radius: 0;
+            text-align: left;
+        }
+        .mode-select-panel .mode-option:hover {
+            background: var(--md-sys-color-surface-container-high);
+        }
+        .mode-select-panel .mode-option .lucide {
+            width: 20px;
+            height: 20px;
+            stroke-width: 1.8;
+            flex-shrink: 0;
+        }
+        .mode-select-panel .mode-option.active-opt {
+            background: var(--md-sys-color-primary-container);
+            color: var(--md-sys-color-on-primary-container);
+        }
+        .mode-select-panel .mode-option .check-mark {
+            margin-left: auto;
+            font-weight: bold;
+            color: var(--md-sys-color-primary);
             display: none;
+        }
+        .mode-select-panel .mode-option.active-opt .check-mark {
+            display: inline;
         }
 
         .send-btn {
@@ -1321,15 +1266,14 @@
             box-shadow: var(--md-elevation-level2);
             background: color-mix(in srgb, var(--md-sys-color-primary) 90%, white);
         }
-        .send-btn:active:not(:disabled) {
-            transform: scale(0.94);
-        }
+        .send-btn:active:not(:disabled) { transform: scale(0.94); }
         .send-btn:disabled {
             background: var(--md-sys-color-surface-container-highest);
             color: var(--md-sys-color-on-surface-variant);
             cursor: not-allowed;
             box-shadow: none;
             transform: none;
+            opacity: 0.6;
         }
         .send-btn .lucide {
             width: 24px;
@@ -1379,9 +1323,7 @@
             align-items: center;
             justify-content: center;
         }
-        .active-chip .chip-close:hover {
-            color: var(--md-sys-color-error);
-        }
+        .active-chip .chip-close:hover { color: var(--md-sys-color-error); }
         .active-chip.image-chip {
             border-color: var(--md-sys-color-primary);
             background: color-mix(in srgb, var(--md-sys-color-primary) 15%, var(--md-sys-color-surface));
@@ -1460,78 +1402,6 @@
             margin: 4px 12px;
         }
 
-        /* ===== Theme Applied Banner ===== */
-        .theme-applied-banner {
-            background: color-mix(in srgb, var(--md-sys-color-primary) 12%, var(--md-sys-color-surface-container));
-            border: 1px solid var(--md-sys-color-primary);
-            border-radius: 16px;
-            padding: 12px 18px;
-            margin: 0 4px 12px 4px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            font-size: 0.9rem;
-            color: var(--md-sys-color-on-surface);
-            animation: fadeIn 0.5s ease;
-            box-shadow: var(--md-elevation-level1);
-            flex-wrap: wrap;
-            position: relative;
-            z-index: 2;
-        }
-        .theme-applied-banner .theme-name {
-            font-weight: 600;
-            color: var(--md-sys-color-primary);
-            font-family: var(--md-ref-typeface-brand);
-            font-style: italic;
-        }
-        .theme-applied-banner .theme-badge {
-            font-size: 0.7rem;
-            padding: 2px 10px;
-            border-radius: 12px;
-            background: var(--md-sys-color-surface-container);
-            border: 1px solid var(--md-sys-color-outline-variant);
-            color: var(--md-sys-color-on-surface-variant);
-            font-weight: 500;
-        }
-        .theme-applied-banner .reset-theme-btn {
-            background: transparent;
-            border: 1px solid var(--md-sys-color-outline-variant);
-            border-radius: 20px;
-            padding: 4px 14px;
-            font-size: 0.8rem;
-            cursor: pointer;
-            color: var(--md-sys-color-on-surface-variant);
-            transition: all 0.2s;
-            font-family: var(--md-ref-typeface-plain);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        .theme-applied-banner .reset-theme-btn:hover {
-            background: var(--md-sys-color-error-container);
-            color: var(--md-sys-color-on-error-container);
-            border-color: var(--md-sys-color-error);
-        }
-        .theme-applied-banner .reset-theme-btn .lucide {
-            width: 16px;
-            height: 16px;
-            stroke-width: 2;
-        }
-        .theme-applied-banner .banner-dismiss {
-            background: transparent;
-            border: none;
-            color: var(--md-sys-color-on-surface-variant);
-            cursor: pointer;
-            padding: 0 4px;
-            font-size: 1.2rem;
-            line-height: 1;
-            transition: color 0.2s;
-        }
-        .theme-applied-banner .banner-dismiss:hover {
-            color: var(--md-sys-color-error);
-        }
-
         /* ===== Error ===== */
         .error {
             background: color-mix(in srgb, var(--md-sys-color-error) 10%, var(--md-sys-color-surface));
@@ -1548,9 +1418,7 @@
             position: relative;
             z-index: 2;
         }
-        .hidden {
-            display: none !important;
-        }
+        .hidden { display: none !important; }
         .install-banner {
             position: fixed;
             bottom: 90px;
@@ -1569,10 +1437,7 @@
             animation: fadeInUp 0.4s ease;
             font-family: var(--md-ref-typeface-plain);
         }
-        .install-banner span {
-            font-size: 0.95rem;
-            font-weight: 500;
-        }
+        .install-banner span { font-size: 0.95rem; font-weight: 500; }
         .install-banner button {
             background: var(--md-sys-color-primary);
             color: var(--md-sys-color-on-primary);
@@ -1584,170 +1449,52 @@
             font-family: var(--md-ref-typeface-plain);
         }
         @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
         }
         @media (max-width: 600px) {
-            .header {
-                padding: 10px 14px;
-                font-size: 1.1rem;
-            }
-            .header .logo-icon {
-                width: 1.6rem;
-                height: 1.6rem;
-            }
-            .header-title {
-                font-size: 1.1rem;
-            }
-            .theme-toggle {
-                width: 40px;
-                height: 40px;
-            }
-            .theme-toggle .lucide {
-                width: 22px;
-                height: 22px;
-            }
-            .hamburger-btn {
-                width: 40px;
-                height: 40px;
-            }
-            .hamburger-btn .lucide {
-                width: 24px;
-                height: 24px;
-            }
-            .chat-container {
-                padding: 16px 12px 90px 12px;
-                padding-bottom: calc(90px + env(safe-area-inset-bottom, 0px));
-            }
-            .welcome-logo {
-                width: 100px;
-                height: 100px;
-            }
-            .welcome-title {
-                font-size: 2rem;
-            }
-            .welcome-subtitle {
-                font-size: 1rem;
-                max-width: 260px;
-            }
-            .message {
-                font-size: 0.98rem;
-            }
-            .message.user {
-                padding: 10px 14px;
-                max-width: 90%;
-            }
-            .message.bot {
-                padding: 2px 0;
-            }
-            .input-area {
-                margin: 0 12px 12px 12px;
-            }
-            .composer-pill {
-                padding: 6px 10px 6px 14px;
-                border-radius: 24px;
-            }
-            #messageInput {
-                font-size: 0.95rem;
-                min-height: 24px;
-            }
-            .plus-btn {
-                width: 32px;
-                height: 32px;
-            }
-            .plus-btn .lucide {
-                width: 18px;
-                height: 18px;
-            }
-            .mode-chip {
-                font-size: 0.75rem;
-                padding: 4px 8px;
-            }
-            .mode-chip .lucide {
-                width: 14px;
-                height: 14px;
-            }
-            .send-btn {
-                width: 36px;
-                height: 36px;
-            }
-            .send-btn .lucide {
-                width: 20px;
-                height: 20px;
-            }
-            .popover-panel {
-                min-width: 160px;
-                left: 0;
-                right: auto;
-            }
-            .sidebar {
-                width: 85vw;
-                max-width: 320px;
-            }
-            .modal-box {
-                padding: 24px 20px 20px;
-                max-width: 340px;
-            }
-            .code-block-header {
-                height: 34px;
-                font-size: 0.7rem;
-            }
-            .copy-code-btn,
-            .run-js-btn {
-                width: 28px;
-                height: 28px;
-            }
-            .copy-code-btn .lucide,
-            .run-js-btn .lucide {
-                width: 16px;
-                height: 16px;
-            }
-            .code-block-header .lang-label .terminal-icon-box {
-                width: 22px;
-                height: 22px;
-            }
-            .code-block-header .lang-label .terminal-icon-box .lucide {
-                width: 14px;
-                height: 14px;
-            }
-            .theme-applied-banner {
-                font-size: 0.8rem;
-                padding: 10px 14px;
-            }
-            .active-chip {
-                font-size: 0.7rem;
-                padding: 3px 8px 3px 6px;
-            }
-            .active-chip .chip-icon {
-                width: 12px;
-                height: 12px;
-            }
+            .header { padding: 10px 14px; font-size: 1.1rem; }
+            .header .logo-icon { width: 1.6rem; height: 1.6rem; }
+            .header-title { font-size: 1.1rem; }
+            .theme-toggle { width: 40px; height: 40px; }
+            .theme-toggle .lucide { width: 22px; height: 22px; }
+            .hamburger-btn { width: 40px; height: 40px; }
+            .hamburger-btn .lucide { width: 24px; height: 24px; }
+            .chat-container { padding: 16px 12px 90px 12px; padding-bottom: calc(90px + var(--safe-area-bottom)); }
+            .welcome-logo { width: 100px; height: 100px; }
+            .welcome-title { font-size: 2rem; }
+            .welcome-subtitle { font-size: 1rem; max-width: 260px; }
+            .message { font-size: 0.98rem; }
+            .message.user { padding: 10px 14px; max-width: 90%; }
+            .message.bot { padding: 2px 0; }
+            .input-area { margin: 0 12px var(--input-area-bottom) 12px; }
+            .composer-pill { padding: 6px 10px 6px 14px; border-radius: 24px; }
+            #messageInput { font-size: 0.95rem; min-height: 24px; }
+            .plus-btn { width: 32px; height: 32px; }
+            .plus-btn .lucide { width: 18px; height: 18px; }
+            .mode-chip { font-size: 0.75rem; padding: 4px 8px; }
+            .mode-chip .lucide { width: 14px; height: 14px; }
+            .send-btn { width: 36px; height: 36px; }
+            .send-btn .lucide { width: 20px; height: 20px; }
+            .popover-panel { min-width: 160px; left: 0; right: auto; }
+            .sidebar { width: 85vw; max-width: 320px; }
+            .modal-box { padding: 24px 20px 20px; max-width: 340px; }
+            .code-block-header { height: 34px; font-size: 0.7rem; }
+            .copy-code-btn, .run-js-btn { width: 28px; height: 28px; }
+            .copy-code-btn .lucide, .run-js-btn .lucide { width: 16px; height: 16px; }
+            .code-block-header .lang-label .terminal-icon-box { width: 22px; height: 22px; }
+            .code-block-header .lang-label .terminal-icon-box .lucide { width: 14px; height: 14px; }
+            .active-chip { font-size: 0.7rem; padding: 3px 8px 3px 6px; }
+            .active-chip .chip-icon { width: 12px; height: 12px; }
+            .install-banner { bottom: 80px; left: 12px; right: 12px; }
         }
         @media (max-width: 400px) {
-            .header-title {
-                font-size: 0.95rem;
-            }
-            .chat-item {
-                padding: 8px 10px;
-            }
-            .chat-item .chat-title {
-                font-size: 0.85rem;
-            }
-            .dropdown-menu {
-                min-width: 140px;
-            }
-            .mode-chip span.mode-label {
-                display: none;
-            }
-            .mode-chip {
-                padding: 6px 8px;
-            }
+            .header-title { font-size: 0.95rem; }
+            .chat-item { padding: 8px 10px; }
+            .chat-item .chat-title { font-size: 0.85rem; }
+            .dropdown-menu { min-width: 140px; }
+            .mode-chip span.mode-label { display: none; }
+            .mode-chip { padding: 6px 8px; }
         }
 
         /* ===== Background Animation Support ===== */
@@ -1759,19 +1506,11 @@
             animation: gradientShift 12s ease infinite;
         }
         @keyframes gradientShift {
-            0% {
-                background-position: 0% 50%;
-            }
-            50% {
-                background-position: 100% 50%;
-            }
-            100% {
-                background-position: 0% 50%;
-            }
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
         }
-        #dynamicThemeStyle {
-            display: none;
-        }
+        #dynamicThemeStyle { display: none; }
         #particleCanvas {
             position: fixed;
             top: 0;
@@ -1783,9 +1522,7 @@
             opacity: 0;
             transition: opacity 1.2s ease;
         }
-        #particleCanvas.active {
-            opacity: 1;
-        }
+        #particleCanvas.active { opacity: 1; }
         #bgAnimationContainer {
             position: fixed;
             top: 0;
@@ -1805,18 +1542,33 @@
             height: 100vh;
             background: transparent;
         }
+        #svgBackground {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+            display: none;
+        }
+        #svgBackground.active { display: block; }
+        #svgBackground svg {
+            width: 100%;
+            height: 100%;
+            display: block;
+        }
     </style>
 </head>
 <body>
-
-    <!-- ===== BACKGROUND ANIMATION CONTAINER ===== -->
+    <!-- ===== BACKGROUND LAYERS ===== -->
     <div id="bgAnimationContainer"></div>
-    <!-- ===== PARTICLE CANVAS ===== -->
+    <div id="svgBackground"></div>
     <canvas id="particleCanvas"></canvas>
 
     <!-- ===== APP WRAPPER ===== -->
     <div class="app-wrapper">
-
         <!-- ===== HEADER ===== -->
         <div class="header">
             <div class="header-left">
@@ -1848,7 +1600,7 @@
 
         <!-- ===== INPUT AREA ===== -->
         <div class="input-area" id="inputArea">
-            <!-- Active mode chips appear here -->
+            <!-- Active mode chips -->
             <div class="active-chips" id="activeChips"></div>
 
             <div class="composer-pill">
@@ -1859,30 +1611,30 @@
                     <button class="plus-btn" id="plusBtn" aria-label="More options">
                         <i data-lucide="plus" class="lucide"></i>
                     </button>
-                    <button class="mode-chip" id="modeChip" aria-label="Toggle mode">
+                    <!-- Mode chip -->
+                    <button class="mode-chip" id="modeChip" aria-label="Switch mode">
                         <i data-lucide="zap" class="lucide"></i>
                         <span class="mode-label" id="modeLabel">Chat</span>
-                        <span class="mode-close" id="modeClose">×</span>
                     </button>
+                    <!-- Mode selection panel (dropdown) -->
+                    <div class="mode-select-panel" id="modeSelectPanel">
+                        <button class="mode-option active-opt" data-mode="chat">
+                            <i data-lucide="zap" class="lucide"></i> Chat (Gemini)
+                            <span class="check-mark">✓</span>
+                        </button>
+                        <button class="mode-option" data-mode="image">
+                            <i data-lucide="image" class="lucide"></i> Image (I-gen)
+                            <span class="check-mark">✓</span>
+                        </button>
+                    </div>
                     <button class="send-btn" id="sendBtn" aria-label="Send message" disabled>
                         <i data-lucide="arrow-up" class="lucide"></i>
                     </button>
                 </div>
             </div>
 
-            <!-- Popover panel -->
+            <!-- Popover panel (only Web Search + Theme Mode + Reset Theme) -->
             <div class="popover-panel" id="popoverPanel">
-                <button class="popover-item" id="attachImageBtn">
-                    <i data-lucide="image" class="lucide"></i> Attach image
-                </button>
-                <button class="popover-item" id="imageModeToggle">
-                    <i data-lucide="image" class="lucide"></i> Image generation
-                    <span class="toggle-indicator" id="imageModeIndicator">Off</span>
-                </button>
-                <button class="popover-item" id="clearAttachmentsBtn" disabled style="opacity:0.5;">
-                    <i data-lucide="trash-2" class="lucide"></i> Clear attachments
-                </button>
-                <div class="popover-divider"></div>
                 <button class="popover-item" id="webSearchToggle">
                     <i data-lucide="globe" class="lucide"></i> Web search
                     <span class="toggle-indicator" id="webSearchIndicator">Off</span>
@@ -1890,6 +1642,10 @@
                 <button class="popover-item" id="themeModeToggle">
                     <i data-lucide="palette" class="lucide"></i> Theme mode
                     <span class="toggle-indicator" id="themeModeIndicator">Off</span>
+                </button>
+                <div class="popover-divider"></div>
+                <button class="popover-item" id="resetThemePopover">
+                    <i data-lucide="rotate-ccw" class="lucide"></i> Reset Theme
                 </button>
             </div>
         </div>
@@ -1927,7 +1683,7 @@
             </div>
         </div>
 
-        <!-- ===== DROPDOWN MENU ===== -->
+        <!-- ===== DROPDOWN MENU (chat item) ===== -->
         <div class="dropdown-menu" id="dropdownMenu">
             <button class="dropdown-item" id="dropdownPin" data-action="pin">
                 <i data-lucide="pin" class="lucide"></i> Pin
@@ -1941,7 +1697,7 @@
             </button>
         </div>
 
-        <!-- ===== MODAL ===== -->
+        <!-- ===== MODAL (for rename/delete) ===== -->
         <div class="modal-overlay" id="modalOverlay">
             <div class="modal-box">
                 <h3 id="modalTitle">Confirm</h3>
@@ -1956,9 +1712,7 @@
 
         <!-- ===== DYNAMIC THEME STYLE TAG ===== -->
         <style id="dynamicThemeStyle"></style>
-
     </div>
-    <!-- end app-wrapper -->
 
     <!-- ============================================================ -->
     <!-- ===== JAVASCRIPT ===== -->
@@ -1974,22 +1728,14 @@
                 this.particles = [];
                 this.running = false;
                 this.animationId = null;
-                this.config = {
-                    type: 'none',
-                    count: 60,
-                    color: '#ffffff',
-                    speed: 1,
-                    size: 3,
-                };
+                this.config = { type: 'none', count: 60, color: '#ffffff', speed: 1, size: 3 };
                 this._resize();
                 window.addEventListener('resize', () => this._resize());
             }
-
             _resize() {
                 this.canvas.width = window.innerWidth;
                 this.canvas.height = window.innerHeight;
             }
-
             start(config) {
                 this.stop();
                 this.config = Object.assign({}, this.config, config || {});
@@ -2007,15 +1753,13 @@
                     let p = {
                         x: Math.random() * this.canvas.width,
                         y: Math.random() * this.canvas.height,
-                        vx: 0,
-                        vy: 0,
+                        vx: 0, vy: 0,
                         size: size * (0.5 + Math.random() * 0.8),
                         opacity: 0.3 + Math.random() * 0.7,
                         color: color,
                         phase: Math.random() * Math.PI * 2,
                         wobble: 0.5 + Math.random() * 0.5,
                     };
-
                     switch (this.config.type) {
                         case 'snow':
                             p.vy = (0.5 + Math.random() * 1.5) * speed;
@@ -2025,8 +1769,7 @@
                             p.opacity = 0.4 + Math.random() * 0.6;
                             break;
                         case 'stars':
-                            p.vy = 0;
-                            p.vx = 0;
+                            p.vy = 0; p.vx = 0;
                             p.size = size * (0.3 + Math.random() * 0.7);
                             p.opacity = 0.2 + Math.random() * 0.8;
                             p.twinkleSpeed = 0.5 + Math.random() * 1.5;
@@ -2063,12 +1806,10 @@
                     }
                     this.particles.push(p);
                 }
-
                 this.canvas.classList.add('active');
                 this.running = true;
                 this._loop();
             }
-
             stop() {
                 this.running = false;
                 if (this.animationId) {
@@ -2078,75 +1819,58 @@
                 this.canvas.classList.remove('active');
                 this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
             }
-
             _loop() {
                 if (!this.running) return;
                 this.animationId = requestAnimationFrame(() => this._loop());
                 this._update();
                 this._draw();
             }
-
             _update() {
-                const w = this.canvas.width;
-                const h = this.canvas.height;
+                const w = this.canvas.width, h = this.canvas.height;
                 const type = this.config.type;
-
                 for (const p of this.particles) {
                     p.x += p.vx || 0;
                     p.y += p.vy || 0;
-
                     if (type === 'snow') {
                         p.x += Math.sin(p.phase + p.y * 0.01) * 0.3 * p.wobble;
-                        if (p.y > h + 20) { p.y = -20;
-                            p.x = Math.random() * w; }
+                        if (p.y > h + 20) { p.y = -20; p.x = Math.random() * w; }
                         if (p.x > w + 20) p.x = -20;
                         if (p.x < -20) p.x = w + 20;
                     } else if (type === 'stars') {
-                        // twinkle handled in draw
+                        // handled in draw
                     } else if (type === 'confetti') {
                         p.rotation += p.rotSpeed || 0;
-                        if (p.y > h + 20) { p.y = -20;
-                            p.x = Math.random() * w; }
+                        if (p.y > h + 20) { p.y = -20; p.x = Math.random() * w; }
                         if (p.x > w + 20) p.x = -20;
                         if (p.x < -20) p.x = w + 20;
                     } else if (type === 'bubbles') {
                         p.x += Math.sin(p.phase + p.y * 0.02) * 0.5 * p.wobble;
-                        if (p.y < -20) { p.y = h + 20;
-                            p.x = Math.random() * w; }
+                        if (p.y < -20) { p.y = h + 20; p.x = Math.random() * w; }
                         if (p.x > w + 20) p.x = -20;
                         if (p.x < -20) p.x = w + 20;
                     } else if (type === 'rain') {
-                        if (p.y > h + 20) { p.y = -20;
-                            p.x = Math.random() * w; }
+                        if (p.y > h + 20) { p.y = -20; p.x = Math.random() * w; }
                         if (p.x > w + 20) p.x = -20;
                         if (p.x < -20) p.x = w + 20;
                     } else {
-                        if (p.y > h + 20) { p.y = -20;
-                            p.x = Math.random() * w; }
+                        if (p.y > h + 20) { p.y = -20; p.x = Math.random() * w; }
                         if (p.x > w + 20) p.x = -20;
                         if (p.x < -20) p.x = w + 20;
                     }
-
                     if (p.x > w + 50) p.x = -50;
                     if (p.x < -50) p.x = w + 50;
                     if (p.y > h + 50) p.y = -50;
                     if (p.y < -50) p.y = h + 50;
                 }
             }
-
             _draw() {
-                const ctx = this.ctx;
-                const w = this.canvas.width;
-                const h = this.canvas.height;
+                const ctx = this.ctx, w = this.canvas.width, h = this.canvas.height;
                 ctx.clearRect(0, 0, w, h);
                 const type = this.config.type;
-
                 for (const p of this.particles) {
                     let opacity = p.opacity || 0.6;
-
                     if (type === 'stars') {
-                        const twinkle = 0.5 + 0.5 * Math.sin(Date.now() * 0.002 * (p.twinkleSpeed || 1) + (p.twinkleOffset ||
-                            0));
+                        const twinkle = 0.5 + 0.5 * Math.sin(Date.now() * 0.002 * (p.twinkleSpeed || 1) + (p.twinkleOffset || 0));
                         opacity = p.opacity * (0.3 + 0.7 * twinkle);
                         ctx.beginPath();
                         ctx.arc(p.x, p.y, p.size * (0.5 + 0.5 * twinkle), 0, Math.PI * 2);
@@ -2156,7 +1880,6 @@
                         ctx.globalAlpha = 1;
                         continue;
                     }
-
                     if (type === 'rain') {
                         ctx.beginPath();
                         ctx.moveTo(p.x, p.y);
@@ -2168,7 +1891,6 @@
                         ctx.globalAlpha = 1;
                         continue;
                     }
-
                     if (type === 'confetti') {
                         ctx.save();
                         ctx.translate(p.x, p.y);
@@ -2176,12 +1898,11 @@
                         ctx.globalAlpha = opacity;
                         ctx.fillStyle = p.color || '#ff6b6b';
                         const s = p.size || 3;
-                        ctx.fillRect(-s / 2, -s / 4, s, s / 2);
+                        ctx.fillRect(-s/2, -s/4, s, s/2);
                         ctx.globalAlpha = 1;
                         ctx.restore();
                         continue;
                     }
-
                     if (type === 'bubbles') {
                         ctx.beginPath();
                         ctx.arc(p.x, p.y, p.size || 3, 0, Math.PI * 2);
@@ -2197,7 +1918,6 @@
                         ctx.globalAlpha = 1;
                         continue;
                     }
-
                     ctx.beginPath();
                     ctx.arc(p.x, p.y, p.size || 3, 0, Math.PI * 2);
                     ctx.fillStyle = p.color || '#ffffff';
@@ -2218,19 +1938,13 @@
             chats: [],
             activeId: null,
             _nextId: 1,
-
             init() {
                 this.load();
-                if (this.chats.length === 0) {
-                    this.createChat('New Chat');
-                }
-                if (!this.activeId && this.chats.length > 0) {
-                    this.activeId = this.chats[0].id;
-                }
+                if (this.chats.length === 0) this.createChat('New Chat');
+                if (!this.activeId && this.chats.length > 0) this.activeId = this.chats[0].id;
                 this.save();
                 return this;
             },
-
             createChat(title) {
                 if (this.chats.length >= MAX_CHATS) return null;
                 const chat = {
@@ -2246,7 +1960,6 @@
                 this.save();
                 return chat;
             },
-
             deleteChat(id) {
                 const idx = this.chats.findIndex(c => c.id === id);
                 if (idx === -1) return false;
@@ -2254,13 +1967,10 @@
                 if (this.activeId === id) {
                     this.activeId = this.chats.length > 0 ? this.chats[0].id : null;
                 }
-                if (this.chats.length === 0) {
-                    this.createChat('New Chat');
-                }
+                if (this.chats.length === 0) this.createChat('New Chat');
                 this.save();
                 return true;
             },
-
             renameChat(id, newTitle) {
                 const chat = this.getChat(id);
                 if (!chat || !newTitle.trim()) return false;
@@ -2269,7 +1979,6 @@
                 this.save();
                 return true;
             },
-
             togglePin(id) {
                 const chat = this.getChat(id);
                 if (!chat) return false;
@@ -2278,15 +1987,8 @@
                 this.save();
                 return true;
             },
-
-            getChat(id) {
-                return this.chats.find(c => c.id === id) || null;
-            },
-
-            getActive() {
-                return this.getChat(this.activeId);
-            },
-
+            getChat(id) { return this.chats.find(c => c.id === id) || null; },
+            getActive() { return this.getChat(this.activeId); },
             switchTo(id) {
                 if (this.getChat(id)) {
                     this.activeId = id;
@@ -2295,7 +1997,6 @@
                 }
                 return false;
             },
-
             addMessage(chatId, role, text) {
                 const chat = this.getChat(chatId);
                 if (!chat) return false;
@@ -2304,7 +2005,6 @@
                 this.save();
                 return true;
             },
-
             clearMessages(chatId) {
                 const chat = this.getChat(chatId);
                 if (!chat) return false;
@@ -2313,25 +2013,16 @@
                 this.save();
                 return true;
             },
-
             save() {
                 try {
-                    const data = {
-                        chats: this.chats,
-                        activeId: this.activeId,
-                        nextId: this._nextId,
-                    };
+                    const data = { chats: this.chats, activeId: this.activeId, nextId: this._nextId };
                     localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                } catch (e) { console.warn('Save failed:', e); }
+                } catch(e) { console.warn('Save failed:', e); }
             },
-
             load() {
                 try {
                     const raw = localStorage.getItem(STORAGE_KEY);
-                    if (!raw) {
-                        this._migrateOld();
-                        return;
-                    }
+                    if (!raw) { this._migrateOld(); return; }
                     const data = JSON.parse(raw);
                     this.chats = data.chats || [];
                     this.activeId = data.activeId || null;
@@ -2342,13 +2033,9 @@
                         if (!c.createdAt) c.createdAt = Date.now();
                         if (!c.updatedAt) c.updatedAt = Date.now();
                     });
-                    if (this.chats.length === 0) {
-                        this.createChat('New Chat');
-                    }
-                    if (!this.getChat(this.activeId) && this.chats.length > 0) {
-                        this.activeId = this.chats[0].id;
-                    }
-                } catch (e) {
+                    if (this.chats.length === 0) this.createChat('New Chat');
+                    if (!this.getChat(this.activeId) && this.chats.length > 0) this.activeId = this.chats[0].id;
+                } catch(e) {
                     console.warn('Load failed:', e);
                     this.chats = [];
                     this.activeId = null;
@@ -2356,7 +2043,6 @@
                     this.createChat('New Chat');
                 }
             },
-
             _migrateOld() {
                 try {
                     const oldRaw = localStorage.getItem('endroid_conversation');
@@ -2375,17 +2061,15 @@
                     this.activeId = chat.id;
                     this.save();
                     localStorage.removeItem('endroid_conversation');
-                } catch (e) { console.warn('Migration failed:', e); }
+                } catch(e) { console.warn('Migration failed:', e); }
             },
-
             getSortedChats() {
                 const pinned = this.chats.filter(c => c.pinned);
                 const unpinned = this.chats.filter(c => !c.pinned);
-                pinned.sort((a, b) => a.title.localeCompare(b.title));
-                unpinned.sort((a, b) => b.updatedAt - a.updatedAt);
+                pinned.sort((a,b) => a.title.localeCompare(b.title));
+                unpinned.sort((a,b) => b.updatedAt - a.updatedAt);
                 return [...pinned, ...unpinned];
             },
-
             getTitle(chat) {
                 if (!chat) return 'Chat';
                 if (chat.title && chat.title.trim()) return chat.title.trim();
@@ -2396,14 +2080,13 @@
                 }
                 return 'New Chat';
             },
-
             getPreview(chat) {
                 if (!chat || chat.messages.length === 0) return 'Empty chat';
                 const last = chat.messages[chat.messages.length - 1];
                 if (!last) return 'Empty chat';
                 const snippet = last.text.slice(0, 40);
                 return snippet + (last.text.length > 40 ? '…' : '');
-            },
+            }
         };
 
         // ================================================================
@@ -2414,6 +2097,7 @@
             _styleTag: null,
             _defaultVariables: {},
             _particleSystem: null,
+            _svgContainer: null,
 
             init() {
                 this._styleTag = document.getElementById('dynamicThemeStyle');
@@ -2424,6 +2108,8 @@
                     this._styleTag = tag;
                 }
                 this._particleSystem = new ParticleSystem();
+                this._svgContainer = document.getElementById('svgBackground');
+                // Snapshot default variables
                 const root = document.documentElement;
                 const styles = getComputedStyle(root);
                 const vars = [
@@ -2453,27 +2139,23 @@
 
             apply(themeData) {
                 if (!themeData || typeof themeData !== 'object') return false;
-                const { cssVariables, css, name, mode, particles } = themeData;
+                const { cssVariables, css, name, mode, particles, svgBackground } = themeData;
                 const root = document.documentElement;
 
+                // Mode (dark/light)
                 if (mode === 'dark') {
                     document.body.classList.remove('theme-light');
                     document.body.classList.add('theme-dark');
                     const icon = document.getElementById('themeIcon');
-                    if (icon) {
-                        icon.setAttribute('data-lucide', 'sun');
-                        if (typeof lucide !== 'undefined') lucide.createIcons();
-                    }
+                    if (icon) { icon.setAttribute('data-lucide', 'sun'); if (typeof lucide !== 'undefined') lucide.createIcons(); }
                 } else if (mode === 'light') {
                     document.body.classList.remove('theme-dark');
                     document.body.classList.add('theme-light');
                     const icon = document.getElementById('themeIcon');
-                    if (icon) {
-                        icon.setAttribute('data-lucide', 'moon');
-                        if (typeof lucide !== 'undefined') lucide.createIcons();
-                    }
+                    if (icon) { icon.setAttribute('data-lucide', 'moon'); if (typeof lucide !== 'undefined') lucide.createIcons(); }
                 }
 
+                // CSS variables
                 if (cssVariables && typeof cssVariables === 'object') {
                     Object.entries(cssVariables).forEach(([key, value]) => {
                         if (key.startsWith('--') && value) {
@@ -2482,12 +2164,23 @@
                     });
                 }
 
+                // Additional CSS (animations, etc.)
                 if (css && typeof css === 'string' && css.trim()) {
                     this._styleTag.textContent = css;
                 } else {
                     this._styleTag.textContent = '';
                 }
 
+                // SVG Background
+                if (svgBackground && typeof svgBackground === 'string' && svgBackground.trim()) {
+                    this._svgContainer.innerHTML = svgBackground;
+                    this._svgContainer.classList.add('active');
+                } else {
+                    this._svgContainer.innerHTML = '';
+                    this._svgContainer.classList.remove('active');
+                }
+
+                // Particles
                 if (particles && particles.type && particles.type !== 'none') {
                     const pConfig = {
                         type: particles.type,
@@ -2507,11 +2200,12 @@
                     css: css || '',
                     mode: mode || 'light',
                     particles: particles || null,
+                    svgBackground: svgBackground || null,
                 };
 
                 try {
                     localStorage.setItem('endroid_applied_theme', JSON.stringify(themeData));
-                } catch (e) { console.warn('Theme save failed:', e); }
+                } catch(e) { console.warn('Theme save failed:', e); }
 
                 return true;
             },
@@ -2523,10 +2217,10 @@
                 });
                 this._styleTag.textContent = '';
                 this._particleSystem.stop();
+                this._svgContainer.innerHTML = '';
+                this._svgContainer.classList.remove('active');
                 this._appliedTheme = null;
-                try {
-                    localStorage.removeItem('endroid_applied_theme');
-                } catch (e) { console.warn('Theme remove failed:', e); }
+                try { localStorage.removeItem('endroid_applied_theme'); } catch(e) {}
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
                 const currentTheme = localStorage.getItem('endroid-theme') || 'system';
                 if (currentTheme === 'dark' || (currentTheme === 'system' && prefersDark.matches)) {
@@ -2539,13 +2233,8 @@
                 return true;
             },
 
-            getAppliedTheme() {
-                return this._appliedTheme;
-            },
-
-            isApplied() {
-                return this._appliedTheme !== null;
-            },
+            getAppliedTheme() { return this._appliedTheme; },
+            isApplied() { return this._appliedTheme !== null; },
 
             getThemePrompt(userPrompt) {
                 return `You are a UI theme generator for a chat application. Based on the user's description, generate a complete visual theme.
@@ -2595,7 +2284,8 @@
             "color": "#HEX",
             "speed": 0.5-2,
             "size": 2-8
-          }
+          },
+          "svgBackground": "<!-- SVG code as a string (optional). Use this for complex vector backgrounds. -->"
         }
 
         RULES:
@@ -2609,6 +2299,7 @@
         8. The "css" field can include @keyframes for background animations, gradients, etc.
         9. All hex values must be 6 characters. Use #RRGGBB format.
         10. Ensure WCAG AA contrast for readability.
+        11. You can provide an SVG background in the "svgBackground" field. Use simple SVG shapes to create decorative backgrounds.
 
         User's theme request: ${userPrompt}`;
             }
@@ -2637,20 +2328,19 @@
             popoverPanel: document.getElementById('popoverPanel'),
             modeChip: document.getElementById('modeChip'),
             modeLabel: document.getElementById('modeLabel'),
-            modeClose: document.getElementById('modeClose'),
-            imageModeToggle: document.getElementById('imageModeToggle'),
-            imageModeIndicator: document.getElementById('imageModeIndicator'),
+            modeSelectPanel: document.getElementById('modeSelectPanel'),
             webSearchToggle: document.getElementById('webSearchToggle'),
             webSearchIndicator: document.getElementById('webSearchIndicator'),
             themeModeToggle: document.getElementById('themeModeToggle'),
             themeModeIndicator: document.getElementById('themeModeIndicator'),
-            attachImageBtn: document.getElementById('attachImageBtn'),
-            clearAttachmentsBtn: document.getElementById('clearAttachmentsBtn'),
+            resetThemePopover: document.getElementById('resetThemePopover'),
             activeChips: document.getElementById('activeChips'),
 
             _typingId: null,
             _dropdownTargetId: null,
             _errorTimer: null,
+            _currentMode: 'chat', // 'chat' or 'image'
+            _isProcessing: false,
 
             init() {
                 ThemeEngine.init();
@@ -2658,9 +2348,7 @@
                 this.render();
                 this._restoreThemeFromStorage();
                 this._syncUIState();
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             },
 
             _restoreThemeFromStorage() {
@@ -2670,31 +2358,42 @@
                         const data = JSON.parse(saved);
                         if (data && (data.cssVariables || data.mode)) {
                             ThemeEngine.apply(data);
-                            this._showThemeAppliedBanner(data.name || 'Custom Theme', data.mode || 'light');
                         }
                     }
-                } catch (e) { console.warn('Theme restore failed:', e); }
+                } catch(e) { console.warn('Theme restore failed:', e); }
             },
 
             _syncUIState() {
-                const isImage = imageModeEnabled;
+                const isImage = (this._currentMode === 'image');
                 this.modeChip.classList.toggle('active', isImage);
                 this.modeLabel.textContent = isImage ? 'Image' : 'Chat';
-                this.imageModeIndicator.textContent = isImage ? 'On' : 'Off';
-                this.imageModeToggle.classList.toggle('active', isImage);
+                // Icon
+                const icon = this.modeChip.querySelector('.lucide');
+                if (icon) {
+                    icon.setAttribute('data-lucide', isImage ? 'image' : 'zap');
+                    if (typeof lucide !== 'undefined') lucide.createIcons();
+                }
+                // Mode select panel
+                this.modeSelectPanel.querySelectorAll('.mode-option').forEach(opt => {
+                    const mode = opt.dataset.mode;
+                    opt.classList.toggle('active-opt', mode === this._currentMode);
+                });
+                // Web search indicator
                 this.webSearchIndicator.textContent = webSearchEnabled ? 'On' : 'Off';
                 this.webSearchToggle.classList.toggle('active', webSearchEnabled);
+                // Theme mode
                 this.themeModeIndicator.textContent = themeModeEnabled ? 'On' : 'Off';
                 this.themeModeToggle.classList.toggle('active', themeModeEnabled);
-                this.sendBtn.disabled = !this.input.value.trim();
-                // Update active chips
+                // Send button
+                this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
+                // Active chips
                 this._updateActiveChips();
             },
 
             _updateActiveChips() {
                 const container = this.activeChips;
                 container.innerHTML = '';
-                if (imageModeEnabled) {
+                if (this._currentMode === 'image') {
                     const chip = document.createElement('div');
                     chip.className = 'active-chip image-chip';
                     chip.innerHTML = `<i data-lucide="image" class="chip-icon lucide"></i> Image <button class="chip-close" data-mode="image">×</button>`;
@@ -2712,12 +2411,11 @@
                     chip.innerHTML = `<i data-lucide="palette" class="chip-icon lucide"></i> Theme <button class="chip-close" data-mode="theme">×</button>`;
                     container.appendChild(chip);
                 }
-                // Bind close buttons
                 container.querySelectorAll('.chip-close').forEach(btn => {
                     btn.addEventListener('click', (e) => {
                         const mode = btn.dataset.mode;
                         if (mode === 'image') {
-                            imageModeEnabled = false;
+                            this._currentMode = 'chat';
                         } else if (mode === 'web') {
                             webSearchEnabled = false;
                         } else if (mode === 'theme') {
@@ -2745,8 +2443,8 @@
                 this.modalOverlay.addEventListener('click', (e) => {
                     if (e.target === this.modalOverlay) this.closeModal();
                 });
-                this.modalConfirm.addEventListener('click', () => this._handleModalConfirm());
 
+                // Chat item dropdown
                 document.addEventListener('click', (e) => {
                     const target = e.target.closest('.dropdown-menu') || e.target.closest('.chat-menu-btn');
                     if (!target) this.closeDropdown();
@@ -2788,7 +2486,7 @@
                     }
                 });
                 this.input.addEventListener('input', () => {
-                    this.sendBtn.disabled = !this.input.value.trim();
+                    this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
                     this.input.style.height = 'auto';
                     const newHeight = Math.min(this.input.scrollHeight, 120);
                     this.input.style.height = newHeight + 'px';
@@ -2812,43 +2510,38 @@
                     }
                 });
 
-                // Mode chip click: toggle image mode
+                // Mode chip: open mode selection panel
                 this.modeChip.addEventListener('click', (e) => {
-                    if (e.target.closest('.mode-close')) return;
-                    imageModeEnabled = !imageModeEnabled;
-                    if (imageModeEnabled) {
-                        webSearchEnabled = false;
-                        themeModeEnabled = false;
-                    }
-                    this._syncUIState();
-                    this._recreateIcons();
-                    this.input.focus();
-                });
-
-                // Mode close button (×)
-                this.modeClose.addEventListener('click', (e) => {
                     e.stopPropagation();
-                    imageModeEnabled = false;
-                    this._syncUIState();
-                    this._recreateIcons();
-                    this.input.focus();
+                    this.modeSelectPanel.classList.toggle('open');
                 });
-
-                // Popover: Image generation toggle
-                this.imageModeToggle.addEventListener('click', () => {
-                    imageModeEnabled = !imageModeEnabled;
-                    if (imageModeEnabled) {
-                        webSearchEnabled = false;
-                        themeModeEnabled = false;
+                document.addEventListener('click', (e) => {
+                    if (!this.modeSelectPanel.contains(e.target) && e.target !== this.modeChip) {
+                        this.modeSelectPanel.classList.remove('open');
                     }
-                    this._syncUIState();
-                    this._recreateIcons();
-                    this.popoverPanel.classList.remove('open');
+                });
+                // Mode options
+                this.modeSelectPanel.querySelectorAll('.mode-option').forEach(opt => {
+                    opt.addEventListener('click', () => {
+                        const mode = opt.dataset.mode;
+                        if (mode === 'chat') {
+                            this._currentMode = 'chat';
+                        } else if (mode === 'image') {
+                            this._currentMode = 'image';
+                        }
+                        this.modeSelectPanel.classList.remove('open');
+                        this._syncUIState();
+                        this._recreateIcons();
+                        this.input.focus();
+                    });
                 });
 
-                // Popover: Web search toggle
+                // Popover toggles
                 this.webSearchToggle.addEventListener('click', () => {
-                    if (imageModeEnabled) return;
+                    if (this._currentMode === 'image') {
+                        this.showError('Web search is disabled in Image mode.');
+                        return;
+                    }
                     webSearchEnabled = !webSearchEnabled;
                     if (webSearchEnabled) {
                         themeModeEnabled = false;
@@ -2858,12 +2551,11 @@
                     this.popoverPanel.classList.remove('open');
                 });
 
-                // Popover: Theme mode toggle
                 this.themeModeToggle.addEventListener('click', () => {
                     themeModeEnabled = !themeModeEnabled;
                     if (themeModeEnabled) {
-                        imageModeEnabled = false;
                         webSearchEnabled = false;
+                        this._currentMode = 'chat';
                     }
                     this._syncUIState();
                     this._recreateIcons();
@@ -2871,37 +2563,17 @@
                     this.input.focus();
                 });
 
-                // Attach image: placeholder
-                this.attachImageBtn.addEventListener('click', () => {
-                    const fileInput = document.getElementById('hiddenFileInput') || (() => {
-                        const fi = document.createElement('input');
-                        fi.type = 'file';
-                        fi.accept = 'image/*';
-                        fi.id = 'hiddenFileInput';
-                        fi.style.display = 'none';
-                        document.body.appendChild(fi);
-                        fi.addEventListener('change', (e) => {
-                            if (this.files && this.files[0]) {
-                                UI.showError(`Attached: ${this.files[0].name} (not implemented)`);
-                            }
-                            this.value = '';
-                        });
-                        return fi;
-                    })();
-                    fileInput.click();
+                // Reset Theme from popover
+                this.resetThemePopover.addEventListener('click', () => {
                     this.popoverPanel.classList.remove('open');
-                });
-
-                // Clear attachments: placeholder
-                this.clearAttachmentsBtn.addEventListener('click', () => {
-                    this.showError('No attachments to clear.');
-                    this.popoverPanel.classList.remove('open');
+                    this._resetTheme();
                 });
 
                 // Keyboard shortcuts
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         this.popoverPanel.classList.remove('open');
+                        this.modeSelectPanel.classList.remove('open');
                         this.closeSidebar();
                         this.closeDropdown();
                         this.closeModal();
@@ -2914,9 +2586,7 @@
             },
 
             _recreateIcons() {
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
+                if (typeof lucide !== 'undefined') lucide.createIcons();
             },
 
             // ---- Sidebar ----
@@ -3030,8 +2700,7 @@
                 const container = this.chatList;
                 const sorted = chatManager.getSortedChats();
                 if (sorted.length === 0) {
-                    container.innerHTML =
-                        `<div class="chat-list-empty">No chats yet.<br>Click "New Chat" to start.</div>`;
+                    container.innerHTML = `<div class="chat-list-empty">No chats yet.<br>Click "New Chat" to start.</div>`;
                     return;
                 }
                 let html = '';
@@ -3039,9 +2708,7 @@
                     const title = chatManager.getTitle(chat);
                     const preview = chatManager.getPreview(chat);
                     const isActive = chat.id === chatManager.activeId;
-                    const pinIcon = chat.pinned ?
-                        `<i data-lucide="pin" class="pin-icon lucide" style="width:14px;height:14px;stroke-width:2;"></i>` :
-                        '';
+                    const pinIcon = chat.pinned ? `<i data-lucide="pin" class="pin-icon lucide" style="width:14px;height:14px;stroke-width:2;"></i>` : '';
                     html += `
                         <div class="chat-item ${isActive ? 'active' : ''}" data-chat-id="${chat.id}">
                             <div class="chat-info">
@@ -3087,11 +2754,9 @@
             renderChat(chatId) {
                 const container = this.chatContainer;
                 const chat = chatManager.getChat(chatId);
-                const existingBanner = container.querySelector('.theme-applied-banner');
                 container.innerHTML = '';
                 const welcomeEl = document.getElementById('welcomeMessage');
                 if (welcomeEl) container.appendChild(welcomeEl);
-                if (existingBanner) container.appendChild(existingBanner);
 
                 if (!chat || chat.messages.length === 0) {
                     if (welcomeEl) welcomeEl.style.display = 'flex';
@@ -3107,7 +2772,6 @@
                 this._recreateIcons();
             },
 
-            // ---- Add message to DOM ----
             _addMessageToDOM(role, text, isTyping) {
                 const container = this.chatContainer;
                 const welcomeEl = document.getElementById('welcomeMessage');
@@ -3142,9 +2806,7 @@
                 if (role === 'assistant') {
                     const renderedHtml = renderMarkdown(text);
                     messageDiv.innerHTML = renderedHtml;
-                    setTimeout(() => {
-                        this._recreateIcons();
-                    }, 0);
+                    setTimeout(() => { this._recreateIcons(); }, 0);
                 } else {
                     messageDiv.textContent = text;
                 }
@@ -3157,13 +2819,9 @@
 
             _removeTypingIndicator() {
                 const el = document.getElementById('typingIndicator');
-                if (el) {
-                    el.remove();
-                    this._typingId = null;
-                }
+                if (el) { el.remove(); this._typingId = null; }
             },
 
-            // ---- New Chat ----
             newChat() {
                 if (chatManager.chats.length >= MAX_CHATS) {
                     this.showError(`Maximum ${MAX_CHATS} chats allowed. Delete one to create a new chat.`);
@@ -3175,17 +2833,15 @@
                     this.renderChat(chat.id);
                     this.input.focus();
                     this._recreateIcons();
-                    setTimeout(() => {
-                        this.openRenameModal(chat.id, 'New Chat');
-                    }, 200);
+                    setTimeout(() => { this.openRenameModal(chat.id, 'New Chat'); }, 200);
                 }
             },
 
-            // ---- Send Message ----
             async sendMessage() {
                 const input = this.input;
                 const text = input.value.trim();
                 if (!text) return;
+                if (this._isProcessing) return;
 
                 const active = chatManager.getActive();
                 if (!active) {
@@ -3195,12 +2851,14 @@
 
                 input.value = '';
                 input.style.height = 'auto';
+                this._isProcessing = true;
                 this.sendBtn.disabled = true;
 
                 // Theme mode
                 if (themeModeEnabled) {
                     await this._handleThemeGeneration(text, active);
-                    this.sendBtn.disabled = false;
+                    this._isProcessing = false;
+                    this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
                     setTimeout(() => input.focus(), 100);
                     this.render();
                     this._recreateIcons();
@@ -3212,13 +2870,12 @@
                 chatManager.addMessage(active.id, 'user', text);
                 this.render();
 
-                if (imageModeEnabled) {
+                if (this._currentMode === 'image') {
                     this._addMessageToDOM('assistant', '', true);
                     try {
                         const enhanced = await this._getEnhancedPrompt(text);
                         this._removeTypingIndicator();
                         this._addMessageToDOM('assistant', '', true);
-                        // NEW: Use the updated Flux API endpoint
                         const imageUrl = `https://api.omegatech.app/api/ai/flux?prompt=${encodeURIComponent(enhanced)}`;
                         const finalMessage = `Here is image:\n\n![Generated Image](${imageUrl})`;
                         this._removeTypingIndicator();
@@ -3231,12 +2888,14 @@
                         chatManager.addMessage(active.id, 'assistant', errMsg);
                         this.showError(err.message);
                     } finally {
-                        this.sendBtn.disabled = false;
+                        this._isProcessing = false;
+                        this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
                         setTimeout(() => input.focus(), 100);
                         this.render();
                         this._recreateIcons();
                     }
                 } else {
+                    // Chat mode (Gemini)
                     this._addMessageToDOM('assistant', '', true);
                     try {
                         const response = await this._callAPI(text, active.id);
@@ -3250,7 +2909,8 @@
                         chatManager.addMessage(active.id, 'assistant', errMsg);
                         this.showError(err.message);
                     } finally {
-                        this.sendBtn.disabled = false;
+                        this._isProcessing = false;
+                        this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
                         setTimeout(() => input.focus(), 100);
                         this.render();
                         this._recreateIcons();
@@ -3258,7 +2918,6 @@
                 }
             },
 
-            // ---- Theme Generation ----
             async _handleThemeGeneration(prompt, active) {
                 this._addMessageToDOM('user', prompt, false);
                 chatManager.addMessage(active.id, 'user', prompt);
@@ -3296,18 +2955,15 @@
                         throw new Error('Failed to apply theme');
                     }
 
+                    // Success message (no banner)
                     const themeName = themeData.name || 'Custom Theme';
                     const mode = themeData.mode || 'light';
-                    this._showThemeAppliedBanner(themeName, mode);
-
                     let particleEmoji = '';
                     if (themeData.particles && themeData.particles.type && themeData.particles.type !== 'none') {
                         const emojis = { snow: '❄️', stars: '✨', confetti: '🎉', bubbles: '🫧', rain: '🌧️' };
                         particleEmoji = emojis[themeData.particles.type] || '✨';
                     }
-
-                    const successMsg =
-                        `🎨 **Theme Applied: ${themeName}** ${particleEmoji}\n\nMode: **${mode === 'dark' ? '🌙 Dark' : '☀️ Light'}**\nDouble-click the 🎨 palette button to reset to the default theme.`;
+                    const successMsg = `🎨 **Theme Applied: ${themeName}** ${particleEmoji}\n\nMode: **${mode === 'dark' ? '🌙 Dark' : '☀️ Light'}**\nTo reset, click the **+** button and select "Reset Theme".`;
                     this._addMessageToDOM('assistant', successMsg, false);
                     chatManager.addMessage(active.id, 'assistant', successMsg);
 
@@ -3322,57 +2978,17 @@
                     chatManager.addMessage(active.id, 'assistant', errMsg);
                     this.showError(err.message);
                 } finally {
-                    this.sendBtn.disabled = false;
+                    this._isProcessing = false;
+                    this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
                     setTimeout(() => this.input.focus(), 100);
                     this.render();
                     this._recreateIcons();
                 }
             },
 
-            _showThemeAppliedBanner(themeName, mode) {
-                const existing = document.querySelector('.theme-applied-banner');
-                if (existing) existing.remove();
-
-                const container = this.chatContainer;
-                const banner = document.createElement('div');
-                banner.className = 'theme-applied-banner';
-                const modeLabel = mode === 'dark' ? '🌙 Dark' : '☀️ Light';
-                banner.innerHTML = `
-                    <span>🎨 Theme: <span class="theme-name">${this._escapeHtml(themeName)}</span>
-                    <span class="theme-badge">${modeLabel}</span></span>
-                    <span style="display:flex; gap:8px; align-items:center;">
-                        <button class="reset-theme-btn" id="resetThemeBtn">
-                            <i data-lucide="rotate-ccw" class="lucide"></i> Reset
-                        </button>
-                        <button class="banner-dismiss" id="dismissBanner" aria-label="Dismiss">×</button>
-                    </span>
-                `;
-                const welcome = container.querySelector('#welcomeMessage');
-                if (welcome) {
-                    container.insertBefore(banner, welcome.nextSibling);
-                } else {
-                    container.prepend(banner);
-                }
-
-                const resetBtn = banner.querySelector('#resetThemeBtn');
-                if (resetBtn) {
-                    resetBtn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        this._resetTheme();
-                    });
-                }
-                const dismissBtn = banner.querySelector('#dismissBanner');
-                if (dismissBtn) {
-                    dismissBtn.addEventListener('click', () => {
-                        banner.remove();
-                    });
-                }
-
-                this._recreateIcons();
-            },
-
             _resetTheme() {
                 ThemeEngine.reset();
+                // Remove any theme applied banner if exists
                 const banner = document.querySelector('.theme-applied-banner');
                 if (banner) banner.remove();
                 const container = this.chatContainer;
@@ -3381,7 +2997,6 @@
                 note.style.borderColor = 'var(--md-sys-color-outline-variant)';
                 note.innerHTML = `
                     <span>↩️ Default theme restored</span>
-                    <button class="reset-theme-btn" style="opacity:0.5;cursor:default;border-color:transparent;">✓</button>
                     <button class="banner-dismiss" id="dismissBanner2">×</button>
                 `;
                 const welcome = container.querySelector('#welcomeMessage');
@@ -3392,9 +3007,7 @@
                 }
                 const dismiss2 = note.querySelector('#dismissBanner2');
                 if (dismiss2) dismiss2.addEventListener('click', () => note.remove());
-                setTimeout(() => {
-                    if (note.parentNode) note.remove();
-                }, 5000);
+                setTimeout(() => { if (note.parentNode) note.remove(); }, 4000);
                 this._recreateIcons();
                 const active = chatManager.getActive();
                 if (active) {
@@ -3405,8 +3018,7 @@
             },
 
             async _getEnhancedPrompt(userPrompt) {
-                const instruction =
-                    `Enhance this prompt for image generation. Return ONLY the enhanced prompt, with no additional text, no markdown, no code fences, no explanations: ${userPrompt}`;
+                const instruction = `Enhance this prompt for image generation. Return ONLY the enhanced prompt, with no additional text, no markdown, no code fences, no explanations: ${userPrompt}`;
                 const response = await this._callAPI(instruction, null, true);
                 return response.trim();
             },
@@ -3425,7 +3037,7 @@
                 }
                 const payload = {
                     prompt: userMessage,
-                    web_search: webSearchEnabled && !themeModeEnabled,
+                    web_search: webSearchEnabled && !themeModeEnabled && this._currentMode !== 'image',
                     history: history,
                 };
                 const resp = await fetch(WORKER_URL, {
@@ -3464,11 +3076,11 @@
                 const div = document.createElement('div');
                 div.textContent = text;
                 return div.innerHTML;
-            },
+            }
         };
 
         // ================================================================
-        //  MARKDOWN RENDERER
+        //  MARKDOWN RENDERER (original)
         // ================================================================
         function renderMarkdown(text) {
             if (!text || typeof text !== 'string') return '';
@@ -3529,8 +3141,7 @@
                 return `__INLINE_CODE_${inlineCodeBlocks.length - 1}__`;
             });
 
-            processedText = processedText.replace(/(?:\|.*\|.*\n)(?:\|?:?-+:?\|.*\n)+(?:\|.*\|.*\n)+/g, function(
-            match) {
+            processedText = processedText.replace(/(?:\|.*\|.*\n)(?:\|?:?-+:?\|.*\n)+(?:\|.*\|.*\n)+/g, function(match) {
                 const rows = match.trim().split('\n').filter(row => row.trim());
                 if (rows.length < 2) return match;
                 let tableHtml = '<table>\n<thead>\n<tr>\n';
@@ -3564,10 +3175,7 @@
             processedText = processLists(processedText);
 
             inlineCodeBlocks.forEach((block, index) => {
-                processedText = processedText.replace(
-                    `__INLINE_CODE_${index}__`,
-                    `<code>${escapeHtml(block.code)}</code>`
-                );
+                processedText = processedText.replace(`__INLINE_CODE_${index}__`, `<code>${escapeHtml(block.code)}</code>`);
             });
 
             processedText = processParagraphs(processedText);
@@ -3585,8 +3193,7 @@
             processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             processed = processed.replace(/\*(.*?)\*/g, '<em>$1</em>');
             processed = processed.replace(/`([^`]+)`/g, '<code>$1</code>');
-            processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g,
-                '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+            processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
             processed = escapeHtml(processed);
             processed = processed.replace(/&lt;(\/?)(strong|em|code|a\b[^&]*?)&gt;/g, '<$1$2>');
             return processed;
@@ -3600,8 +3207,7 @@
             processed = processed.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
             processed = processed.replace(/\*(.*?)\*/g, '<em>$1</em>');
             processed = processed.replace(/^>\s*(.+)$/gm, '<blockquote>$1</blockquote>');
-            processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g,
-                '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
+            processed = processed.replace(/\[([^\]]+)\]\(([^)]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
             return processed;
         }
 
@@ -3614,13 +3220,11 @@
             for (let i = 0; i < lines.length; i++) {
                 let line = lines[i];
                 if (line.match(/^\s*[-*+]\s+/)) {
-                    if (!inList) { inList = true;
-                        listType = 'ul'; }
+                    if (!inList) { inList = true; listType = 'ul'; }
                     const content = line.replace(/^\s*[-*+]\s+/, '');
                     listItems.push(`<li>${content}</li>`);
                 } else if (line.match(/^\s*\d+\.\s+/)) {
-                    if (!inList) { inList = true;
-                        listType = 'ol'; }
+                    if (!inList) { inList = true; listType = 'ol'; }
                     const content = line.replace(/^\s*\d+\.\s+/, '');
                     listItems.push(`<li>${content}</li>`);
                 } else {
@@ -3673,7 +3277,7 @@
         }
 
         // ================================================================
-        //  ROBUST SANDBOXED JAVASCRIPT RUNNER
+        //  ROBUST SANDBOXED JAVASCRIPT RUNNER (original)
         // ================================================================
 
         const JS_RUN_TIMEOUT_MS = 5000;
@@ -3889,7 +3493,7 @@
                 ta.value = text;
                 document.body.appendChild(ta);
                 ta.select();
-                try { document.execCommand('copy'); } catch (e) {}
+                try { document.execCommand('copy'); } catch(e) {}
                 document.body.removeChild(ta);
                 btn.innerHTML = `<i data-lucide="check" class="lucide"></i>`;
                 btn.classList.add('copied');
@@ -3937,7 +3541,6 @@
         // ================================================================
         const WORKER_URL = 'https://ai.endroid.workers.dev/api/v1/';
         let webSearchEnabled = false;
-        let imageModeEnabled = false;
         let themeModeEnabled = false;
 
         // ================================================================
@@ -3950,7 +3553,6 @@
             UI.input.focus();
             if (typeof lucide !== 'undefined') lucide.createIcons();
 
-            // Service Worker
             if ('serviceWorker' in navigator) {
                 window.addEventListener('load', () => {
                     navigator.serviceWorker.register('/sw.js')
@@ -3958,7 +3560,6 @@
                         .catch(err => console.error('SW registration failed:', err));
                 });
             }
-            // Install banner
             let deferredPrompt;
             const installBanner = document.getElementById('installBanner');
             const installBtn = document.getElementById('installBtn');
