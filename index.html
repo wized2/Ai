@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <title>Aariz - Your Intelligent AI Assistant</title>
-    <meta name="description" content="Aariz is a powerful AI assistant powered by Gemini. Get intelligent responses, code help, and meaningful conversations." />
+    <meta name="description" content="Aariz is a mobile-first AI assistant from Project Endroid. Fast answers, code help, and clear explanations — light and dark themes, works as a PWA." />
     <meta name="keywords" content="AI Assistant, Gemini, Chatbot, AI Chat, Code Help, Programming Assistant" />
     <meta name="author" content="Aariz" />
     <meta name="robots" content="index, follow" />
@@ -1408,6 +1408,38 @@
             100% { background-position: 0% 50%; }
         }
         #dynamicThemeStyle { display: none; }
+    
+        /* Aariz mobile polish */
+        :root { --vv-offset: 0px; --vv-height: 100dvh; }
+        @supports (padding: env(safe-area-inset-bottom)) {
+            .input-container, .composer, .chat-input-area, #inputArea, .bottom-bar {
+                padding-bottom: max(0.5rem, env(safe-area-inset-bottom)) !important;
+            }
+            .header, .app-header, header {
+                padding-top: max(0.35rem, env(safe-area-inset-top));
+            }
+        }
+        @media (max-width: 720px) {
+            body { overscroll-behavior-y: contain; }
+            #chatContainer, .chat-container, .messages {
+                -webkit-overflow-scrolling: touch;
+                padding-left: max(0.75rem, env(safe-area-inset-left));
+                padding-right: max(0.75rem, env(safe-area-inset-right));
+            }
+            #messageInput, textarea#messageInput {
+                font-size: 16px !important; /* prevent iOS zoom */
+                max-height: 30dvh;
+            }
+            .message.bot { max-width: 100%; }
+            .message.user { max-width: 92%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            *, *::before, *::after {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
     </style>
 </head>
 <body>
@@ -1443,7 +1475,7 @@
                     <img src="logo.svg" alt="Aariz Logo" />
                 </div>
                 <h1 class="welcome-title">Hello, I'm Aariz</h1>
-                <p class="welcome-subtitle">Your AI assistant powered by Gemini. Ask me anything, and let's have a great conversation!</p>
+                <p class="welcome-subtitle">Clear answers on any screen. Code, study, plans — ask Aariz.</p>
             </div>
         </div>
 

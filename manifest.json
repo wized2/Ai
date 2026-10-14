@@ -1,12 +1,12 @@
 {
   "name": "Aariz",
   "short_name": "Aariz",
-  "description": "Aariz | AI assistant by Endroid Powered by Gemini",
+  "description": "Aariz \u2014 mobile-first AI assistant by Project Endroid.",
   "start_url": "/Ai",
   "scope": "/",
   "display": "standalone",
-  "background_color": "#ffffff",
-  "theme_color": "#db6b46",
+  "background_color": "#141218",
+  "theme_color": "#6750a4",
   "prefer_related_applications": false,
   "icons": [
     {
@@ -39,5 +39,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "lang": "en"
 }

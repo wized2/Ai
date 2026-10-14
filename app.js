@@ -24,7 +24,7 @@ class ParticleSystem {
             return;
         }
         this.particles = [];
-        const count = Math.min(this.config.count || 60, 300);
+        const count = Math.min(this.config.count || 60, (typeof aarizReduceMotion === "function" && aarizReduceMotion()) ? 24 : 120);
         const color = this.config.color || '#ffffff';
         const size = this.config.size || 3;
         const speed = this.config.speed || 1;
@@ -211,7 +211,8 @@ class ParticleSystem {
 // ================================================================
 //  CHAT MANAGER
 // ================================================================
-const STORAGE_KEY = 'endroid_chats_v2';
+const STORAGE_KEY = 'aariz_chats_v1';
+const STORAGE_KEY_LEGACY = 'endroid_chats_v2';
 const MAX_CHATS = 8;
 
 const chatManager = {
@@ -301,7 +302,7 @@ const chatManager = {
     },
     load() {
         try {
-            const raw = localStorage.getItem(STORAGE_KEY);
+            const raw = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(STORAGE_KEY_LEGACY);
             if (!raw) { this._migrateOld(); return; }
             const data = JSON.parse(raw);
             this.chats = data.chats || [];
@@ -425,7 +426,23 @@ const ThemeEngine = {
             document.body.classList.remove('theme-light');
             document.body.classList.add('theme-dark');
             const icon = document.getElementById('themeIcon');
-            if (icon) { icon.setAttribute('data-lucide', 'sun'); if (typeof lucide !== 'undefined') lucide.createIcons(); }
+            if (icon) { icon.setAttribute('data-lucide', 'sun'); if (typeof lucide !== 'undefined') lucide.createIcons();
+
+    // Mobile keyboard: keep composer visible
+    const composer = document.querySelector('.input-area, .composer, .chat-input-container, footer.input-bar');
+    const main = document.getElementById('chatContainer') || document.querySelector('.chat-container');
+    if (window.visualViewport) {
+        const syncVV = () => {
+            const vv = window.visualViewport;
+            document.documentElement.style.setProperty('--vv-height', vv.height + 'px');
+            document.documentElement.style.setProperty('--vv-offset', Math.max(0, window.innerHeight - vv.height - vv.offsetTop) + 'px');
+            if (main) main.scrollTop = main.scrollHeight;
+        };
+        window.visualViewport.addEventListener('resize', syncVV);
+        window.visualViewport.addEventListener('scroll', syncVV);
+        syncVV();
+    }
+ }
         } else if (mode === 'light') {
             document.body.classList.remove('theme-dark');
             document.body.classList.add('theme-light');
@@ -488,7 +505,7 @@ const ThemeEngine = {
         };
 
         try {
-            localStorage.setItem('endroid_applied_theme', JSON.stringify(themeData));
+            localStorage.setItem('aariz_applied_theme', JSON.stringify(themeData));
         } catch(e) { console.warn('Theme save failed:', e); }
 
         return true;
@@ -504,9 +521,9 @@ const ThemeEngine = {
         this._svgContainer.innerHTML = '';
         this._svgContainer.classList.remove('active');
         this._appliedTheme = null;
-        try { localStorage.removeItem('endroid_applied_theme'); } catch(e) {}
+        try { localStorage.removeItem('aariz_applied_theme'); localStorage.removeItem('endroid_applied_theme'); } catch(e) {}
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-        const currentTheme = localStorage.getItem('endroid-theme') || 'system';
+        const currentTheme = localStorage.getItem('aariz-theme') || localStorage.getItem('endroid-theme') || 'system';
         if (currentTheme === 'dark' || (currentTheme === 'system' && prefersDark.matches)) {
             document.body.classList.remove('theme-light');
             document.body.classList.add('theme-dark');
@@ -1021,7 +1038,7 @@ document.addEventListener('click', function(e) {
 //  THEME (light/dark toggle)
 // ================================================================
 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)');
-let currentTheme = localStorage.getItem('endroid-theme') || 'system';
+let currentTheme = localStorage.getItem('aariz-theme') || localStorage.getItem('endroid-theme') || 'system';
 
 function applyTheme(theme) {
     document.body.classList.remove('theme-light', 'theme-dark');
@@ -1040,7 +1057,7 @@ function applyTheme(theme) {
         }
     }
     currentTheme = theme;
-    localStorage.setItem('endroid-theme', theme);
+    localStorage.setItem('aariz-theme', theme);
 }
 applyTheme(currentTheme);
 prefersDark.addEventListener('change', () => {
@@ -1050,6 +1067,45 @@ prefersDark.addEventListener('change', () => {
 // ================================================================
 //  UI CONTROLLER
 // ================================================================
+
+// ================================================================
+//  AARIZ — system identity & client helpers
+// ================================================================
+const AARIZ_VERSION = '2.0.0';
+const AARIZ_SYSTEM_PROMPT = `You are Aariz, a fast, clear AI assistant by Project Endroid (Mudasir Wazir).
+
+Identity:
+- Name: Aariz. Never claim to be Gemini, ChatGPT, Claude, or another product by name unless the user asks about underlying models.
+- Tone: warm, direct, professional. No filler openings ("Sure!", "Great question!"). Lead with the answer.
+
+How you respond:
+- Prefer short paragraphs and tight lists. Mobile users read on small screens.
+- For code: use fenced blocks with a language tag. Explain only what is needed.
+- For math: use clear step-by-step text; KaTeX-style $...$ only when helpful.
+- For uncertain facts: say so. Do not invent APIs, versions, or citations.
+- Match the user's language (English or Urdu/Roman Urdu are both fine).
+- When the user asks for a plan or debug path, give ordered steps they can follow now.
+
+Tools the app may enable:
+- Web search may be on; if results are provided in context, use them and note they may be incomplete.
+- Image mode is separate; normal chat should not pretend to generate images.
+
+Safety:
+- Refuse clearly harmful illegal guidance. Prefer safer alternatives when relevant.
+- No medical/legal claims as professional advice.
+
+Style constraints:
+- Avoid emoji unless the user uses them first.
+- Avoid repeating the user's full question back.
+- Keep replies focused; offer one optional follow-up only when it adds value.`;
+
+function aarizIsMobile() {
+    return window.matchMedia('(max-width: 720px), (pointer: coarse)').matches;
+}
+function aarizReduceMotion() {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches || aarizIsMobile();
+}
+
 const WORKER_URL = 'https://ai.endroid.workers.dev/api/v1/';
 let webSearchEnabled = false;
 let themeModeEnabled = false;
@@ -1100,7 +1156,7 @@ const UI = {
 
     _restoreThemeFromStorage() {
         try {
-            const saved = localStorage.getItem('endroid_applied_theme');
+            const saved = localStorage.getItem('aariz_applied_theme') || localStorage.getItem('endroid_applied_theme');
             if (saved) {
                 const data = JSON.parse(saved);
                 if (data && (data.cssVariables || data.mode)) {
@@ -1554,10 +1610,25 @@ const UI = {
         }
     },
 
+    stopGeneration() {
+        if (this._abortCtrl) {
+            try { this._abortCtrl.abort(); } catch (_) {}
+        }
+        this._isProcessing = false;
+        this._removeTypingIndicator();
+        this.sendBtn.disabled = !this.input.value.trim();
+        this.sendBtn.setAttribute('aria-label', 'Send');
+        this._recreateIcons();
+    },
+
     async sendMessage() {
         const input = this.input;
+        if (this._isProcessing) {
+            this.stopGeneration();
+            return;
+        }
         const text = input.value.trim();
-        if (!text || this._isProcessing) return;
+        if (!text) return;
 
         const active = chatManager.getActive();
         if (!active) {
@@ -1731,43 +1802,81 @@ const UI = {
     },
 
     async _callAPI(userMessage, chatId, skipHistory = false) {
+        // Keep recent turns; drop huge blobs so mobile + worker stay fast
         let history = [];
         if (!skipHistory && chatId) {
             const chat = chatManager.getChat(chatId);
-            if (chat) {
-                const recent = chat.messages.slice(-8);
+            if (chat && Array.isArray(chat.messages)) {
+                const maxTurns = aarizIsMobile() ? 10 : 16;
+                const recent = chat.messages.slice(-maxTurns);
                 history = recent.map(msg => ({
                     role: msg.role === 'assistant' ? 'model' : 'user',
-                    content: msg.text
-                }));
+                    content: String(msg.text || '').slice(0, 6000)
+                })).filter(m => m.content.trim());
             }
         }
+
         const payload = {
             prompt: userMessage,
-            web_search: webSearchEnabled && !themeModeEnabled && this._currentMode !== 'image',
+            system: AARIZ_SYSTEM_PROMPT,
+            system_instruction: AARIZ_SYSTEM_PROMPT,
+            instructions: AARIZ_SYSTEM_PROMPT,
+            web_search: !!(webSearchEnabled && !themeModeEnabled && this._currentMode !== 'image'),
             history: history,
+            client: { name: 'Aariz', version: AARIZ_VERSION, mobile: aarizIsMobile() }
         };
-        const resp = await fetch(WORKER_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload),
-        });
-        if (!resp.ok) {
-            let err = `Worker error: ${resp.status}`;
-            if (resp.status === 401) err = 'Unauthorized - check your worker';
-            if (resp.status === 429) err = 'Rate limit exceeded';
-            if (resp.status >= 500) err = 'Worker server error';
-            throw new Error(err);
+
+        // Abort previous in-flight request
+        if (this._abortCtrl) {
+            try { this._abortCtrl.abort(); } catch (_) {}
         }
-        return await resp.text();
+        this._abortCtrl = new AbortController();
+        const timeoutMs = aarizIsMobile() ? 55000 : 75000;
+        const timer = setTimeout(() => {
+            try { this._abortCtrl.abort(); } catch (_) {}
+        }, timeoutMs);
+
+        try {
+            const resp = await fetch(WORKER_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'text/plain, application/json'
+                },
+                body: JSON.stringify(payload),
+                signal: this._abortCtrl.signal
+            });
+            if (!resp.ok) {
+                let err = `Worker error: ${resp.status}`;
+                if (resp.status === 401) err = 'Unauthorized — check the API worker.';
+                if (resp.status === 429) err = 'Rate limit exceeded — wait a moment and try again.';
+                if (resp.status >= 500) err = 'Server error — try again shortly.';
+                throw new Error(err);
+            }
+            const ctype = (resp.headers.get('content-type') || '').toLowerCase();
+            if (ctype.includes('application/json')) {
+                const data = await resp.json();
+                if (typeof data === 'string') return data;
+                return data.text || data.response || data.message || data.output || JSON.stringify(data);
+            }
+            return await resp.text();
+        } catch (e) {
+            if (e && e.name === 'AbortError') {
+                throw new Error('Request timed out or was cancelled. Try a shorter message.');
+            }
+            throw e;
+        } finally {
+            clearTimeout(timer);
+        }
     },
 
     _friendlyError(err) {
-        const msg = err.message || '';
-        if (msg.includes('401')) return 'Authentication failed. Please check your worker.';
-        if (msg.includes('429')) return 'Rate limit reached. Please try again later.';
-        if (msg.includes('network')) return 'Network error. Please check your connection.';
-        return `I encountered an error: ${msg}`;
+        const msg = (err && err.message) || '';
+        if (/abort|timed out|cancelled/i.test(msg)) return 'Stopped. You can send again anytime.';
+        if (msg.includes('401')) return 'Aariz could not authenticate with the API worker.';
+        if (msg.includes('429')) return 'Aariz is rate-limited right now. Wait a few seconds and retry.';
+        if (/network|Failed to fetch/i.test(msg)) return 'Network issue. Check connection and try again.';
+        return `Aariz hit a problem: ${msg}`;
     },
 
     showError(msg) {
