@@ -1763,35 +1763,36 @@ const UI = {
 
         this._addMessageToDOM('assistant', '', true);
         try {
-            const systemPrompt = ThemeEngine.getThemePrompt(prompt);
-            const response = await this._callAPI(systemPrompt, active.id, true);
-
+            // Feature flag tells worker to force set_chat_theme tool + JSON response
+            const result = await this._callAPI(prompt, active.id, true, { feature: 'theme', full: true });
             this._removeTypingIndicator();
 
             let themeData = null;
-            try {
-                const jsonMatch = response.match(/\{[\s\S]*\}/);
-                if (jsonMatch) {
-                    themeData = JSON.parse(jsonMatch[0]);
-                } else {
-                    themeData = JSON.parse(response);
-                }
-            } catch (parseErr) {
-                console.warn('Failed to parse theme JSON:', parseErr);
-                const errMsg = 'Sorry, I couldn\'t generate a valid theme. Please try again with a more specific description.';
+            let replyText = '';
+            if (result && typeof result === 'object') {
+                themeData = result.theme || null;
+                replyText = result.text || '';
+            } else if (typeof result === 'string') {
+                replyText = result;
+                try {
+                    const jsonMatch = result.match(/\{[\s\S]*\}/);
+                    if (jsonMatch) {
+                        const parsed = JSON.parse(jsonMatch[0]);
+                        if (parsed.theme) themeData = parsed.theme;
+                        else if (parsed.cssVariables || parsed.mode) themeData = parsed;
+                    }
+                } catch (_) {}
+            }
+
+            if (!themeData || typeof themeData !== 'object') {
+                const errMsg = 'Sorry, the theme tool did not return a valid theme. Try a clearer description (e.g. "dark ocean blue with soft waves").';
                 this._addMessageToDOM('assistant', errMsg, false);
                 chatManager.addMessage(active.id, 'assistant', errMsg);
                 return;
             }
 
-            if (!themeData || typeof themeData !== 'object') {
-                throw new Error('Invalid theme data');
-            }
-
             const applied = ThemeEngine.apply(themeData);
-            if (!applied) {
-                throw new Error('Failed to apply theme');
-            }
+            if (!applied) throw new Error('Failed to apply theme');
 
             const themeName = themeData.name || 'Custom Theme';
             const mode = themeData.mode || 'light';
@@ -1800,14 +1801,15 @@ const UI = {
                 const emojis = { snow: '❄️', stars: '✨', confetti: '🎉', bubbles: '🫧', rain: '🌧️' };
                 particleEmoji = emojis[themeData.particles.type] || '✨';
             }
-            const successMsg = `🎨 **Theme Applied: ${themeName}** ${particleEmoji}\n\nMode: **${mode === 'dark' ? '🌙 Dark' : '☀️ Light'}**\nTo reset, click the **+** button and select "Reset Theme".`;
+            const successMsg = replyText && !/^\s*\{/.test(replyText)
+                ? replyText
+                : `Theme applied: **${themeName}** ${particleEmoji}\n\nMode: **${mode === 'dark' ? 'Dark' : 'Light'}**\nTo reset, open **+** and choose "Reset Theme".`;
             this._addMessageToDOM('assistant', successMsg, false);
             chatManager.addMessage(active.id, 'assistant', successMsg);
 
             themeModeEnabled = false;
             this._syncUIState();
             this._recreateIcons();
-
         } catch (err) {
             this._removeTypingIndicator();
             const errMsg = this._friendlyError(err);
@@ -1817,35 +1819,6 @@ const UI = {
         } finally {
             this._isProcessing = false;
             this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
-            setTimeout(() => this.input.focus(), 100);
-            this.render();
-            this._recreateIcons();
-        }
-    },
-
-    _resetTheme() {
-        ThemeEngine.reset();
-        const container = this.chatContainer;
-        const note = document.createElement('div');
-        note.className = 'theme-notification';
-        note.innerHTML = `
-            <span>↩️ Default theme restored</span>
-            <button class="notif-dismiss">×</button>
-        `;
-        const welcome = container.querySelector('#welcomeMessage');
-        if (welcome) {
-            container.insertBefore(note, welcome.nextSibling);
-        } else {
-            container.prepend(note);
-        }
-        note.querySelector('.notif-dismiss').addEventListener('click', () => note.remove());
-        setTimeout(() => { if (note.parentNode) note.remove(); }, 4000);
-        this._recreateIcons();
-        const active = chatManager.getActive();
-        if (active) {
-            const resetMsg = '🔄 Theme reset to default.';
-            this._addMessageToDOM('assistant', resetMsg, false);
-            chatManager.addMessage(active.id, 'assistant', resetMsg);
         }
     },
 
@@ -1855,7 +1828,7 @@ const UI = {
         return response.trim();
     },
 
-    async _callAPI(userMessage, chatId, skipHistory = false) {
+    async _callAPI(userMessage, chatId, skipHistory = false, options = {}) {
         // Keep recent turns; drop huge blobs so mobile + worker stay fast
         let history = [];
         if (!skipHistory && chatId) {
@@ -1870,6 +1843,7 @@ const UI = {
             }
         }
 
+        const feature = (options && options.feature) || '';
         const payload = {
             prompt: userMessage,
             system: AARIZ_SYSTEM_PROMPT,
@@ -1877,6 +1851,8 @@ const UI = {
             instructions: AARIZ_SYSTEM_PROMPT,
             web_search: !!(webSearchEnabled && !themeModeEnabled && this._currentMode !== 'image'),
             history: history,
+            feature: feature,
+            mode: feature,
             client: { name: 'Aariz', version: AARIZ_VERSION, mobile: aarizIsMobile() }
         };
 
@@ -1910,10 +1886,15 @@ const UI = {
             const ctype = (resp.headers.get('content-type') || '').toLowerCase();
             if (ctype.includes('application/json')) {
                 const data = await resp.json();
+                if (options && options.full) return data;
                 if (typeof data === 'string') return data;
                 return data.text || data.response || data.message || data.output || JSON.stringify(data);
             }
-            return await resp.text();
+            const textBody = await resp.text();
+            if (options && options.full) {
+                try { return JSON.parse(textBody); } catch (_) { return { text: textBody, theme: null }; }
+            }
+            return textBody;
         } catch (e) {
             if (e && e.name === 'AbortError') {
                 throw new Error('Request timed out or was cancelled. Try a shorter message.');
