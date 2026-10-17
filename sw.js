@@ -1,4 +1,4 @@
-const CACHE_NAME = 'aariz-v7';
+const CACHE_NAME = 'aariz-v8';
 const PRECACHE_URLS = [
   './',
   './index.html',

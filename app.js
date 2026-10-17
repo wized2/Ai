@@ -1176,6 +1176,9 @@ const WORKER_URL = 'https://ai.endroid.workers.dev/api/v1/';
 let webSearchEnabled = false;
 let themeModeEnabled = false;
 
+let AARIZ_SEND_LOCK = false;
+let AARIZ_SEND_CTRL = null;
+
 const UI = {
     chatContainer: document.getElementById('chatContainer'),
     welcomeEl: document.getElementById('welcomeMessage'),
@@ -1714,12 +1717,16 @@ const UI = {
     },
 
     stopGeneration() {
+        if (AARIZ_SEND_CTRL) {
+            try { AARIZ_SEND_CTRL.abort('user'); } catch (_) {}
+            AARIZ_SEND_CTRL = null;
+        }
         if (this._abortCtrl) {
             try { this._abortCtrl.abort('user'); } catch (_) {}
             this._abortCtrl = null;
         }
         this._isProcessing = false;
-        this._sendLock = false;
+        AARIZ_SEND_LOCK = false;
         this._removeTypingIndicator();
         if (this.sendBtn) {
             this.sendBtn.disabled = !this.input.value.trim();
@@ -1734,17 +1741,21 @@ const UI = {
             console.error('Aariz: input/sendBtn missing');
             return;
         }
-        // Hard lock — ignore duplicate taps / double listeners
-        if (this._isProcessing || this._sendLock) {
+        // Module-level lock: first line of defense against double listeners
+        if (AARIZ_SEND_LOCK) return;
+        AARIZ_SEND_LOCK = true;
+
+        const text = input.value.trim();
+        if (!text) {
+            AARIZ_SEND_LOCK = false;
             return;
         }
-        const text = input.value.trim();
-        if (!text) return;
 
         let active = chatManager.getActive();
         if (!active) {
             active = chatManager.createChat('New Chat');
             if (!active) {
+                AARIZ_SEND_LOCK = false;
                 this.showError('Could not create a chat. Try refreshing the page.');
                 return;
             }
@@ -1754,10 +1765,8 @@ const UI = {
 
         input.value = '';
         input.style.height = 'auto';
-        this._sendLock = true;
         this._isProcessing = true;
         this.sendBtn.disabled = true;
-        const sendId = (this._sendSeq = (this._sendSeq || 0) + 1);
 
         if (themeModeEnabled) {
             try {
@@ -1767,7 +1776,7 @@ const UI = {
                 this.showError((e && e.message) || 'Theme failed');
             } finally {
                 this._isProcessing = false;
-                this._sendLock = false;
+                AARIZ_SEND_LOCK = false;
                 this.sendBtn.disabled = !this.input.value.trim();
                 setTimeout(() => { try { input.focus(); } catch(_){} }, 50);
                 this.render();
@@ -1849,7 +1858,7 @@ const UI = {
                 this.showError(err.message);
             } finally {
                 this._isProcessing = false;
-                this._sendLock = false;
+                AARIZ_SEND_LOCK = false;
                 if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim();
                 setTimeout(() => { try { input.focus(); } catch(_){} }, 50);
                 this.render();
@@ -1868,7 +1877,7 @@ const UI = {
             this.showError((outerErr && outerErr.message) || 'Send failed');
         } finally {
             this._isProcessing = false;
-            this._sendLock = false;
+            AARIZ_SEND_LOCK = false;
             if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim();
             try { this._recreateIcons(); } catch (_) {}
         }
@@ -1974,8 +1983,9 @@ const UI = {
             client: { name: 'Aariz', version: AARIZ_VERSION, mobile: aarizIsMobile() }
         };
 
-        // One controller per request; keep on UI only so Stop can cancel the latest
+        // Per-request controller — do not abort any other in-flight call automatically
         const ctrl = new AbortController();
+        AARIZ_SEND_CTRL = ctrl;
         this._abortCtrl = ctrl;
         const timeoutMs = aarizIsMobile() ? 60000 : 90000;
         const timer = setTimeout(() => {
@@ -2024,6 +2034,7 @@ const UI = {
         } finally {
             clearTimeout(timer);
             if (this._abortCtrl === ctrl) this._abortCtrl = null;
+            if (AARIZ_SEND_CTRL === ctrl) AARIZ_SEND_CTRL = null;
         }
     },
 
