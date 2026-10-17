@@ -1218,20 +1218,6 @@ const UI = {
         try { this._restoreThemeFromStorage(); } catch (e) { console.warn('restoreTheme', e); }
         try { this._syncUIState(); } catch (e) { console.warn('syncUI', e); }
         try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (_) {}
-        // Failsafe: bind send again in case earlier bind failed
-        if (this.sendBtn && !this.sendBtn.__aarizBound) {
-            this.sendBtn.__aarizBound = true;
-            this.sendBtn.addEventListener('click', (e) => { e.preventDefault(); this.sendMessage(); });
-        }
-        if (this.input && !this.input.__aarizBound) {
-            this.input.__aarizBound = true;
-            this.input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMessage(); }
-            });
-            this.input.addEventListener('input', () => {
-                if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
-            });
-        }
     },
 
     _restoreThemeFromStorage() {
@@ -1349,30 +1335,37 @@ const UI = {
             this.openDeleteModal(id, chat ? chatManager.getTitle(chat) : 'this chat');
         });
 
-        // Send — critical path (single listener only)
-        if (this.sendBtn && !this.sendBtn.__aarizBound) {
+        // Send — wipe any prior listeners by replacing the button node, then bind once
+        if (this.sendBtn) {
+            const fresh = this.sendBtn.cloneNode(true);
+            fresh.type = 'button';
+            this.sendBtn.replaceWith(fresh);
+            this.sendBtn = fresh;
             this.sendBtn.__aarizBound = true;
             this.sendBtn.addEventListener('click', (e) => {
                 e.preventDefault();
                 e.stopPropagation();
                 this.sendMessage();
             });
+            this.sendBtn.disabled = true;
         }
-        if (this.input && !this.input.__aarizBound) {
-            this.input.__aarizBound = true;
-            this.input.addEventListener('keydown', (e) => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                    e.preventDefault();
-                    this.sendMessage();
-                }
-            });
-            this.input.addEventListener('input', () => {
-                if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
-                this.input.style.height = 'auto';
-                this.input.style.height = Math.min(this.input.scrollHeight, 120) + 'px';
-            });
+        if (this.input) {
+            // clone input only if already bound to avoid losing value mid-session on re-init
+            if (!this.input.__aarizBound) {
+                this.input.__aarizBound = true;
+                this.input.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' && !e.shiftKey) {
+                        e.preventDefault();
+                        this.sendMessage();
+                    }
+                });
+                this.input.addEventListener('input', () => {
+                    if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
+                    this.input.style.height = 'auto';
+                    this.input.style.height = Math.min(this.input.scrollHeight, 120) + 'px';
+                });
+            }
         }
-        if (this.sendBtn) this.sendBtn.disabled = true;
 
         on(document.getElementById('themeToggle'), 'click', () => {
             const isDark = document.body.classList.contains('theme-dark');
@@ -1726,6 +1719,7 @@ const UI = {
             this._abortCtrl = null;
         }
         this._isProcessing = false;
+        this._sendLock = false;
         this._removeTypingIndicator();
         if (this.sendBtn) {
             this.sendBtn.disabled = !this.input.value.trim();
@@ -1740,8 +1734,8 @@ const UI = {
             console.error('Aariz: input/sendBtn missing');
             return;
         }
-        // Ignore duplicate taps while a request is in flight (do NOT abort)
-        if (this._isProcessing) {
+        // Hard lock — ignore duplicate taps / double listeners
+        if (this._isProcessing || this._sendLock) {
             return;
         }
         const text = input.value.trim();
@@ -1760,8 +1754,10 @@ const UI = {
 
         input.value = '';
         input.style.height = 'auto';
+        this._sendLock = true;
         this._isProcessing = true;
         this.sendBtn.disabled = true;
+        const sendId = (this._sendSeq = (this._sendSeq || 0) + 1);
 
         if (themeModeEnabled) {
             try {
@@ -1771,6 +1767,7 @@ const UI = {
                 this.showError((e && e.message) || 'Theme failed');
             } finally {
                 this._isProcessing = false;
+                this._sendLock = false;
                 this.sendBtn.disabled = !this.input.value.trim();
                 setTimeout(() => { try { input.focus(); } catch(_){} }, 50);
                 this.render();
@@ -1852,6 +1849,7 @@ const UI = {
                 this.showError(err.message);
             } finally {
                 this._isProcessing = false;
+                this._sendLock = false;
                 if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim();
                 setTimeout(() => { try { input.focus(); } catch(_){} }, 50);
                 this.render();
@@ -1870,6 +1868,7 @@ const UI = {
             this.showError((outerErr && outerErr.message) || 'Send failed');
         } finally {
             this._isProcessing = false;
+            this._sendLock = false;
             if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim();
             try { this._recreateIcons(); } catch (_) {}
         }
