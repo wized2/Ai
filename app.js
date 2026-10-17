@@ -493,6 +493,21 @@ const ThemeEngine = {
   display: block !important;
 }
 .app-wrapper { position: relative; z-index: 1; }
+.header, .sidebar, .sidebar-header, .theme-toggle, .composer-pill, .popover-panel, .mode-select-panel {
+  background-color: var(--md-sys-color-surface-container) !important;
+  color: var(--md-sys-color-on-surface) !important;
+  border-color: var(--md-sys-color-outline-variant) !important;
+}
+.theme-toggle {
+  background-color: var(--md-sys-color-primary-container) !important;
+  color: var(--md-sys-color-on-primary-container) !important;
+}
+.header-title { color: var(--md-sys-color-primary) !important; }
+.sidebar-toggle, .sidebar-close { color: var(--md-sys-color-on-surface-variant) !important; }
+.chat-item.active, .new-chat-btn {
+  background: color-mix(in srgb, var(--md-sys-color-primary) 16%, var(--md-sys-color-surface-container)) !important;
+}
+body { background-color: var(--md-sys-color-surface) !important; color: var(--md-sys-color-on-surface) !important; }
 .input-area, #inputArea {
   position: fixed !important;
   left: 0 !important;
@@ -505,6 +520,9 @@ const ThemeEngine = {
 .composer-pill, .composer-pill *,
 .send-btn, #sendBtn, #messageInput, textarea#messageInput {
   pointer-events: auto !important;
+}
+.chat-container, #chatContainer {
+  padding-bottom: calc(168px + env(safe-area-inset-bottom, 0px)) !important;
 }
 `;
         let safeCss = '';
@@ -767,7 +785,15 @@ function renderMarkdown(text) {
     });
 
     processedText = processedText.replace(/!\[([^\]]*)\]\(([^)]+)\)/g, function(match, alt, url) {
-        return `<img src="${escapeHtml(url)}" alt="${escapeHtml(alt)}" style="max-width:100%; border-radius:12px; margin:6px 0; box-shadow: var(--md-elevation-level1);" />`;
+        const safeUrl = escapeHtml(url);
+        const safeAlt = escapeHtml(alt || 'Image');
+        return `<div class="gen-image-wrap">
+  <img class="gen-image" src="${safeUrl}" alt="${safeAlt}" data-fullsrc="${safeUrl}" loading="lazy" />
+  <div class="gen-image-actions">
+    <button type="button" class="img-preview-btn" data-src="${safeUrl}">View</button>
+    <button type="button" class="img-download-btn primary" data-src="${safeUrl}" data-name="${safeAlt}">Download</button>
+  </div>
+</div>`;
     });
 
     processedText = processBasicMarkdown(processedText);
@@ -1441,8 +1467,30 @@ const UI = {
             this._recreateIcons();
         });
 
+        document.addEventListener('click', (e) => {
+            const t = e.target.closest('.img-preview-btn, .gen-image, .img-download-btn');
+            if (!t) return;
+            if (t.classList.contains('img-download-btn')) {
+                e.preventDefault();
+                this.downloadImage(t.getAttribute('data-src'), t.getAttribute('data-name'));
+                return;
+            }
+            if (t.classList.contains('img-preview-btn') || t.classList.contains('gen-image')) {
+                e.preventDefault();
+                const src = t.getAttribute('data-src') || t.getAttribute('data-fullsrc') || t.getAttribute('src');
+                this.openImageLightbox(src);
+            }
+        });
+        const lbClose = document.getElementById('imgLightboxClose');
+        const lbDl = document.getElementById('imgLightboxDownload');
+        const lb = document.getElementById('imgLightbox');
+        if (lbClose) lbClose.addEventListener('click', () => this.closeImageLightbox());
+        if (lbDl) lbDl.addEventListener('click', () => this.downloadImage(this._lightboxSrc || (document.getElementById('imgLightboxImg') || {}).src, 'aariz-image'));
+        if (lb) lb.addEventListener('click', (e) => { if (e.target === lb) this.closeImageLightbox(); });
+
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
+                this.closeImageLightbox();
                 this.closeDropdown();
                 if (this.popoverPanel) this.popoverPanel.classList.remove('open');
                 if (this.modeSelectPanel) this.modeSelectPanel.classList.remove('open');
@@ -1629,6 +1677,45 @@ const UI = {
         this._recreateIcons();
     },
 
+    openImageLightbox(src) {
+        const box = document.getElementById('imgLightbox');
+        const img = document.getElementById('imgLightboxImg');
+        if (!box || !img || !src) return;
+        img.src = src;
+        box.classList.add('open');
+        box.setAttribute('aria-hidden', 'false');
+        this._lightboxSrc = src;
+    },
+    closeImageLightbox() {
+        const box = document.getElementById('imgLightbox');
+        const img = document.getElementById('imgLightboxImg');
+        if (box) {
+            box.classList.remove('open');
+            box.setAttribute('aria-hidden', 'true');
+        }
+        if (img) img.removeAttribute('src');
+        this._lightboxSrc = '';
+    },
+    async downloadImage(src, name) {
+        if (!src) return;
+        const fileName = (name || 'aariz-image').replace(/[^\w\-]+/g, '_').slice(0, 40) + '.jpg';
+        try {
+            const resp = await fetch(src, { mode: 'cors' });
+            const blob = await resp.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
+            setTimeout(() => URL.revokeObjectURL(url), 2000);
+        } catch (_) {
+            // Fallback: open in new tab
+            window.open(src, '_blank', 'noopener');
+        }
+    },
+
     _recreateIcons() {
         try {
             if (typeof lucide !== 'undefined' && lucide.createIcons) {
@@ -1642,12 +1729,11 @@ const UI = {
             const container = this.chatContainer;
             if (!container) return;
             const run = () => {
-                container.scrollTop = container.scrollHeight + (force ? 200 : 0);
+                container.scrollTop = container.scrollHeight + (force ? 320 : 48);
             };
             run();
-            if (force) {
-                requestAnimationFrame(run);
-            }
+            requestAnimationFrame(run);
+            if (force) setTimeout(run, 50);
         } catch (_) {}
     },
 
@@ -1817,11 +1903,18 @@ const UI = {
                     const wrap = document.getElementById(wrapId);
                     if (wrap) {
                         wrap.innerHTML = '';
+                        img.setAttribute('data-fullsrc', imageUrl);
                         wrap.appendChild(img);
+                        const actions = document.createElement('div');
+                        actions.className = 'gen-image-actions';
+                        actions.innerHTML = `<button type="button" class="img-preview-btn" data-src="${imageUrl}">View</button>
+<button type="button" class="img-download-btn primary" data-src="${imageUrl}" data-name="aariz-image">Download</button>`;
+                        wrap.appendChild(actions);
+                        this._recreateIcons();
                     }
-                    // Wait a frame so height is known, then scroll past the composer
                     requestAnimationFrame(() => this._scrollToBottom(true));
-                    setTimeout(() => this._scrollToBottom(true), 80);
+                    setTimeout(() => this._scrollToBottom(true), 120);
+                    setTimeout(() => this._scrollToBottom(true), 400);
                 };
                 img.onerror = () => {
                     const wrap = document.getElementById(wrapId);
@@ -1850,6 +1943,8 @@ const UI = {
                 this._removeTypingIndicator();
                 this._addMessageToDOM('assistant', response, false);
                 chatManager.addMessage(active.id, 'assistant', response);
+                this._scrollToBottom(true);
+                setTimeout(() => this._scrollToBottom(true), 200);
             } catch (err) {
                 this._removeTypingIndicator();
                 const errMsg = this._friendlyError(err);

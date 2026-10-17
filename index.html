@@ -235,7 +235,10 @@
             display: flex;
             flex-direction: column;
             height: 100vh;
+            height: 100dvh;
+            max-height: 100dvh;
             background: transparent;
+            overflow: hidden;
         }
         /* ===== Header ===== */
         .header {
@@ -635,7 +638,7 @@
             flex: 1;
             overflow-y: auto;
             overflow-x: hidden;
-            padding: 16px 16px calc(80px + var(--safe-area-bottom)) 16px;
+            padding: 16px 16px calc(168px + var(--safe-area-bottom, 0px)) 16px;
             display: flex;
             flex-direction: column;
             gap: 14px;
@@ -1003,18 +1006,19 @@
         }
         .input-area, .input-area * { pointer-events: auto; }
         .chat-container, #chatContainer, .messages {
-            padding-bottom: calc(96px + var(--safe-area-bottom, 0px)) !important;
+            padding-bottom: calc(168px + var(--safe-area-bottom, 0px)) !important;
         }
         .gen-image-wrap {
-            margin: 4px 0 8px;
+            margin: 4px 0 12px;
             width: min(100%, 420px);
             border-radius: 18px;
             overflow: hidden;
-            background: color-mix(in srgb, var(--md-sys-color-surface-container) 88%, var(--md-sys-color-primary) 12%);
+            background: var(--md-sys-color-surface-container);
             border: 1px solid var(--md-sys-color-outline-variant);
             box-shadow: var(--md-elevation-level1);
-            min-height: 220px;
+            min-height: 180px;
             max-width: 100%;
+            position: relative;
         }
         .gen-image-skeleton {
             display: flex;
@@ -1022,7 +1026,7 @@
             align-items: center;
             justify-content: center;
             gap: 14px;
-            min-height: 240px;
+            min-height: 220px;
             width: 100%;
             padding: 24px;
             color: var(--md-sys-color-on-surface-variant);
@@ -1052,16 +1056,89 @@
             display: block;
             width: 100%;
             height: auto;
-            max-height: min(62vh, 520px);
+            max-height: min(58vh, 480px);
             object-fit: cover;
+            cursor: zoom-in;
             background: var(--md-sys-color-surface-container);
-            vertical-align: middle;
+        }
+        .gen-image-actions {
+            display: flex;
+            gap: 8px;
+            padding: 8px 10px 10px;
+            background: var(--md-sys-color-surface-container);
+            border-top: 1px solid var(--md-sys-color-outline-variant);
+        }
+        .gen-image-actions button {
+            flex: 1;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 8px 10px;
+            border-radius: 12px;
+            border: 1px solid var(--md-sys-color-outline-variant);
+            background: var(--md-sys-color-surface);
+            color: var(--md-sys-color-on-surface);
+            font-size: 0.85rem;
+            cursor: pointer;
+        }
+        .gen-image-actions button.primary {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
+            border-color: transparent;
         }
         .gen-image-error {
             padding: 20px 16px;
             color: var(--md-sys-color-error);
             text-align: center;
             font-size: 0.9rem;
+        }
+        /* Fullscreen image preview */
+        .img-lightbox {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(0,0,0,0.88);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+            padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+        }
+        .img-lightbox.open { display: flex; }
+        .img-lightbox img {
+            max-width: 100%;
+            max-height: calc(100dvh - 120px);
+            object-fit: contain;
+            border-radius: 12px;
+            box-shadow: 0 12px 40px rgba(0,0,0,0.45);
+        }
+        .img-lightbox-bar {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            width: min(100%, 360px);
+        }
+        .img-lightbox-bar button {
+            flex: 1;
+            padding: 12px 14px;
+            border-radius: 14px;
+            border: none;
+            font-size: 0.95rem;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .img-lightbox-bar .lb-close {
+            background: rgba(255,255,255,0.14);
+            color: #fff;
+        }
+        .img-lightbox-bar .lb-download {
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
         }
         #svgBackground {
             position: fixed;
@@ -1672,11 +1749,20 @@
             </div>
         </div>
 
+        <!-- ===== IMAGE LIGHTBOX ===== -->
+        <div class="img-lightbox" id="imgLightbox" aria-hidden="true">
+            <img id="imgLightboxImg" alt="Preview" />
+            <div class="img-lightbox-bar">
+                <button type="button" class="lb-close" id="imgLightboxClose">Close</button>
+                <button type="button" class="lb-download" id="imgLightboxDownload">Download</button>
+            </div>
+        </div>
+
         <!-- ===== DYNAMIC THEME STYLE ===== -->
         <style id="dynamicThemeStyle"></style>
     </div>
 
     <!-- ===== APP JS ===== -->
-    <script src="app.js?v=20261017v8"></script>
+    <script src="app.js?v=20261017v9"></script>
 </body>
 </html>
