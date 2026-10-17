@@ -475,13 +475,15 @@ const ThemeEngine = {
 
         // Theme CSS — scoped + layout-safe background rules so custom themes never break the chrome
         const safeBg = `
+#svgBackground, #svgBackground.active, #particleCanvas, #bgAnimationContainer {
+  pointer-events: none !important;
+}
 #svgBackground.active {
   position: fixed !important;
   inset: 0 !important;
   width: 100% !important;
   height: 100% !important;
   z-index: 0 !important;
-  pointer-events: none !important;
   overflow: hidden !important;
 }
 #svgBackground.active svg {
@@ -490,23 +492,32 @@ const ThemeEngine = {
   object-fit: cover !important;
   display: block !important;
 }
-.app-shell, .chat-app, body > .app {
-  position: relative;
-  z-index: 1;
-}
-.input-area {
+.app-wrapper { position: relative; z-index: 1; }
+.input-area, #inputArea {
   position: fixed !important;
-  left: 0; right: 0;
-  bottom: 0;
-  bottom: env(safe-area-inset-bottom, 0px);
-  z-index: 50 !important;
+  left: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  z-index: 200 !important;
+  pointer-events: auto !important;
+}
+.input-area *, #inputArea *,
+.composer-pill, .composer-pill *,
+.send-btn, #sendBtn, #messageInput, textarea#messageInput {
+  pointer-events: auto !important;
 }
 `;
+        let safeCss = '';
         if (css && typeof css === 'string' && css.trim()) {
-            this._styleTag.textContent = safeBg + '\n' + css;
-        } else {
-            this._styleTag.textContent = safeBg;
+            // Strip rules that break interaction / layout chrome
+            safeCss = String(css)
+                .replace(/pointer-events\s*:\s*none\s*!important/gi, 'pointer-events: auto')
+                .replace(/pointer-events\s*:\s*none/gi, 'pointer-events: auto')
+                .replace(/\.input-area[^{]*\{[^}]*\}/gi, '')
+                .replace(/#inputArea[^{]*\{[^}]*\}/gi, '')
+                .replace(/body\s*\{[^}]*pointer-events[^}]*\}/gi, '');
         }
+        this._styleTag.textContent = safeBg + '\n' + safeCss;
 
         if (svgBackground && typeof svgBackground === 'string' && svgBackground.trim()) {
             let svgContent = svgBackground.trim();
@@ -1201,12 +1212,26 @@ const UI = {
     _isProcessing: false,
 
     init() {
-        ThemeEngine.init();
-        this._bindEvents();
-        this.render();
-        this._restoreThemeFromStorage();
-        this._syncUIState();
-        if (typeof lucide !== 'undefined') lucide.createIcons();
+        try { ThemeEngine.init(); } catch (e) { console.warn('ThemeEngine.init', e); }
+        try { this._bindEvents(); } catch (e) { console.error('bindEvents', e); }
+        try { this.render(); } catch (e) { console.warn('render', e); }
+        try { this._restoreThemeFromStorage(); } catch (e) { console.warn('restoreTheme', e); }
+        try { this._syncUIState(); } catch (e) { console.warn('syncUI', e); }
+        try { if (typeof lucide !== 'undefined') lucide.createIcons(); } catch (_) {}
+        // Failsafe: bind send again in case earlier bind failed
+        if (this.sendBtn && !this.sendBtn.__aarizBound) {
+            this.sendBtn.__aarizBound = true;
+            this.sendBtn.addEventListener('click', (e) => { e.preventDefault(); this.sendMessage(); });
+        }
+        if (this.input && !this.input.__aarizBound) {
+            this.input.__aarizBound = true;
+            this.input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMessage(); }
+            });
+            this.input.addEventListener('input', () => {
+                if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
+            });
+        }
     },
 
     _restoreThemeFromStorage() {
@@ -1277,26 +1302,28 @@ const UI = {
     },
 
     _bindEvents() {
-        this.sidebarToggle.addEventListener('click', () => this.openSidebar());
-        document.getElementById('sidebarClose').addEventListener('click', () => this.closeSidebar());
-        this.overlay.addEventListener('click', () => this.closeSidebar());
+        const on = (el, ev, fn) => { if (el) el.addEventListener(ev, fn); };
 
-        document.getElementById('newChatBtn').addEventListener('click', () => {
+        on(this.sidebarToggle, 'click', () => this.openSidebar());
+        on(document.getElementById('sidebarClose'), 'click', () => this.closeSidebar());
+        on(this.overlay, 'click', () => this.closeSidebar());
+        on(document.getElementById('newChatBtn'), 'click', () => {
             this.closeSidebar();
             this.newChat();
         });
 
-        this.modalCancel.addEventListener('click', () => this.closeModal());
-        this.modalOverlay.addEventListener('click', (e) => {
+        on(this.modalCancel, 'click', () => this.closeModal());
+        on(this.modalOverlay, 'click', (e) => {
             if (e.target === this.modalOverlay) this.closeModal();
         });
-        this.modalConfirm.addEventListener('click', () => this._handleModalConfirm());
+        on(this.modalConfirm, 'click', () => this._handleModalConfirm());
 
         document.addEventListener('click', (e) => {
             const target = e.target.closest('.dropdown-menu') || e.target.closest('.chat-menu-btn');
             if (!target) this.closeDropdown();
         });
-        document.getElementById('dropdownPin').addEventListener('click', () => {
+
+        on(document.getElementById('dropdownPin'), 'click', () => {
             const id = this._dropdownTargetId;
             if (!id) return;
             chatManager.togglePin(id);
@@ -1305,7 +1332,7 @@ const UI = {
             this.renderChat(chatManager.activeId);
             this._recreateIcons();
         });
-        document.getElementById('dropdownRename').addEventListener('click', () => {
+        on(document.getElementById('dropdownRename'), 'click', () => {
             const id = this._dropdownTargetId;
             if (!id) return;
             const chat = chatManager.getChat(id);
@@ -1314,66 +1341,69 @@ const UI = {
                 this.openRenameModal(id, chatManager.getTitle(chat));
             }
         });
-        document.getElementById('dropdownDelete').addEventListener('click', () => {
+        on(document.getElementById('dropdownDelete'), 'click', () => {
             const id = this._dropdownTargetId;
             if (!id) return;
             const chat = chatManager.getChat(id);
-            if (chat) {
-                this.closeDropdown();
-                this.openDeleteModal(id, chatManager.getTitle(chat));
-            }
+            this.closeDropdown();
+            this.openDeleteModal(id, chat ? chatManager.getTitle(chat) : 'this chat');
         });
 
-        this.sendBtn.addEventListener('click', () => this.sendMessage());
-        this.input.addEventListener('keydown', (e) => {
+        // Send — critical path
+        on(this.sendBtn, 'click', (e) => {
+            e.preventDefault();
+            this.sendMessage();
+        });
+        on(this.input, 'keydown', (e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
                 e.preventDefault();
                 this.sendMessage();
             }
         });
-        this.input.addEventListener('input', () => {
-            this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
+        on(this.input, 'input', () => {
+            if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
             this.input.style.height = 'auto';
-            const newHeight = Math.min(this.input.scrollHeight, 100);
-            this.input.style.height = newHeight + 'px';
+            this.input.style.height = Math.min(this.input.scrollHeight, 120) + 'px';
         });
-        this.sendBtn.disabled = true;
+        if (this.sendBtn) this.sendBtn.disabled = true;
 
-        document.getElementById('themeToggle').addEventListener('click', () => {
+        on(document.getElementById('themeToggle'), 'click', () => {
             const isDark = document.body.classList.contains('theme-dark');
             applyTheme(isDark ? 'light' : 'dark');
         });
 
-        this.plusBtn.addEventListener('click', (e) => {
+        on(this.plusBtn, 'click', (e) => {
             e.stopPropagation();
-            this.popoverPanel.classList.toggle('open');
+            if (this.popoverPanel) this.popoverPanel.classList.toggle('open');
         });
         document.addEventListener('click', (e) => {
-            if (!this.popoverPanel.contains(e.target) && e.target !== this.plusBtn) {
+            if (this.popoverPanel && !this.popoverPanel.contains(e.target) && e.target !== this.plusBtn) {
                 this.popoverPanel.classList.remove('open');
             }
         });
 
-        this.modeChip.addEventListener('click', (e) => {
+        on(this.modeChip, 'click', (e) => {
             e.stopPropagation();
-            this.modeSelectPanel.classList.toggle('open');
+            if (this.modeSelectPanel) this.modeSelectPanel.classList.toggle('open');
         });
         document.addEventListener('click', (e) => {
-            if (!this.modeSelectPanel.contains(e.target) && e.target !== this.modeChip) {
+            if (this.modeSelectPanel && !this.modeSelectPanel.contains(e.target) && e.target !== this.modeChip) {
                 this.modeSelectPanel.classList.remove('open');
             }
         });
-        this.modeSelectPanel.querySelectorAll('.mode-option').forEach(opt => {
-            opt.addEventListener('click', () => {
-                this._currentMode = opt.dataset.mode;
-                this.modeSelectPanel.classList.remove('open');
-                this._syncUIState();
-                this._recreateIcons();
-                this.input.focus();
+        if (this.modeSelectPanel) {
+            this.modeSelectPanel.querySelectorAll('.mode-option').forEach((opt) => {
+                opt.addEventListener('click', () => {
+                    this._currentMode = opt.dataset.mode;
+                    this.modeSelectPanel.classList.remove('open');
+                    this._syncUIState();
+                    this._recreateIcons();
+                    if (this.input) this.input.focus();
+                });
             });
-        });
+        }
 
-        this.webSearchToggle.addEventListener('click', () => {
+        on(this.webSearchToggle, 'click', () => {
             if (this._currentMode === 'image') {
                 this.showError('Web search is disabled in Image mode.');
                 return;
@@ -1382,10 +1412,10 @@ const UI = {
             if (webSearchEnabled) themeModeEnabled = false;
             this._syncUIState();
             this._recreateIcons();
-            this.popoverPanel.classList.remove('open');
+            if (this.popoverPanel) this.popoverPanel.classList.remove('open');
         });
 
-        this.themeModeToggle.addEventListener('click', () => {
+        on(this.themeModeToggle, 'click', () => {
             themeModeEnabled = !themeModeEnabled;
             if (themeModeEnabled) {
                 webSearchEnabled = false;
@@ -1393,32 +1423,28 @@ const UI = {
             }
             this._syncUIState();
             this._recreateIcons();
-            this.popoverPanel.classList.remove('open');
-            this.input.focus();
+            if (this.popoverPanel) this.popoverPanel.classList.remove('open');
         });
 
-        this.resetThemePopover.addEventListener('click', () => {
-            this.popoverPanel.classList.remove('open');
-            this._resetTheme();
+        on(this.resetThemePopover, 'click', () => {
+            try { ThemeEngine.reset(); } catch (e) { console.warn(e); }
+            if (this.popoverPanel) this.popoverPanel.classList.remove('open');
+            const active = chatManager.getActive();
+            if (active) {
+                const resetMsg = 'Theme reset to default.';
+                this._addMessageToDOM('assistant', resetMsg, false);
+                chatManager.addMessage(active.id, 'assistant', resetMsg);
+            }
+            this._recreateIcons();
         });
 
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                this.popoverPanel.classList.remove('open');
-                this.modeSelectPanel.classList.remove('open');
-                this.closeSidebar();
                 this.closeDropdown();
-                this.closeModal();
-            }
-            if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
-                e.preventDefault();
-                this.toggleSidebar();
+                if (this.popoverPanel) this.popoverPanel.classList.remove('open');
+                if (this.modeSelectPanel) this.modeSelectPanel.classList.remove('open');
             }
         });
-    },
-
-    _recreateIcons() {
-        if (typeof lucide !== 'undefined') lucide.createIcons();
     },
 
     openSidebar() {
@@ -1678,17 +1704,26 @@ const UI = {
 
     async sendMessage() {
         const input = this.input;
+        if (!input || !this.sendBtn) {
+            console.error('Aariz: input/sendBtn missing');
+            return;
+        }
+        // If a run is stuck, stop it — then allow this send to continue
         if (this._isProcessing) {
             this.stopGeneration();
-            return;
         }
         const text = input.value.trim();
         if (!text) return;
 
-        const active = chatManager.getActive();
+        let active = chatManager.getActive();
         if (!active) {
-            this.showError('No active chat. Create a new chat first.');
-            return;
+            active = chatManager.createChat('New Chat');
+            if (!active) {
+                this.showError('Could not create a chat. Try refreshing the page.');
+                return;
+            }
+            this.render();
+            this.renderChat(active.id);
         }
 
         input.value = '';
@@ -1697,12 +1732,18 @@ const UI = {
         this.sendBtn.disabled = true;
 
         if (themeModeEnabled) {
-            await this._handleThemeGeneration(text, active);
-            this._isProcessing = false;
-            this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
-            setTimeout(() => input.focus(), 100);
-            this.render();
-            this._recreateIcons();
+            try {
+                await this._handleThemeGeneration(text, active);
+            } catch (e) {
+                console.error(e);
+                this.showError((e && e.message) || 'Theme failed');
+            } finally {
+                this._isProcessing = false;
+                this.sendBtn.disabled = !this.input.value.trim();
+                setTimeout(() => { try { input.focus(); } catch(_){} }, 50);
+                this.render();
+                this._recreateIcons();
+            }
             return;
         }
 
@@ -1778,8 +1819,8 @@ const UI = {
                 this.showError(err.message);
             } finally {
                 this._isProcessing = false;
-                this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
-                setTimeout(() => input.focus(), 100);
+                if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim();
+                setTimeout(() => { try { input.focus(); } catch(_){} }, 50);
                 this.render();
                 this._recreateIcons();
             }
@@ -1972,7 +2013,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     if ('serviceWorker' in navigator) {
         window.addEventListener('load', () => {
-            navigator.serviceWorker.register('/sw.js')
+            navigator.serviceWorker.register('./sw.js')
                 .then(reg => console.log('SW registered:', reg.scope))
                 .catch(err => console.error('SW registration failed:', err));
         });

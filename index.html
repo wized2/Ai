@@ -999,9 +999,9 @@
                 color-mix(in srgb, var(--md-sys-color-surface) 70%, transparent) 78%,
                 transparent);
             transition: background 0.35s ease;
-            pointer-events: none;
+            pointer-events: auto;
         }
-        .input-area > * { pointer-events: auto; }
+        .input-area, .input-area * { pointer-events: auto; }
         .chat-container, #chatContainer, .messages {
             padding-bottom: calc(96px + var(--safe-area-bottom, 0px)) !important;
         }
@@ -1233,6 +1233,9 @@
         }
         .mode-select-panel .mode-option.active-opt .check-mark { display: inline; }
         .send-btn {
+            pointer-events: auto !important;
+            z-index: 5;
+            position: relative;
             width: 36px; height: 36px;
             border-radius: 50%;
             border: none;
