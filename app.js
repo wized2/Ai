@@ -1349,22 +1349,29 @@ const UI = {
             this.openDeleteModal(id, chat ? chatManager.getTitle(chat) : 'this chat');
         });
 
-        // Send — critical path
-        on(this.sendBtn, 'click', (e) => {
-            e.preventDefault();
-            this.sendMessage();
-        });
-        on(this.input, 'keydown', (e) => {
-            if (e.key === 'Enter' && !e.shiftKey) {
+        // Send — critical path (single listener only)
+        if (this.sendBtn && !this.sendBtn.__aarizBound) {
+            this.sendBtn.__aarizBound = true;
+            this.sendBtn.addEventListener('click', (e) => {
                 e.preventDefault();
+                e.stopPropagation();
                 this.sendMessage();
-            }
-        });
-        on(this.input, 'input', () => {
-            if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
-            this.input.style.height = 'auto';
-            this.input.style.height = Math.min(this.input.scrollHeight, 120) + 'px';
-        });
+            });
+        }
+        if (this.input && !this.input.__aarizBound) {
+            this.input.__aarizBound = true;
+            this.input.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    this.sendMessage();
+                }
+            });
+            this.input.addEventListener('input', () => {
+                if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
+                this.input.style.height = 'auto';
+                this.input.style.height = Math.min(this.input.scrollHeight, 120) + 'px';
+            });
+        }
         if (this.sendBtn) this.sendBtn.disabled = true;
 
         on(document.getElementById('themeToggle'), 'click', () => {
@@ -1715,12 +1722,15 @@ const UI = {
 
     stopGeneration() {
         if (this._abortCtrl) {
-            try { this._abortCtrl.abort(); } catch (_) {}
+            try { this._abortCtrl.abort('user'); } catch (_) {}
+            this._abortCtrl = null;
         }
         this._isProcessing = false;
         this._removeTypingIndicator();
-        this.sendBtn.disabled = !this.input.value.trim();
-        this.sendBtn.setAttribute('aria-label', 'Send');
+        if (this.sendBtn) {
+            this.sendBtn.disabled = !this.input.value.trim();
+            this.sendBtn.setAttribute('aria-label', 'Send');
+        }
         this._recreateIcons();
     },
 
@@ -1730,9 +1740,9 @@ const UI = {
             console.error('Aariz: input/sendBtn missing');
             return;
         }
-        // If a run is stuck, stop it — then allow this send to continue
+        // Ignore duplicate taps while a request is in flight (do NOT abort)
         if (this._isProcessing) {
-            this.stopGeneration();
+            return;
         }
         const text = input.value.trim();
         if (!text) return;
@@ -1965,14 +1975,12 @@ const UI = {
             client: { name: 'Aariz', version: AARIZ_VERSION, mobile: aarizIsMobile() }
         };
 
-        // Abort previous in-flight request
-        if (this._abortCtrl) {
-            try { this._abortCtrl.abort(); } catch (_) {}
-        }
-        this._abortCtrl = new AbortController();
-        const timeoutMs = aarizIsMobile() ? 55000 : 75000;
+        // One controller per request; keep on UI only so Stop can cancel the latest
+        const ctrl = new AbortController();
+        this._abortCtrl = ctrl;
+        const timeoutMs = aarizIsMobile() ? 60000 : 90000;
         const timer = setTimeout(() => {
-            try { this._abortCtrl.abort(); } catch (_) {}
+            try { ctrl.abort('timeout'); } catch (_) {}
         }, timeoutMs);
 
         try {
@@ -1983,7 +1991,7 @@ const UI = {
                     'Accept': 'text/plain, application/json'
                 },
                 body: JSON.stringify(payload),
-                signal: this._abortCtrl.signal
+                signal: ctrl.signal
             });
             if (!resp.ok) {
                 let err = `Worker error: ${resp.status}`;
@@ -2006,11 +2014,17 @@ const UI = {
             return textBody;
         } catch (e) {
             if (e && e.name === 'AbortError') {
-                throw new Error('Request timed out or was cancelled. Try a shorter message.');
+                const reason = (ctrl.signal && ctrl.signal.reason) || '';
+                if (String(reason) === 'timeout') {
+                    throw new Error('Request timed out. Try again with a shorter message.');
+                }
+                // User hit stop — quiet
+                throw new Error('Stopped. You can send again anytime.');
             }
             throw e;
         } finally {
             clearTimeout(timer);
+            if (this._abortCtrl === ctrl) this._abortCtrl = null;
         }
     },
 
