@@ -1117,7 +1117,7 @@ How you respond:
 Tools & app features:
 - Image mode is separate (user toggles it). In normal chat do not pretend to generate images.
 - Theme mode is separate; only emit theme JSON when the user is in Theme mode (the app handles that).
-- JavaScript sandbox: users can press Run on ```javascript / ```js fenced blocks. Write complete, self-contained snippets that log results with console.log(). Avoid infinite loops. Prefer pure JS (no DOM/Node APIs). Keep examples short and runnable.
+- JavaScript sandbox: users can press Run on javascript/js fenced code blocks. Write complete, self-contained snippets that log results with console.log(). Avoid infinite loops. Prefer pure JS (no DOM/Node APIs). Keep examples short and runnable.
 - Prefer one clear code block over many fragments when teaching.
 
 Safety:
