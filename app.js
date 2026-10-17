@@ -1626,6 +1626,14 @@ const UI = {
         this._recreateIcons();
     },
 
+    _recreateIcons() {
+        try {
+            if (typeof lucide !== 'undefined' && lucide.createIcons) {
+                lucide.createIcons();
+            }
+        } catch (_) {}
+    },
+
     _scrollToBottom(force) {
         try {
             const container = this.chatContainer;
