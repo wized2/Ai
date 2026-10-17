@@ -239,6 +239,7 @@
         }
         /* ===== Header ===== */
         .header {
+            transition: background-color 0.35s ease, color 0.35s ease, border-color 0.35s ease;
             padding: 8px 16px;
             height: var(--header-height);
             min-height: var(--header-height);
@@ -710,18 +711,17 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .message.user {
-            background: var(--md-sys-color-primary-container);
-            color: var(--md-sys-color-on-primary-container);
+            background: var(--md-sys-color-primary);
+            color: var(--md-sys-color-on-primary);
             align-self: flex-end;
             padding: 10px 16px;
             border-radius: 20px 20px 6px 20px;
             max-width: 85%;
             box-shadow: var(--md-elevation-level1);
-            border: 1px solid color-mix(in srgb, var(--md-sys-color-primary) 15%, transparent);
-            margin-left: auto;
+            border: none;
+            word-wrap: break-word;
             transition: background var(--motion-duration-medium) var(--motion-easing-emphasized),
-                color var(--motion-duration-medium) var(--motion-easing-emphasized),
-                border-color var(--motion-duration-medium) var(--motion-easing-emphasized);
+                color var(--motion-duration-medium) var(--motion-easing-emphasized);
         }
         .message.bot {
             background: transparent;
@@ -747,23 +747,33 @@
         .typing-indicator {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
+            padding: 6px 4px;
         }
-        .typing-spinner {
-            width: 22px; height: 22px;
-            animation: spin 1.2s linear infinite;
-            color: var(--md-sys-color-primary);
+        .typing-dots {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            height: 18px;
         }
-        .typing-spinner .lucide { width: 100%; height: 100%; stroke-width: 2; }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
+        .typing-dots span {
+            width: 7px;
+            height: 7px;
+            border-radius: 50%;
+            background: var(--md-sys-color-primary);
+            opacity: 0.35;
+            animation: aariz-dot 1.25s ease-in-out infinite;
+        }
+        .typing-dots span:nth-child(2) { animation-delay: 0.15s; }
+        .typing-dots span:nth-child(3) { animation-delay: 0.3s; }
+        @keyframes aariz-dot {
+            0%, 80%, 100% { transform: translateY(0); opacity: 0.3; }
+            40% { transform: translateY(-5px); opacity: 1; }
         }
         .typing-text {
             color: var(--md-sys-color-on-surface-variant);
-            font-size: 0.9rem;
-            font-family: var(--md-ref-typeface-plain);
-            transition: color var(--motion-duration-medium) var(--motion-easing-emphasized);
+            font-size: 0.88rem;
+            letter-spacing: 0.01em;
         }
         /* ===== Code Blocks ===== */
         .code-block {
@@ -960,11 +970,16 @@
             border: 1px solid color-mix(in srgb, var(--md-sys-color-primary) 15%, transparent);
         }
         .message.bot img {
-            max-width: 100%;
-            border-radius: 12px;
-            margin: 6px 0;
-            box-shadow: var(--md-elevation-level1);
+            max-width: min(100%, 420px);
+            width: 100%;
+            height: auto;
+            max-height: min(62vh, 520px);
+            object-fit: cover;
+            border-radius: 18px;
+            margin: 6px 0 4px;
             display: block;
+            box-shadow: var(--md-elevation-level1);
+            border: 1px solid var(--md-sys-color-outline-variant);
         }
 
         /* ===== Input Area ===== */
@@ -979,7 +994,11 @@
             bottom: 0;
             z-index: 50;
             flex-shrink: 0;
-            background: linear-gradient(to top, var(--md-sys-color-surface) 70%, transparent);
+            background: linear-gradient(to top,
+                color-mix(in srgb, var(--md-sys-color-surface) 96%, transparent) 55%,
+                color-mix(in srgb, var(--md-sys-color-surface) 70%, transparent) 78%,
+                transparent);
+            transition: background 0.35s ease;
             pointer-events: none;
         }
         .input-area > * { pointer-events: auto; }
@@ -987,43 +1006,62 @@
             padding-bottom: calc(96px + var(--safe-area-bottom, 0px)) !important;
         }
         .gen-image-wrap {
-            margin-top: 8px;
-            border-radius: 16px;
+            margin: 4px 0 8px;
+            width: min(100%, 420px);
+            border-radius: 18px;
             overflow: hidden;
-            background: var(--md-sys-color-surface-container);
-            min-height: 180px;
+            background: color-mix(in srgb, var(--md-sys-color-surface-container) 88%, var(--md-sys-color-primary) 12%);
+            border: 1px solid var(--md-sys-color-outline-variant);
+            box-shadow: var(--md-elevation-level1);
+            min-height: 220px;
+            max-width: 100%;
         }
         .gen-image-skeleton {
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            min-height: 180px;
+            gap: 14px;
+            min-height: 240px;
+            width: 100%;
+            padding: 24px;
             color: var(--md-sys-color-on-surface-variant);
-            font-size: 0.9rem;
+            font-size: 0.92rem;
+            background:
+              linear-gradient(110deg,
+                color-mix(in srgb, var(--md-sys-color-surface-container) 90%, transparent) 25%,
+                color-mix(in srgb, var(--md-sys-color-primary) 12%, var(--md-sys-color-surface-container)) 37%,
+                color-mix(in srgb, var(--md-sys-color-surface-container) 90%, transparent) 63%);
+            background-size: 200% 100%;
+            animation: aariz-shimmer 1.4s ease-in-out infinite;
+        }
+        @keyframes aariz-shimmer {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
         }
         .gen-image-spinner {
-            width: 28px;
-            height: 28px;
-            border: 3px solid var(--md-sys-color-outline-variant);
+            width: 32px;
+            height: 32px;
+            border: 3px solid color-mix(in srgb, var(--md-sys-color-primary) 25%, transparent);
             border-top-color: var(--md-sys-color-primary);
             border-radius: 50%;
-            animation: aariz-spin 0.8s linear infinite;
+            animation: aariz-spin 0.75s linear infinite;
         }
         @keyframes aariz-spin { to { transform: rotate(360deg); } }
         .gen-image {
             display: block;
             width: 100%;
             height: auto;
-            max-height: 70vh;
-            object-fit: contain;
+            max-height: min(62vh, 520px);
+            object-fit: cover;
             background: var(--md-sys-color-surface-container);
+            vertical-align: middle;
         }
         .gen-image-error {
-            padding: 16px;
+            padding: 20px 16px;
             color: var(--md-sys-color-error);
             text-align: center;
+            font-size: 0.9rem;
         }
         #svgBackground {
             position: fixed;
@@ -1233,20 +1271,15 @@
             padding: 0 2px;
         }
         .active-chip {
-            display: flex;
+            display: inline-flex;
             align-items: center;
-            gap: 4px;
-            padding: 3px 8px 3px 6px;
-            border-radius: 12px;
-            font-size: 0.7rem;
-            font-weight: 500;
-            font-family: var(--md-ref-typeface-plain);
-            background: var(--md-sys-color-surface-container);
-            border: 1px solid var(--md-sys-color-outline-variant);
+            gap: 6px;
+            padding: 4px 10px;
+            border-radius: 999px;
+            font-size: 0.8rem;
+            background: color-mix(in srgb, var(--md-sys-color-primary) 14%, var(--md-sys-color-surface-container));
             color: var(--md-sys-color-on-surface);
-            cursor: default;
-            transition: all 0.2s;
-            white-space: nowrap;
+            border: 1px solid color-mix(in srgb, var(--md-sys-color-primary) 28%, var(--md-sys-color-outline-variant));
         }
         .active-chip .chip-icon { width: 12px; height: 12px; stroke-width: 2; }
         .active-chip .chip-close {

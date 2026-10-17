@@ -446,6 +446,31 @@ const ThemeEngine = {
                     root.style.setProperty(key, String(value));
                 }
             });
+            // Fill related surface/container tokens so header, chips, composer all tint
+            const g = (k, fb) => (cssVariables[k] || root.style.getPropertyValue(k).trim() || fb);
+            const surface = g('--md-sys-color-surface', '#F8F9FF');
+            const onSurface = g('--md-sys-color-on-surface', '#1A1C1E');
+            const primary = g('--md-sys-color-primary', '#3B5AFE');
+            const onPrimary = g('--md-sys-color-on-primary', '#FFFFFF');
+            const set = (k, v) => { if (v) root.style.setProperty(k, v); };
+            set('--md-sys-color-surface-bright', surface);
+            set('--md-sys-color-surface-dim', g('--md-sys-color-surface-dim', surface));
+            set('--md-sys-color-surface-container', g('--md-sys-color-surface-container', surface));
+            set('--md-sys-color-surface-container-low', g('--md-sys-color-surface-container-low', surface));
+            set('--md-sys-color-surface-container-high', g('--md-sys-color-surface-container-high', surface));
+            set('--md-sys-color-surface-container-highest', g('--md-sys-color-surface-container-highest', surface));
+            set('--md-sys-color-surface-container-lowest', g('--md-sys-color-surface-container-lowest', surface));
+            set('--md-sys-color-on-surface-variant', g('--md-sys-color-on-surface-variant', onSurface));
+            set('--md-sys-color-primary-container', g('--md-sys-color-primary-container', primary));
+            set('--md-sys-color-on-primary-container', g('--md-sys-color-on-primary-container', onPrimary));
+            set('--md-sys-color-secondary', g('--md-sys-color-secondary', primary));
+            set('--md-sys-color-on-secondary', g('--md-sys-color-on-secondary', onPrimary));
+            // Sync browser chrome
+            try {
+                const meta = document.querySelector('meta[name="theme-color"]');
+                if (meta) meta.setAttribute('content', primary);
+                document.body.style.backgroundColor = surface;
+            } catch (_) {}
         }
 
         // Theme CSS — scoped + layout-safe background rules so custom themes never break the chrome
@@ -1589,16 +1614,16 @@ const UI = {
             typingDiv.className = 'message bot typing';
             typingDiv.id = 'typingIndicator';
             typingDiv.innerHTML = `
-                <div class="typing-indicator">
-                    <div class="typing-spinner">
-                        <i data-lucide="loader-circle" class="lucide" style="width:22px;height:22px;stroke-width:2;"></i>
+                <div class="typing-indicator" aria-label="Aariz is responding">
+                    <div class="typing-dots" aria-hidden="true">
+                        <span></span><span></span><span></span>
                     </div>
-                    <span class="typing-text">Aariz is thinking</span>
+                    <span class="typing-text">Aariz is responding</span>
                 </div>
             `;
             container.appendChild(typingDiv);
             this._typingId = 'typingIndicator';
-            container.scrollTop = container.scrollHeight;
+            this._scrollToBottom();
             this._recreateIcons();
             return typingDiv;
         }
@@ -1615,7 +1640,7 @@ const UI = {
         }
 
         container.appendChild(messageDiv);
-        container.scrollTop = container.scrollHeight;
+        this._scrollToBottom();
         this._recreateIcons();
         return messageDiv;
     },
@@ -1699,25 +1724,31 @@ const UI = {
     <span>Generating image…</span>
   </div>
 </div>`;
+                // Keep a live DOM node (don't full-render while loading — that resets layout)
                 this._addMessageToDOM('assistant', loadingHtml, false);
                 chatManager.addMessage(active.id, 'assistant', `![Generated Image](${imageUrl})`);
+                this._scrollToBottom();
 
                 const img = new Image();
                 img.alt = 'Generated Image';
                 img.className = 'gen-image';
+                img.decoding = 'async';
                 img.onload = () => {
                     const wrap = document.getElementById(wrapId);
                     if (wrap) {
                         wrap.innerHTML = '';
                         wrap.appendChild(img);
                     }
-                    this._scrollToBottom && this._scrollToBottom();
+                    // Wait a frame so height is known, then scroll past the composer
+                    requestAnimationFrame(() => this._scrollToBottom(true));
+                    setTimeout(() => this._scrollToBottom(true), 80);
                 };
                 img.onerror = () => {
                     const wrap = document.getElementById(wrapId);
                     if (wrap) {
-                        wrap.innerHTML = '<div class="gen-image-error">Could not load image. Try again with a different prompt.</div>';
+                        wrap.innerHTML = '<div class="gen-image-error">Could not load image. Try a different prompt.</div>';
                     }
+                    this._scrollToBottom(true);
                 };
                 img.src = imageUrl;
             } catch (err) {
@@ -1729,8 +1760,7 @@ const UI = {
             } finally {
                 this._isProcessing = false;
                 this.sendBtn.disabled = !this.input.value.trim() || this._isProcessing;
-                setTimeout(() => input.focus(), 100);
-                this.render();
+                setTimeout(() => { try { this.input.focus(); } catch(_){} }, 100);
                 this._recreateIcons();
             }
         } else {
