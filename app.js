@@ -426,55 +426,78 @@ const ThemeEngine = {
             document.body.classList.remove('theme-light');
             document.body.classList.add('theme-dark');
             const icon = document.getElementById('themeIcon');
-            if (icon) { icon.setAttribute('data-lucide', 'sun'); if (typeof lucide !== 'undefined') lucide.createIcons();
-
-    // Mobile keyboard: keep composer visible
-    const composer = document.querySelector('.input-area, .composer, .chat-input-container, footer.input-bar');
-    const main = document.getElementById('chatContainer') || document.querySelector('.chat-container');
-    if (window.visualViewport) {
-        const syncVV = () => {
-            const vv = window.visualViewport;
-            document.documentElement.style.setProperty('--vv-height', vv.height + 'px');
-            document.documentElement.style.setProperty('--vv-offset', Math.max(0, window.innerHeight - vv.height - vv.offsetTop) + 'px');
-            if (main) main.scrollTop = main.scrollHeight;
-        };
-        window.visualViewport.addEventListener('resize', syncVV);
-        window.visualViewport.addEventListener('scroll', syncVV);
-        syncVV();
-    }
- }
+            if (icon) {
+                icon.setAttribute('data-lucide', 'sun');
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
         } else if (mode === 'light') {
             document.body.classList.remove('theme-dark');
             document.body.classList.add('theme-light');
             const icon = document.getElementById('themeIcon');
-            if (icon) { icon.setAttribute('data-lucide', 'moon'); if (typeof lucide !== 'undefined') lucide.createIcons(); }
+            if (icon) {
+                icon.setAttribute('data-lucide', 'moon');
+                if (typeof lucide !== 'undefined') lucide.createIcons();
+            }
         }
 
         if (cssVariables && typeof cssVariables === 'object') {
             Object.entries(cssVariables).forEach(([key, value]) => {
-                if (key.startsWith('--') && value) {
-                    root.style.setProperty(key, value);
+                if (typeof key === 'string' && key.startsWith('--') && value) {
+                    root.style.setProperty(key, String(value));
                 }
             });
         }
 
+        // Theme CSS — scoped + layout-safe background rules so custom themes never break the chrome
+        const safeBg = `
+#svgBackground.active {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100% !important;
+  height: 100% !important;
+  z-index: 0 !important;
+  pointer-events: none !important;
+  overflow: hidden !important;
+}
+#svgBackground.active svg {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  display: block !important;
+}
+.app-shell, .chat-app, body > .app {
+  position: relative;
+  z-index: 1;
+}
+.input-area {
+  position: fixed !important;
+  left: 0; right: 0;
+  bottom: 0;
+  bottom: env(safe-area-inset-bottom, 0px);
+  z-index: 50 !important;
+}
+`;
         if (css && typeof css === 'string' && css.trim()) {
-            this._styleTag.textContent = css;
+            this._styleTag.textContent = safeBg + '\n' + css;
         } else {
-            this._styleTag.textContent = '';
+            this._styleTag.textContent = safeBg;
         }
 
-        // SVG Background - force full screen
         if (svgBackground && typeof svgBackground === 'string' && svgBackground.trim()) {
-            // Ensure SVG has proper viewBox and sizing
-            let svgContent = svgBackground;
-            // Inject viewBox if missing
-            if (!svgContent.includes('viewBox')) {
-                svgContent = svgContent.replace('<svg', '<svg viewBox="0 0 100 100"');
+            let svgContent = svgBackground.trim();
+            if (!/^<svg[\s>]/i.test(svgContent)) {
+                svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice">${svgContent}</svg>`;
+            } else {
+                if (!/viewBox=/i.test(svgContent)) {
+                    svgContent = svgContent.replace(/<svg/i, '<svg viewBox="0 0 100 100"');
+                }
+                if (!/preserveAspectRatio=/i.test(svgContent)) {
+                    svgContent = svgContent.replace(/<svg/i, '<svg preserveAspectRatio="xMidYMid slice"');
+                }
+                svgContent = svgContent
+                    .replace(/\swidth="[^"]*"/gi, ' width="100%"')
+                    .replace(/\sheight="[^"]*"/gi, ' height="100%"');
             }
-            // Ensure width and height are 100%
-            svgContent = svgContent.replace(/width="[^"]*"/g, 'width="100%"');
-            svgContent = svgContent.replace(/height="[^"]*"/g, 'height="100%"');
             this._svgContainer.innerHTML = svgContent;
             this._svgContainer.classList.add('active');
         } else {
@@ -483,14 +506,13 @@ const ThemeEngine = {
         }
 
         if (particles && particles.type && particles.type !== 'none') {
-            const pConfig = {
+            this._particleSystem.start({
                 type: particles.type,
-                count: particles.count || 60,
+                count: Math.min(Number(particles.count) || 50, 120),
                 color: particles.color || '#ffffff',
                 speed: particles.speed || 1,
                 size: particles.size || 3,
-            };
-            this._particleSystem.start(pConfig);
+            });
         } else {
             this._particleSystem.stop();
         }
@@ -506,8 +528,9 @@ const ThemeEngine = {
 
         try {
             localStorage.setItem('aariz_applied_theme', JSON.stringify(themeData));
-        } catch(e) { console.warn('Theme save failed:', e); }
-
+        } catch (e) {
+            console.warn('Theme save failed:', e);
+        }
         return true;
     },
 
@@ -608,7 +631,12 @@ RULES:
 8. The "css" field can include @keyframes for background animations, gradients, etc.
 9. All hex values must be 6 characters. Use #RRGGBB format.
 10. Ensure WCAG AA contrast for readability.
-11. The SVG background should be aesthetically pleasing and match the theme.
+11. svgBackground must be a FULL-VIEWPORT decorative SVG:
+   - Root <svg viewBox="0 0 100 100" preserveAspectRatio="xMidYMid slice"> (percent coords 0–100).
+   - No fixed pixel width/height; design fills the viewBox (gradients, soft shapes, waves).
+   - Avoid tiny centered icons — backgrounds must read as wallpaper, not a stamp.
+   - Prefer 2–4 large soft shapes + gradient; keep file small.
+12. Never emit CSS that changes position/display of .input-area, header, or fixed chrome.
 
 User's theme request: ${userPrompt}`;
     }
@@ -1086,9 +1114,11 @@ How you respond:
 - Match the user's language (English or Urdu/Roman Urdu are both fine).
 - When the user asks for a plan or debug path, give ordered steps they can follow now.
 
-Tools the app may enable:
-- Web search may be on; if results are provided in context, use them and note they may be incomplete.
-- Image mode is separate; normal chat should not pretend to generate images.
+Tools & app features:
+- Image mode is separate (user toggles it). In normal chat do not pretend to generate images.
+- Theme mode is separate; only emit theme JSON when the user is in Theme mode (the app handles that).
+- JavaScript sandbox: users can press Run on ```javascript / ```js fenced blocks. Write complete, self-contained snippets that log results with console.log(). Avoid infinite loops. Prefer pure JS (no DOM/Node APIs). Keep examples short and runnable.
+- Prefer one clear code block over many fragments when teaching.
 
 Safety:
 - Refuse clearly harmful illegal guidance. Prefer safer alternatives when relevant.
@@ -1660,12 +1690,36 @@ const UI = {
             try {
                 const enhanced = await this._getEnhancedPrompt(text);
                 this._removeTypingIndicator();
-                this._addMessageToDOM('assistant', '', true);
+
                 const imageUrl = `https://api.omegatech.app/api/ai/flux?prompt=${encodeURIComponent(enhanced)}`;
-                const finalMessage = `Here is image:\n\n![Generated Image](${imageUrl})`;
-                this._removeTypingIndicator();
-                this._addMessageToDOM('assistant', finalMessage, false);
-                chatManager.addMessage(active.id, 'assistant', finalMessage);
+                const wrapId = 'imgload-' + Date.now();
+                const loadingHtml = `<div class="gen-image-wrap" id="${wrapId}">
+  <div class="gen-image-skeleton" role="status" aria-live="polite">
+    <span class="gen-image-spinner"></span>
+    <span>Generating image…</span>
+  </div>
+</div>`;
+                this._addMessageToDOM('assistant', loadingHtml, false);
+                chatManager.addMessage(active.id, 'assistant', `![Generated Image](${imageUrl})`);
+
+                const img = new Image();
+                img.alt = 'Generated Image';
+                img.className = 'gen-image';
+                img.onload = () => {
+                    const wrap = document.getElementById(wrapId);
+                    if (wrap) {
+                        wrap.innerHTML = '';
+                        wrap.appendChild(img);
+                    }
+                    this._scrollToBottom && this._scrollToBottom();
+                };
+                img.onerror = () => {
+                    const wrap = document.getElementById(wrapId);
+                    if (wrap) {
+                        wrap.innerHTML = '<div class="gen-image-error">Could not load image. Try again with a different prompt.</div>';
+                    }
+                };
+                img.src = imageUrl;
             } catch (err) {
                 this._removeTypingIndicator();
                 const errMsg = this._friendlyError(err);
