@@ -1626,6 +1626,20 @@ const UI = {
         this._recreateIcons();
     },
 
+    _scrollToBottom(force) {
+        try {
+            const container = this.chatContainer;
+            if (!container) return;
+            const run = () => {
+                container.scrollTop = container.scrollHeight + (force ? 200 : 0);
+            };
+            run();
+            if (force) {
+                requestAnimationFrame(run);
+            }
+        } catch (_) {}
+    },
+
     _addMessageToDOM(role, text, isTyping) {
         const container = this.chatContainer;
         const welcomeEl = document.getElementById('welcomeMessage');
@@ -1747,6 +1761,7 @@ const UI = {
             return;
         }
 
+        try {
         this._addMessageToDOM('user', text, false);
         chatManager.addMessage(active.id, 'user', text);
         this.render();
@@ -1824,6 +1839,21 @@ const UI = {
                 this.render();
                 this._recreateIcons();
             }
+        }
+        } catch (outerErr) {
+            console.error('sendMessage failed', outerErr);
+            this._removeTypingIndicator();
+            const errMsg = this._friendlyError(outerErr);
+            try {
+                this._addMessageToDOM('assistant', errMsg, false);
+                const a = chatManager.getActive();
+                if (a) chatManager.addMessage(a.id, 'assistant', errMsg);
+            } catch (_) {}
+            this.showError((outerErr && outerErr.message) || 'Send failed');
+        } finally {
+            this._isProcessing = false;
+            if (this.sendBtn) this.sendBtn.disabled = !this.input.value.trim();
+            try { this._recreateIcons(); } catch (_) {}
         }
     },
 
